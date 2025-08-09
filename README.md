@@ -1,15 +1,22 @@
 # Yalla CLI
 
+[![Tests](https://github.com/Marwen-Brini/Yalla/actions/workflows/run-tests.yml/badge.svg)](https://github.com/Marwen-Brini/Yalla/actions/workflows/run-tests.yml)
+[![Code Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)](https://github.com/Marwen-Brini/Yalla)
+[![PHP Version](https://img.shields.io/badge/PHP-%5E8.1-blue)](https://www.php.net)
+
 A standalone PHP CLI framework built from scratch without dependencies.
 
 ## Features
 
 - **Zero Dependencies**: Built entirely from scratch without relying on Symfony Console or other frameworks
 - **Command Routing**: Custom command parser and router
-- **Colored Output**: ANSI color support for beautiful terminal output
-- **Table Rendering**: Built-in table formatter for structured data
+- **Colored Output**: ANSI color support for beautiful terminal output (cross-platform)
+- **Table Rendering**: Built-in table formatter with Unicode box drawing
 - **Input Parsing**: Handles commands, arguments, and options (long and short formats)
+- **Command Scaffolding**: Built-in `create:command` to generate new command boilerplate
+- **100% Test Coverage**: Fully tested with Pest PHP
 - **Extensible**: Easy to add custom commands
+- **Cross-Platform**: Works on Windows, macOS, and Linux
 
 ## Installation
 
@@ -75,6 +82,59 @@ $app->run();
 ./my-cli greet World
 ./my-cli greet World --yell
 ./my-cli greet World -y
+```
+
+### Command Scaffolding
+
+Yalla includes a built-in command generator to quickly create new commands:
+
+```bash
+# Create a new command with default settings
+./bin/yalla create:command deploy
+
+# Create with custom class name
+./bin/yalla create:command deploy --class=DeployApplicationCommand
+
+# Create in a custom directory
+./bin/yalla create:command deploy --dir=src/Commands/Deployment
+
+# Force overwrite if file exists
+./bin/yalla create:command deploy --force
+```
+
+This will generate a command class with the proper structure:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace Yalla\Commands;
+
+use Yalla\Commands\Command;
+use Yalla\Output\Output;
+
+class DeployCommand extends Command
+{
+    public function __construct()
+    {
+        $this->name = 'deploy';
+        $this->description = 'Description of your command';
+        
+        // Define arguments and options here
+    }
+    
+    public function execute(array $input, Output $output): int
+    {
+        $output->info('Executing deploy command...');
+        
+        // Your command logic here
+        
+        $output->success('deploy completed successfully!');
+        
+        return 0;
+    }
+}
 ```
 
 ## Creating Commands
@@ -153,10 +213,29 @@ $output->writeln($output->color('Custom', Output::MAGENTA));
 $output->table(['Header 1', 'Header 2'], $rows);
 ```
 
+## Architecture
+
+Yalla is built with a clean, modular architecture:
+
+- **Application**: Main entry point that handles command registration and execution
+- **CommandRegistry**: Manages command registration and retrieval
+- **InputParser**: Parses CLI arguments into structured data
+- **Output**: Handles all terminal output with color support
+- **Command**: Base class for all commands
+
 ## Testing
 
+Yalla maintains 100% code coverage with comprehensive test suite using Pest PHP:
+
 ```bash
+# Run tests
 composer test
+
+# Run tests with coverage report
+composer test -- --coverage
+
+# Run specific test file
+vendor/bin/pest tests/ApplicationTest.php
 ```
 
 ## License
