@@ -4,6 +4,13 @@ All notable changes to `yalla` will be documented in this file.
 
 ## [Unreleased]
 
+### Changed
+- Clarified PHP version support (8.1 to 8.4) in composer.json and documentation
+- Optimized GitHub Actions workflows to prevent job cancellation
+  - Reduced matrix combinations from 16 to 7 jobs
+  - Added separate workflow for code coverage
+  - Set max-parallel jobs to 4 to avoid GitHub limits
+
 ## 1.1.0 - 2025-01-09
 
 ### Added

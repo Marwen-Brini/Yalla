@@ -2,7 +2,7 @@
 
 [![Tests](https://github.com/Marwen-Brini/Yalla/actions/workflows/run-tests.yml/badge.svg)](https://github.com/Marwen-Brini/Yalla/actions/workflows/run-tests.yml)
 [![Code Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)](https://github.com/Marwen-Brini/Yalla)
-[![PHP Version](https://img.shields.io/badge/PHP-%5E8.1-blue)](https://www.php.net)
+[![PHP Version](https://img.shields.io/badge/PHP-8.1%20to%208.4-blue)](https://www.php.net)
 
 A standalone PHP CLI framework built from scratch without dependencies.
 
@@ -17,6 +17,11 @@ A standalone PHP CLI framework built from scratch without dependencies.
 - **100% Test Coverage**: Fully tested with Pest PHP
 - **Extensible**: Easy to add custom commands
 - **Cross-Platform**: Works on Windows, macOS, and Linux
+
+## Requirements
+
+- PHP 8.1, 8.2, 8.3, or 8.4
+- Composer 2.0+
 
 ## Installation
 
