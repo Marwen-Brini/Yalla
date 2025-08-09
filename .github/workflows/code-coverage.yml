@@ -26,10 +26,15 @@ jobs:
         run: composer update --prefer-stable --prefer-dist --no-interaction
 
       - name: Execute tests with coverage
+        timeout-minutes: 5
         run: composer test-coverage
+        env:
+          CI: true
 
       - name: Generate coverage report
         run: composer test-coverage-html
+        env:
+          CI: true
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3

@@ -58,7 +58,8 @@ jobs:
 
       - name: Execute tests
         timeout-minutes: 5
-        run: vendor/bin/pest --ci --no-interaction
+        run: composer test
         env:
           SHELL_VERBOSITY: 0
           NO_INTERACTION: 1
+          CI: true
