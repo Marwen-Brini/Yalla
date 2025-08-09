@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
+    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.5/phpunit.xsd"
     backupGlobals="false"
     bootstrap="vendor/autoload.php"
     colors="true"
@@ -14,20 +14,32 @@
     beStrictAboutOutputDuringTests="true"
     cacheDirectory=".phpunit.cache"
     backupStaticProperties="false"
+    requireCoverageMetadata="false"
+    beStrictAboutCoverageMetadata="false"
 >
     <testsuites>
         <testsuite name="Yalla Test Suite">
             <directory>tests</directory>
         </testsuite>
     </testsuites>
-    <coverage>
+    
+    <coverage
+        pathCoverage="false"
+        ignoreDeprecatedCodeUnits="true"
+        disableCodeCoverageIgnore="false"
+    >
         <report>
             <html outputDirectory="build/coverage"/>
             <text outputFile="build/coverage.txt"/>
             <clover outputFile="build/logs/clover.xml"/>
         </report>
     </coverage>
-    <source>
+    
+    <source
+        restrictNotices="true"
+        restrictWarnings="true"
+        ignoreIndirectDeprecations="true"
+    >
         <include>
             <directory suffix=".php">./src</directory>
         </include>

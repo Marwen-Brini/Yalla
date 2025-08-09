@@ -55,10 +55,34 @@ class Output
 
     private function hasColorSupport(): bool
     {
-        if (DIRECTORY_SEPARATOR === '\\') {
-            return getenv('ANSICON') !== false || getenv('ConEmuANSI') === 'ON';
+        if ($this->isWindows()) {
+            return $this->hasWindowsColorSupport();
         }
 
+        return $this->hasUnixColorSupport();
+    }
+
+    /**
+     * Check if running on Windows (extracted for testability)
+     */
+    protected function isWindows(): bool
+    {
+        return DIRECTORY_SEPARATOR === '\\';
+    }
+
+    /**
+     * Check Windows color support (extracted for testability)
+     */
+    protected function hasWindowsColorSupport(): bool
+    {
+        return getenv('ANSICON') !== false || getenv('ConEmuANSI') === 'ON';
+    }
+
+    /**
+     * Check Unix color support (extracted for testability)
+     */
+    protected function hasUnixColorSupport(): bool
+    {
         return function_exists('posix_isatty') && posix_isatty(STDOUT);
     }
 

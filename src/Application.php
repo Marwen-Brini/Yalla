@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yalla;
 
 use Yalla\Commands\CommandRegistry;
+use Yalla\Commands\CreateCommandCommand;
 use Yalla\Commands\HelpCommand;
 use Yalla\Commands\ListCommand;
 use Yalla\Input\InputParser;
@@ -37,6 +38,7 @@ class Application
     {
         $this->registry->register(new HelpCommand($this->registry));
         $this->registry->register(new ListCommand($this->registry));
+        $this->registry->register(new CreateCommandCommand());
     }
 
     public function register($command): self
