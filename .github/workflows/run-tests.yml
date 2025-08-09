@@ -56,10 +56,20 @@ jobs:
       - name: List Installed Dependencies
         run: composer show -D
 
-      - name: Execute tests
+      - name: Execute tests (Linux/macOS)
+        if: runner.os != 'Windows'
         timeout-minutes: 5
-        run: composer test
+        run: composer test-ci
         env:
-          SHELL_VERBOSITY: 0
-          NO_INTERACTION: 1
+          CI: true
+          
+      - name: Execute tests (Windows)
+        if: runner.os == 'Windows'
+        timeout-minutes: 5
+        shell: powershell
+        run: |
+          composer test-ci
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          exit 0
+        env:
           CI: true
