@@ -22,20 +22,20 @@ class ListCommand extends Command
         $output->writeln($output->color('Yalla CLI', Output::CYAN));
         $output->writeln('');
         $output->writeln($output->color('Available commands:', Output::YELLOW));
-        
+
         $commands = [];
         foreach ($this->registry->all() as $command) {
             $commands[] = [
                 $output->color($command->getName(), Output::GREEN),
-                $command->getDescription()
+                $command->getDescription(),
             ];
         }
-        
+
         $output->table(['Command', 'Description'], $commands);
-        
+
         $output->writeln('');
-        $output->writeln('Run ' . $output->color('yalla help [command]', Output::GREEN) . ' for more information about a command.');
-        
+        $output->writeln('Run '.$output->color('yalla help [command]', Output::GREEN).' for more information about a command.');
+
         return 0;
     }
 }

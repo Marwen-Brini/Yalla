@@ -9,8 +9,11 @@ use Yalla\Output\Output;
 abstract class Command
 {
     protected string $name;
+
     protected string $description;
+
     protected array $arguments = [];
+
     protected array $options = [];
 
     abstract public function execute(array $input, Output $output): int;
@@ -42,7 +45,7 @@ abstract class Command
             'description' => $description,
             'required' => $required,
         ];
-        
+
         return $this;
     }
 
@@ -54,13 +57,14 @@ abstract class Command
             'description' => $description,
             'default' => $default,
         ];
-        
+
         return $this;
     }
 
     protected function getArgument(array $input, string $name, $default = null)
     {
         $index = array_search($name, array_column($this->arguments, 'name'));
+
         return $input['arguments'][$index] ?? $default;
     }
 

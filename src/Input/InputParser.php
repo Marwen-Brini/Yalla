@@ -21,7 +21,7 @@ class InputParser
             if (str_starts_with($arg, '--')) {
                 $isOption = true;
                 $optionName = substr($arg, 2);
-                
+
                 if (str_contains($optionName, '=')) {
                     [$name, $value] = explode('=', $optionName, 2);
                     $result['options'][$name] = $value;
@@ -33,7 +33,7 @@ class InputParser
             } elseif (str_starts_with($arg, '-')) {
                 $isOption = true;
                 $flags = substr($arg, 1);
-                
+
                 for ($i = 0; $i < strlen($flags); $i++) {
                     $result['options'][$flags[$i]] = true;
                 }
