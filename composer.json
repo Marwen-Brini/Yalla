@@ -42,8 +42,9 @@
         }
     },
     "scripts": {
-        "test": "vendor/bin/pest --coverage --min=100",
-        "test-coverage": "vendor/bin/pest --coverage --coverage-html build/coverage",
+        "test": "vendor/bin/pest",
+        "test-coverage": "vendor/bin/pest --coverage --min=100",
+        "test-coverage-html": "vendor/bin/pest --coverage --coverage-html build/coverage",
         "test-coverage-ci": "vendor/bin/pest --coverage --min=100 --coverage-clover build/logs/clover.xml",
         "format": "vendor/bin/pint",
         "analyse": "vendor/bin/phpstan analyse"

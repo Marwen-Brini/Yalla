@@ -42,6 +42,7 @@ jobs:
           php-version: ${{ matrix.php }}
           extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick, fileinfo
           coverage: none
+          ini-values: error_reporting=E_ALL
 
       - name: Setup problem matchers
         run: |

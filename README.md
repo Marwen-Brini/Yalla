@@ -254,8 +254,11 @@ Yalla maintains 100% code coverage with comprehensive test suite using Pest PHP:
 # Run tests
 composer test
 
-# Run tests with coverage report
-composer test -- --coverage
+# Run tests with coverage (requires Xdebug or PCOV)
+composer test-coverage
+
+# Generate HTML coverage report
+composer test-coverage-html
 
 # Run specific test file
 vendor/bin/pest tests/ApplicationTest.php
