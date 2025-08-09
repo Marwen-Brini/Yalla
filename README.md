@@ -28,6 +28,8 @@ composer require marwen-brini/yalla
 
 ### Basic Usage
 
+Create a CLI script (e.g., `bin/yalla`):
+
 ```php
 #!/usr/bin/env php
 <?php
@@ -35,6 +37,21 @@ composer require marwen-brini/yalla
 require 'vendor/autoload.php';
 
 use Yalla\Application;
+
+$app = new Application('Yalla CLI', '1.1.0');
+$app->run();
+```
+
+Make it executable:
+```bash
+chmod +x bin/yalla
+```
+
+### Creating Custom Commands
+
+```php
+<?php
+
 use Yalla\Commands\Command;
 use Yalla\Output\Output;
 
@@ -64,7 +81,8 @@ class GreetCommand extends Command
     }
 }
 
-$app = new Application('My CLI', '1.0.0');
+// Register in your application
+$app = new Application('Yalla CLI', '1.1.0');
 $app->register(new GreetCommand());
 $app->run();
 ```
@@ -73,15 +91,15 @@ $app->run();
 
 ```bash
 # List all commands
-./my-cli list
+./bin/yalla list
 
 # Get help for a command
-./my-cli help greet
+./bin/yalla help greet
 
 # Run a command
-./my-cli greet World
-./my-cli greet World --yell
-./my-cli greet World -y
+./bin/yalla greet World
+./bin/yalla greet World --yell
+./bin/yalla greet World -y
 ```
 
 ### Command Scaffolding
