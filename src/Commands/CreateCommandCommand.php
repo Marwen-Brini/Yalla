@@ -12,7 +12,7 @@ class CreateCommandCommand extends Command
     {
         $this->name = 'create:command';
         $this->description = 'Create a new command class';
-        
+
         $this->addArgument('name', 'The name of the command (e.g., serve, deploy, make:model)', true);
         $this->addOption('class', 'c', 'Custom class name (default: generates from command name)', null);
         $this->addOption('dir', 'd', 'Directory to create the command in (default: src/Commands)', 'src/Commands');
@@ -25,103 +25,106 @@ class CreateCommandCommand extends Command
         $className = $this->getOption($input, 'class') ?: $this->generateClassName($commandName);
         $directory = $this->getOption($input, 'dir', 'src/Commands');
         $force = $this->getOption($input, 'force', false);
-        
+
         // Ensure class name ends with Command
-        if (!str_ends_with($className, 'Command')) {
+        if (! str_ends_with($className, 'Command')) {
             $className .= 'Command';
         }
-        
+
         // Generate file path
-        $filePath = $this->getProjectRoot() . '/' . $directory . '/' . $className . '.php';
-        
+        $filePath = $this->getProjectRoot().'/'.$directory.'/'.$className.'.php';
+
         // Check if file exists
-        if ($this->fileExists($filePath) && !$force) {
+        if ($this->fileExists($filePath) && ! $force) {
             $output->error("File already exists: $filePath");
-            $output->info("Use --force to overwrite");
+            $output->info('Use --force to overwrite');
+
             return 1;
         }
-        
+
         // Ensure directory exists
         $dir = dirname($filePath);
-        if (!$this->createDirectory($dir)) {
+        if (! $this->createDirectory($dir)) {
             $output->error("Failed to create directory: $dir");
+
             return 1;
         }
-        
+
         // Generate namespace from directory
         $namespace = $this->generateNamespace($directory);
-        
+
         // Generate command class content
         $content = $this->generateCommandClass($className, $commandName, $namespace);
-        
+
         // Write file
-        if (!$this->writeFile($filePath, $content)) {
+        if (! $this->writeFile($filePath, $content)) {
             $output->error("Failed to write file: $filePath");
+
             return 1;
         }
-        
+
         $output->success("Command created successfully: $filePath");
         $output->writeln('');
-        $output->info("Next steps:");
+        $output->info('Next steps:');
         $output->writeln("1. Edit the command class: $className");
-        $output->writeln("2. Register it in your application:");
+        $output->writeln('2. Register it in your application:');
         $output->writeln('');
         $output->writeln($output->color("   \$app->register(new \\$namespace\\$className());", Output::CYAN));
         $output->writeln('');
-        $output->writeln("3. Run your command:");
+        $output->writeln('3. Run your command:');
         $output->writeln('');
         $output->writeln($output->color("   ./bin/yalla $commandName", Output::CYAN));
-        
+
         return 0;
     }
-    
+
     private function generateClassName(string $commandName): string
     {
         // Convert command name to class name
         // serve -> ServeCommand
         // make:model -> MakeModelCommand
         // create-user -> CreateUserCommand
-        
+
         $parts = preg_split('/[:_-]/', $commandName);
         $className = '';
-        
+
         foreach ($parts as $part) {
             $className .= ucfirst(strtolower($part));
         }
-        
-        return $className . 'Command';
+
+        return $className.'Command';
     }
-    
+
     private function generateNamespace(string $directory): string
     {
         // Convert directory to namespace
         // src/Commands -> YourApp\Commands
         // src/Commands/Make -> YourApp\Commands\Make
-        
+
         $parts = explode('/', $directory);
-        
+
         // Remove 'src' if it's the first part
         if ($parts[0] === 'src') {
             array_shift($parts);
         }
-        
+
         // Try to detect the root namespace from composer.json
         $rootNamespace = $this->detectRootNamespace();
-        
+
         if (empty($parts)) {
             return $rootNamespace;
         }
-        
-        return $rootNamespace . '\\' . implode('\\', $parts);
+
+        return $rootNamespace.'\\'.implode('\\', $parts);
     }
-    
+
     private function detectRootNamespace(): string
     {
-        $composerPath = $this->getProjectRoot() . '/composer.json';
-        
+        $composerPath = $this->getProjectRoot().'/composer.json';
+
         if (file_exists($composerPath)) {
             $composer = json_decode(file_get_contents($composerPath), true);
-            
+
             if (isset($composer['autoload']['psr-4'])) {
                 foreach ($composer['autoload']['psr-4'] as $namespace => $path) {
                     // Get the first PSR-4 namespace
@@ -129,27 +132,27 @@ class CreateCommandCommand extends Command
                 }
             }
         }
-        
+
         // Default fallback
         return 'App';
     }
-    
+
     private function getProjectRoot(): string
     {
         // Try to find project root by looking for composer.json
         $dir = getcwd();
-        
+
         while ($dir !== '/') {
-            if (file_exists($dir . '/composer.json')) {
+            if (file_exists($dir.'/composer.json')) {
                 return $dir;
             }
             $dir = dirname($dir);
         }
-        
+
         // Fallback to current directory
         return getcwd();
     }
-    
+
     private function generateCommandClass(string $className, string $commandName, string $namespace): string
     {
         $template = <<<'PHP'
@@ -194,14 +197,14 @@ class %CLASS_NAME% extends Command
     }
 }
 PHP;
-        
+
         return str_replace(
             ['%NAMESPACE%', '%CLASS_NAME%', '%COMMAND_NAME%'],
             [$namespace, $className, $commandName],
             $template
         );
     }
-    
+
     /**
      * Check if a file exists (extracted for testability)
      */
@@ -209,7 +212,7 @@ PHP;
     {
         return file_exists($path);
     }
-    
+
     /**
      * Create a directory (extracted for testability)
      */
@@ -218,10 +221,10 @@ PHP;
         if (is_dir($dir)) {
             return true;
         }
-        
+
         return mkdir($dir, 0755, true);
     }
-    
+
     /**
      * Write content to a file (extracted for testability)
      */

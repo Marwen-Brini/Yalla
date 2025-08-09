@@ -13,10 +13,11 @@ class MockCommand extends Command
         $this->name = 'mock';
         $this->description = 'Mock command';
     }
-    
+
     public function execute(array $input, Output $output): int
     {
         $output->writeln('Mock executed');
+
         return 0;
     }
 }
@@ -28,7 +29,7 @@ class FailingCommand extends Command
         $this->name = 'fail';
         $this->description = 'Failing command';
     }
-    
+
     public function execute(array $input, Output $output): int
     {
         throw new Exception('Command failed');
@@ -51,75 +52,75 @@ it('has default name and version', function () {
 });
 
 it('can register custom commands', function () {
-    $app = new Application();
-    $command = new MockCommand();
-    
+    $app = new Application;
+    $command = new MockCommand;
+
     $result = $app->register($command);
-    
+
     expect($result)->toBe($app);
 });
 
 it('runs default list command when no command provided', function () {
-    $app = new Application();
-    
+    $app = new Application;
+
     $_SERVER['argv'] = ['yalla'];
-    
+
     ob_start();
     $exitCode = $app->run();
     ob_end_clean();
-    
+
     expect($exitCode)->toBe(0);
 });
 
 it('runs specified command', function () {
-    $app = new Application();
-    $app->register(new MockCommand());
-    
+    $app = new Application;
+    $app->register(new MockCommand);
+
     $_SERVER['argv'] = ['yalla', 'mock'];
-    
+
     ob_start();
     $exitCode = $app->run();
     $output = ob_get_clean();
-    
+
     expect($exitCode)->toBe(0);
     expect($output)->toContain('Mock executed');
 });
 
 it('returns error for non-existent command', function () {
-    $app = new Application();
-    
+    $app = new Application;
+
     $_SERVER['argv'] = ['yalla', 'nonexistent'];
-    
+
     ob_start();
     $exitCode = $app->run();
     $output = ob_get_clean();
-    
+
     expect($exitCode)->toBe(1);
     expect($output)->toContain("Command 'nonexistent' not found");
 });
 
 it('handles command exceptions gracefully', function () {
-    $app = new Application();
-    $app->register(new FailingCommand());
-    
+    $app = new Application;
+    $app->register(new FailingCommand);
+
     $_SERVER['argv'] = ['yalla', 'fail'];
-    
+
     ob_start();
     $exitCode = $app->run();
     $output = ob_get_clean();
-    
+
     expect($exitCode)->toBe(1);
     expect($output)->toContain('Command failed');
 });
 
 it('handles missing argv gracefully', function () {
-    $app = new Application();
-    
+    $app = new Application;
+
     unset($_SERVER['argv']);
-    
+
     ob_start();
     $exitCode = $app->run();
     ob_end_clean();
-    
+
     expect($exitCode)->toBe(0);
 });

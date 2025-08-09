@@ -38,7 +38,7 @@ class Application
     {
         $this->registry->register(new HelpCommand($this->registry));
         $this->registry->register(new ListCommand($this->registry));
-        $this->registry->register(new CreateCommandCommand());
+        $this->registry->register(new CreateCommandCommand);
     }
 
     public function register($command): self
