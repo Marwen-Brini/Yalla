@@ -1,0 +1,59 @@
+{
+    "name": "marwen-brini/yalla",
+    "description": "A standalone PHP CLI framework built from scratch",
+    "keywords": [
+        "cli",
+        "command-line",
+        "console",
+        "yalla",
+        "php"
+    ],
+    "homepage": "https://github.com/marwen-brini/yalla",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Marwen-Brini",
+            "email": "brini.marwen@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.1"
+    },
+    "require-dev": {
+        "pestphp/pest": "^3.0",
+        "laravel/pint": "^1.0",
+        "spatie/ray": "^1.28",
+        "phpstan/phpstan": "^2.0",
+        "phpstan/extension-installer": "^1.4",
+        "phpstan/phpstan-phpunit": "^2.0"
+    },
+    "bin": [
+        "bin/yalla"
+    ],
+    "autoload": {
+        "psr-4": {
+            "Yalla\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Yalla\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/pest",
+        "test-coverage": "vendor/bin/pest --coverage",
+        "format": "vendor/bin/pint",
+        "analyse": "vendor/bin/phpstan analyse"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "phpstan/extension-installer": true
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
