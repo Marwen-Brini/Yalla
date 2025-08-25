@@ -10,6 +10,9 @@ use Yalla\Commands\HelpCommand;
 use Yalla\Commands\ListCommand;
 use Yalla\Input\InputParser;
 use Yalla\Output\Output;
+use Yalla\Repl\ReplCommand;
+use Yalla\Commands\InitReplCommand;
+use Yalla\Commands\InitCommand;
 
 class Application
 {
@@ -39,6 +42,9 @@ class Application
         $this->registry->register(new HelpCommand($this->registry));
         $this->registry->register(new ListCommand($this->registry));
         $this->registry->register(new CreateCommandCommand);
+        $this->registry->register(new ReplCommand);
+        $this->registry->register(new InitReplCommand);
+        $this->registry->register(new InitCommand);
     }
 
     public function register($command): self

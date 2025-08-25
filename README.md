@@ -9,13 +9,15 @@ A standalone PHP CLI framework built from scratch without dependencies.
 ## Features
 
 - **Zero Dependencies**: Built entirely from scratch without relying on Symfony Console or other frameworks
+- **Interactive REPL**: Full-featured Read-Eval-Print-Loop for interactive PHP development
 - **Command Routing**: Custom command parser and router
 - **Colored Output**: ANSI color support for beautiful terminal output (cross-platform)
 - **Table Rendering**: Built-in table formatter with Unicode box drawing
 - **Input Parsing**: Handles commands, arguments, and options (long and short formats)
 - **Command Scaffolding**: Built-in `create:command` to generate new command boilerplate
+- **History & Autocomplete**: REPL with command history and intelligent autocompletion
+- **Extensible Architecture**: Plugin system for custom REPL extensions
 - **100% Test Coverage**: Fully tested with Pest PHP
-- **Extensible**: Easy to add custom commands
 - **Cross-Platform**: Works on Windows, macOS, and Linux
 
 ## Requirements
@@ -156,6 +158,118 @@ class DeployCommand extends Command
         $output->success('deploy completed successfully!');
         
         return 0;
+    }
+}
+```
+
+## Interactive REPL
+
+Yalla includes a powerful REPL (Read-Eval-Print-Loop) for interactive PHP development:
+
+### Starting the REPL
+
+```bash
+# Start the REPL
+./bin/yalla repl
+
+# With custom configuration
+./bin/yalla repl --config=repl.config.php
+
+# Disable colors
+./bin/yalla repl --no-colors
+
+# Disable history
+./bin/yalla repl --no-history
+```
+
+### REPL Commands
+
+- `:help` - Show available commands
+- `:exit` - Exit the REPL
+- `:vars` - Show defined variables
+- `:imports` - Show imported classes
+- `:clear` - Clear the screen
+- `:history` - Show command history
+
+### REPL Features
+
+- **Command History**: Navigate through previous commands with up/down arrows
+- **Variable Persistence**: Variables defined in the REPL persist across commands
+- **Shortcuts**: Define shortcuts for frequently used classes
+- **Auto-imports**: Automatically import specified classes
+- **Custom Extensions**: Add your own commands and functionality
+
+### REPL Configuration
+
+Create a `repl.config.php` file:
+
+```php
+<?php
+
+return [
+    'shortcuts' => [
+        'User' => '\App\Models\User',
+        'DB' => '\Illuminate\Support\Facades\DB',
+    ],
+    
+    'imports' => [
+        ['class' => '\Carbon\Carbon', 'alias' => 'Carbon'],
+    ],
+    
+    'display' => [
+        'prompt' => 'myapp> ',
+        'performance' => true, // Show execution time and memory
+    ],
+    
+    'history' => [
+        'file' => $_ENV['HOME'] . '/.myapp_history',
+        'max_entries' => 1000,
+    ],
+];
+```
+
+### Creating REPL Extensions
+
+```php
+use Yalla\Repl\ReplExtension;
+use Yalla\Repl\ReplContext;
+
+class MyExtension implements ReplExtension
+{
+    public function register(ReplContext $context): void
+    {
+        // Add custom commands
+        $context->addCommand('models', function($args, $output) {
+            // List all models
+        });
+        
+        // Add shortcuts
+        $context->addShortcut('User', '\App\Models\User');
+        
+        // Add custom formatters
+        $context->addFormatter('MyClass', function($value, $output) {
+            $output->info('Custom formatting for MyClass');
+        });
+    }
+    
+    public function boot(): void
+    {
+        // Bootstrap your extension
+    }
+    
+    public function getName(): string
+    {
+        return 'My Custom Extension';
+    }
+    
+    public function getVersion(): string
+    {
+        return '1.0.0';
+    }
+    
+    public function getDescription(): string
+    {
+        return 'Adds custom functionality to the REPL';
     }
 }
 ```

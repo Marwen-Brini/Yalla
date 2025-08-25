@@ -178,4 +178,95 @@ class Output
         $line .= '┤';
         $this->writeln($line);
     }
+
+    public function box(string $content, string $color = self::WHITE): void
+    {
+        $lines = explode("\n", $content);
+        $maxLength = max(array_map('strlen', $lines));
+        $width = $maxLength + 4;
+        
+        // Top border
+        $top = '╔' . str_repeat('═', $width - 2) . '╗';
+        $this->writeln($this->color($top, $color));
+        
+        // Content lines
+        foreach ($lines as $line) {
+            $padding = $width - 4 - strlen($line);
+            $paddedLine = '║ ' . $line . str_repeat(' ', $padding + 1) . ' ║';
+            $this->writeln($this->color($paddedLine, $color));
+        }
+        
+        // Bottom border
+        $bottom = '╚' . str_repeat('═', $width - 2) . '╝';
+        $this->writeln($this->color($bottom, $color));
+    }
+
+    public function progressBar(int $current, int $total, int $width = 50): void
+    {
+        if ($total === 0) {
+            return;
+        }
+        
+        $percent = ($current / $total) * 100;
+        $filled = (int)(($current / $total) * $width);
+        $empty = $width - $filled;
+        
+        $bar = '[' . str_repeat('█', $filled) . str_repeat('░', $empty) . ']';
+        $percentage = sprintf(' %d%%', $percent);
+        
+        // Use carriage return to overwrite the same line
+        $this->write("\r" . $bar . $percentage);
+        
+        if ($current === $total) {
+            $this->writeln('');
+        }
+    }
+
+    public function spinner(int $step = 0): void
+    {
+        $frames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
+        $frame = $frames[$step % count($frames)];
+        $this->write("\r" . $frame);
+    }
+
+    public function dim(string $message): void
+    {
+        $this->writeln($this->color($message, self::DIM));
+    }
+
+    public function bold(string $message): void
+    {
+        $this->writeln($this->color($message, self::BOLD));
+    }
+
+    public function underline(string $message): void
+    {
+        $this->writeln($this->color($message, self::UNDERLINE));
+    }
+
+    public function section(string $title): void
+    {
+        $this->writeln('');
+        $this->writeln($this->color('━━━ ' . $title . ' ━━━', self::CYAN));
+        $this->writeln('');
+    }
+
+    public function tree(array $items, int $level = 0): void
+    {
+        foreach ($items as $key => $value) {
+            $isLast = ($key === array_key_last($items));
+            $prefix = str_repeat('  ', $level);
+            
+            if ($level > 0) {
+                $prefix .= $isLast ? '└── ' : '├── ';
+            }
+            
+            if (is_array($value)) {
+                $this->writeln($prefix . $this->color($key, self::CYAN));
+                $this->tree($value, $level + 1);
+            } else {
+                $this->writeln($prefix . $key . ': ' . $this->color((string)$value, self::GREEN));
+            }
+        }
+    }
 }
