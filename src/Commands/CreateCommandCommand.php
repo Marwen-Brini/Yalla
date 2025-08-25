@@ -23,11 +23,11 @@ class CreateCommandCommand extends Command
     {
         $commandName = $this->getArgument($input, 'name');
         $className = $this->getOption($input, 'class') ?: $this->generateClassName($commandName);
-        
+
         // Check for yalla.config.php to get configured directory and namespace
         $config = $this->loadYallaConfig();
         $directory = $this->getOption($input, 'dir', $config['command_directory'] ?? 'src/Commands');
-        
+
         $force = $this->getOption($input, 'force', false);
 
         // Ensure class name ends with Command
@@ -69,23 +69,23 @@ class CreateCommandCommand extends Command
 
         $output->success("Command created successfully: $filePath");
         $output->writeln('');
-        
+
         // Check if we have a yalla.config.php
         // @codeCoverageIgnoreStart
         if (file_exists('yalla.config.php')) {
-            $fullClassName = $namespace . '\\' . $className;
+            $fullClassName = $namespace.'\\'.$className;
             $output->info('Next steps:');
-            $output->writeln("1. Register your command in yalla.config.php:");
+            $output->writeln('1. Register your command in yalla.config.php:');
             $output->writeln('');
             $output->writeln($output->color("   'commands' => [", Output::CYAN));
             $output->writeln($output->color("       \\{$fullClassName}::class,", Output::CYAN));
-            $output->writeln($output->color("   ],", Output::CYAN));
+            $output->writeln($output->color('   ],', Output::CYAN));
             $output->writeln('');
-            $output->writeln("2. Run your command:");
+            $output->writeln('2. Run your command:');
             $output->writeln('');
             $output->writeln($output->color("   ./cli $commandName", Output::CYAN));
         } else {
-        // @codeCoverageIgnoreEnd
+            // @codeCoverageIgnoreEnd
             $output->info('Next steps:');
             $output->writeln("1. Edit the command class: $className");
             $output->writeln('2. Register it in your application:');
@@ -125,9 +125,10 @@ class CreateCommandCommand extends Command
         if (file_exists('yalla.config.php')) {
             return require 'yalla.config.php';
         }
+
         return [];
     }
-    
+
     private function generateNamespace(string $directory): string
     {
         // Convert directory to namespace

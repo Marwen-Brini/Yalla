@@ -12,28 +12,30 @@ class InitReplCommand extends Command
     {
         $this->name = 'init:repl';
         $this->description = 'Initialize REPL configuration file';
-        
+
         $this->addOption('force', 'f', 'Overwrite existing config file', false);
     }
-    
+
     public function execute(array $input, Output $output): int
     {
         $configFile = 'repl.config.php';
-        
-        if (file_exists($configFile) && !$this->getOption($input, 'force')) {
+
+        if (file_exists($configFile) && ! $this->getOption($input, 'force')) {
             $output->error("Config file '$configFile' already exists. Use --force to overwrite.");
+
             return 1;
         }
-        
+
         $config = $this->getDefaultConfig();
-        
+
         // @codeCoverageIgnoreStart
-        if (!$this->writeConfigFile($configFile, $config)) {
+        if (! $this->writeConfigFile($configFile, $config)) {
             $output->error("Failed to write config file '$configFile'");
+
             return 1;
         }
         // @codeCoverageIgnoreEnd
-        
+
         $output->success("Created '$configFile' successfully!");
         $output->writeln('');
         $output->info('You can now run: ./vendor/bin/yalla repl');
@@ -42,10 +44,10 @@ class InitReplCommand extends Command
         $output->dim('  - Custom extensions for your project');
         $output->dim('  - Shortcuts to frequently used classes');
         $output->dim('  - Auto-imports for common namespaces');
-        
+
         return 0;
     }
-    
+
     private function getDefaultConfig(): string
     {
         return <<<'PHP'
@@ -121,7 +123,7 @@ return [
 ];
 PHP;
     }
-    
+
     private function writeConfigFile(string $path, string $content): bool
     {
         return file_put_contents($path, $content) !== false;

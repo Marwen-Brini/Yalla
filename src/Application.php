@@ -7,12 +7,12 @@ namespace Yalla;
 use Yalla\Commands\CommandRegistry;
 use Yalla\Commands\CreateCommandCommand;
 use Yalla\Commands\HelpCommand;
+use Yalla\Commands\InitCommand;
+use Yalla\Commands\InitReplCommand;
 use Yalla\Commands\ListCommand;
 use Yalla\Input\InputParser;
 use Yalla\Output\Output;
 use Yalla\Repl\ReplCommand;
-use Yalla\Commands\InitReplCommand;
-use Yalla\Commands\InitCommand;
 
 class Application
 {

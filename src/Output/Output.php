@@ -184,20 +184,20 @@ class Output
         $lines = explode("\n", $content);
         $maxLength = max(array_map('strlen', $lines));
         $width = $maxLength + 4;
-        
+
         // Top border
-        $top = '╔' . str_repeat('═', $width - 2) . '╗';
+        $top = '╔'.str_repeat('═', $width - 2).'╗';
         $this->writeln($this->color($top, $color));
-        
+
         // Content lines
         foreach ($lines as $line) {
             $padding = $width - 4 - strlen($line);
-            $paddedLine = '║ ' . $line . str_repeat(' ', $padding + 1) . ' ║';
+            $paddedLine = '║ '.$line.str_repeat(' ', $padding + 1).' ║';
             $this->writeln($this->color($paddedLine, $color));
         }
-        
+
         // Bottom border
-        $bottom = '╚' . str_repeat('═', $width - 2) . '╝';
+        $bottom = '╚'.str_repeat('═', $width - 2).'╝';
         $this->writeln($this->color($bottom, $color));
     }
 
@@ -206,17 +206,17 @@ class Output
         if ($total === 0) {
             return;
         }
-        
+
         $percent = ($current / $total) * 100;
-        $filled = (int)(($current / $total) * $width);
+        $filled = (int) (($current / $total) * $width);
         $empty = $width - $filled;
-        
-        $bar = '[' . str_repeat('█', $filled) . str_repeat('░', $empty) . ']';
+
+        $bar = '['.str_repeat('█', $filled).str_repeat('░', $empty).']';
         $percentage = sprintf(' %d%%', $percent);
-        
+
         // Use carriage return to overwrite the same line
-        $this->write("\r" . $bar . $percentage);
-        
+        $this->write("\r".$bar.$percentage);
+
         if ($current === $total) {
             $this->writeln('');
         }
@@ -226,7 +226,7 @@ class Output
     {
         $frames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
         $frame = $frames[$step % count($frames)];
-        $this->write("\r" . $frame);
+        $this->write("\r".$frame);
     }
 
     public function dim(string $message): void
@@ -247,7 +247,7 @@ class Output
     public function section(string $title): void
     {
         $this->writeln('');
-        $this->writeln($this->color('━━━ ' . $title . ' ━━━', self::CYAN));
+        $this->writeln($this->color('━━━ '.$title.' ━━━', self::CYAN));
         $this->writeln('');
     }
 
@@ -256,16 +256,16 @@ class Output
         foreach ($items as $key => $value) {
             $isLast = ($key === array_key_last($items));
             $prefix = str_repeat('  ', $level);
-            
+
             if ($level > 0) {
                 $prefix .= $isLast ? '└── ' : '├── ';
             }
-            
+
             if (is_array($value)) {
-                $this->writeln($prefix . $this->color($key, self::CYAN));
+                $this->writeln($prefix.$this->color($key, self::CYAN));
                 $this->tree($value, $level + 1);
             } else {
-                $this->writeln($prefix . $key . ': ' . $this->color((string)$value, self::GREEN));
+                $this->writeln($prefix.$key.': '.$this->color((string) $value, self::GREEN));
             }
         }
     }
