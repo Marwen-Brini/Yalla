@@ -53,6 +53,7 @@ class ReplConfig
                 'stacktrace' => false,
                 'max_depth' => 5,
                 'max_items' => 100,
+                'mode' => 'compact', // compact, verbose, json, dump
             ],
 
             'autocomplete' => [

@@ -4,6 +4,30 @@ All notable changes to `yalla` will be documented in this file.
 
 ## [Unreleased]
 
+## 1.3.0 - 2025-01-10
+
+### Added
+- **Multiple Display Modes**: Added configurable output formats for REPL
+  - `compact` mode: Default concise, colorized output
+  - `verbose` mode: Detailed object and array information with metadata
+  - `json` mode: JSON representation for data structures  
+  - `dump` mode: Traditional PHP var_dump() style output
+  - New `:mode [mode]` command to switch modes dynamically
+- **Enhanced Object Display**: Improved formatting for objects
+  - Shows public properties inline for better readability
+  - Displays `__toString()` results when available
+  - Smart truncation for long strings
+- **Better ORM Support**: Fixed display issues with protected/private properties
+  - Arrays of ORM models now display correctly as lists
+  - No more empty table boxes for objects without public properties
+
+### Fixed
+- **Semicolon Support**: Fixed parse errors when using trailing semicolons
+  - Commands like `Post::count();` now work naturally
+  - Variable assignments with semicolons (`$x = 5;`) are properly handled
+- **Object Display**: Fixed `strrchr()` warning with objects without namespaces
+- **Mixed Arrays**: Properly handles arrays containing both arrays and objects
+
 ### Changed
 - Clarified PHP version support (8.1 to 8.4) in composer.json and documentation
 - Optimized GitHub Actions workflows to prevent job cancellation

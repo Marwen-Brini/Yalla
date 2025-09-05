@@ -75,6 +75,71 @@ Or with a custom config file:
 - `:history` - Show command history
 - `:vars` - Show defined variables
 - `:imports` - Show imported classes
+- `:mode [mode]` - View or change display mode (compact, verbose, json, dump)
+
+### Display Modes
+
+The REPL supports multiple display modes for output formatting:
+
+#### Compact Mode (default)
+Concise, colorized output optimized for readability:
+```php
+[1] > ['name' => 'John', 'age' => 30]
+[
+  'name' => "John",
+  'age' => 30
+]
+```
+
+#### Verbose Mode
+Detailed information about objects and arrays:
+```php
+[2] > :mode verbose
+Display mode changed to: verbose
+
+[3] > new User(['id' => 1, 'name' => 'Alice'])
+═══ Object Details ═══
+Class: User
+Properties:
+  public $id = 1
+  public $name = "Alice"
+Public Methods:
+  - save()
+  - delete()
+  ...
+```
+
+#### JSON Mode
+Output formatted as JSON:
+```php
+[4] > :mode json
+Display mode changed to: json
+
+[5] > ['users' => [['id' => 1], ['id' => 2]]]
+{
+  "users": [
+    {"id": 1},
+    {"id": 2}
+  ]
+}
+```
+
+#### Dump Mode
+PHP's `var_dump()` style output:
+```php
+[6] > :mode dump
+Display mode changed to: dump
+
+[7] > "test"
+string(4) "test"
+```
+
+To change modes, use `:mode <mode>` or configure in `repl.config.php`:
+```php
+'display' => [
+    'mode' => 'verbose', // Options: compact, verbose, json, dump
+]
+```
 
 ### Using Shortcuts
 

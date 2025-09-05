@@ -94,10 +94,10 @@ class ReplSession
         if ($this->config->get('display.welcome', true)) {
             $this->output->writeln('');
             if (method_exists($this->output, 'box')) {
-                $this->output->box('Yalla REPL v1.2.0', Output::CYAN);
+                $this->output->box('Yalla REPL v1.3.0', Output::CYAN);
             } else {
                 $this->output->writeln($this->output->color('╔══════════════════════╗', Output::CYAN));
-                $this->output->writeln($this->output->color('║  Yalla REPL v1.2.0   ║', Output::CYAN));
+                $this->output->writeln($this->output->color('║  Yalla REPL v1.3.0   ║', Output::CYAN));
                 $this->output->writeln($this->output->color('╚══════════════════════╝', Output::CYAN));
             }
             $this->output->writeln('');
@@ -339,6 +339,10 @@ class ReplSession
             }
         }
 
+        // Strip trailing semicolons to avoid syntax errors when wrapping
+        // This allows users to naturally type commands with semicolons
+        $code = rtrim($code, '; ');
+
         // Wrap code to capture return value
         $wrappedCode = "return ($code);";
 
@@ -368,7 +372,30 @@ class ReplSession
             return;
         }
 
-        // Default formatting based on type
+        // Get display mode from config
+        $displayMode = $this->config->get('display.mode', 'compact');
+
+        // Handle different display modes
+        switch ($displayMode) {
+            case 'json':
+                $this->displayResultAsJson($result);
+                break;
+            case 'dump':
+                $this->displayResultAsDump($result);
+                break;
+            case 'verbose':
+                $this->displayResultAsVerbose($result);
+                break;
+            case 'compact':
+            default:
+                $this->displayResultAsCompact($result);
+                break;
+        }
+    }
+
+    private function displayResultAsCompact($result): void
+    {
+        // Default formatting based on type (current implementation)
         switch (gettype($result)) {
             case 'NULL':
                 if (method_exists($this->output, 'dim')) {
@@ -414,6 +441,43 @@ class ReplSession
         }
     }
 
+    private function displayResultAsJson($result): void
+    {
+        try {
+            $json = json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+            if ($json === false) {
+                throw new \Exception('JSON encoding failed: ' . json_last_error_msg());
+            }
+            $this->output->writeln($this->output->color($json, Output::CYAN));
+        } catch (\Exception $e) {
+            $this->output->error('Cannot display as JSON: ' . $e->getMessage());
+            $this->displayResultAsCompact($result);
+        }
+    }
+
+    private function displayResultAsDump($result): void
+    {
+        ob_start();
+        var_dump($result);
+        $dump = ob_get_clean();
+        $this->output->writeln($dump);
+    }
+
+    private function displayResultAsVerbose($result): void
+    {
+        switch (gettype($result)) {
+            case 'object':
+                $this->displayObjectVerbose($result);
+                break;
+            case 'array':
+                $this->displayArrayVerbose($result);
+                break;
+            default:
+                // For scalars, use compact mode
+                $this->displayResultAsCompact($result);
+        }
+    }
+
     private function displayArray(array $array): void
     {
         if (empty($array)) {
@@ -447,23 +511,21 @@ class ReplSession
         }
 
         $first = reset($array);
-        if (! is_array($first) && ! is_object($first)) {
+        
+        // Only try table display for arrays of arrays
+        // Objects are better displayed as a list since they might have protected/private properties
+        if (! is_array($first)) {
             return false;
         }
 
-        // Check if all elements have same structure
-        $firstKeys = is_array($first) ? array_keys($first) : array_keys(get_object_vars($first));
+        // Check if all elements are arrays with same structure
+        $firstKeys = array_keys($first);
 
         foreach ($array as $item) {
-            if (is_array($item)) {
-                if (array_keys($item) !== $firstKeys) {
-                    return false;
-                }
-            } elseif (is_object($item)) {
-                if (array_keys(get_object_vars($item)) !== $firstKeys) {
-                    return false;
-                }
-            } else {
+            if (! is_array($item)) {
+                return false;
+            }
+            if (array_keys($item) !== $firstKeys) {
                 return false;
             }
         }
@@ -474,13 +536,15 @@ class ReplSession
     private function displayArrayAsTable(array $array): void
     {
         $first = reset($array);
-        $headers = is_array($first) ? array_keys($first) : array_keys(get_object_vars($first));
+        
+        // This method now only handles arrays of arrays (checked by isTableArray)
+        $headers = array_keys($first);
 
         $rows = [];
         foreach ($array as $item) {
             $row = [];
             foreach ($headers as $header) {
-                $value = is_array($item) ? ($item[$header] ?? '') : ($item->$header ?? '');
+                $value = $item[$header] ?? '';
                 $row[] = $this->formatValue($value);
             }
             $rows[] = $row;
@@ -548,6 +612,126 @@ class ReplSession
         $this->output->writeln('}');
     }
 
+    private function displayObjectVerbose($object): void
+    {
+        $class = get_class($object);
+        $reflection = new \ReflectionObject($object);
+        
+        // Display class information
+        $this->output->writeln($this->output->color('═══ Object Details ═══', Output::CYAN));
+        $this->output->writeln('Class: ' . $this->output->color($class, Output::YELLOW));
+        
+        // Display parent classes
+        $parent = $reflection->getParentClass();
+        if ($parent) {
+            $this->output->writeln('Parent: ' . $this->output->color($parent->getName(), Output::DIM));
+        }
+        
+        // Display interfaces
+        $interfaces = $reflection->getInterfaceNames();
+        if (!empty($interfaces)) {
+            $this->output->writeln('Interfaces: ' . $this->output->color(implode(', ', $interfaces), Output::DIM));
+        }
+        
+        // Display all properties (including inherited)
+        $this->output->writeln($this->output->color('Properties:', Output::CYAN));
+        $properties = $reflection->getProperties();
+        
+        foreach ($properties as $property) {
+            $property->setAccessible(true);
+            $name = $property->getName();
+            
+            try {
+                $value = $property->getValue($object);
+            } catch (\Exception $e) {
+                $value = '<inaccessible>';
+            }
+            
+            $visibility = '';
+            if ($property->isPrivate()) {
+                $visibility = $this->output->color('private', Output::RED);
+            } elseif ($property->isProtected()) {
+                $visibility = $this->output->color('protected', Output::YELLOW);
+            } else {
+                $visibility = $this->output->color('public', Output::GREEN);
+            }
+            
+            $static = $property->isStatic() ? ' static' : '';
+            $declaring = $property->getDeclaringClass()->getName();
+            
+            $this->output->writeln(sprintf(
+                '  %s%s $%s = %s %s',
+                $visibility,
+                $static,
+                $name,
+                $this->formatValue($value),
+                $declaring !== $class ? $this->output->color("(from $declaring)", Output::DIM) : ''
+            ));
+        }
+        
+        // Display methods summary
+        $methods = $reflection->getMethods();
+        $publicMethods = array_filter($methods, fn($m) => $m->isPublic() && !$m->isConstructor() && !$m->isDestructor());
+        
+        if (!empty($publicMethods)) {
+            $this->output->writeln($this->output->color('Public Methods:', Output::CYAN));
+            foreach (array_slice($publicMethods, 0, 10) as $method) {
+                $params = array_map(fn($p) => '$' . $p->getName(), $method->getParameters());
+                $this->output->writeln('  - ' . $method->getName() . '(' . implode(', ', $params) . ')');
+            }
+            
+            if (count($publicMethods) > 10) {
+                $this->output->writeln($this->output->color('  ... and ' . (count($publicMethods) - 10) . ' more', Output::DIM));
+            }
+        }
+    }
+
+    private function displayArrayVerbose(array $array): void
+    {
+        $this->output->writeln($this->output->color('═══ Array Details ═══', Output::CYAN));
+        $this->output->writeln('Type: ' . (array_keys($array) === range(0, count($array) - 1) ? 'Indexed' : 'Associative'));
+        $this->output->writeln('Count: ' . count($array));
+        
+        if (!empty($array)) {
+            $this->output->writeln($this->output->color('Contents:', Output::CYAN));
+            
+            $index = 0;
+            foreach ($array as $key => $value) {
+                if ($index >= 20) {
+                    $this->output->writeln($this->output->color('  ... and ' . (count($array) - 20) . ' more items', Output::DIM));
+                    break;
+                }
+                
+                $keyStr = is_string($key) ? "'$key'" : (string)$key;
+                $this->output->writeln('  [' . $this->output->color($keyStr, Output::YELLOW) . '] => ' . $this->formatValueVerbose($value));
+                $index++;
+            }
+        } else {
+            $this->output->writeln($this->output->color('  <empty>', Output::DIM));
+        }
+    }
+
+    private function formatValueVerbose($value): string
+    {
+        switch (gettype($value)) {
+            case 'object':
+                $class = get_class($value);
+                $reflection = new \ReflectionObject($value);
+                $propCount = count($reflection->getProperties());
+                $methodCount = count($reflection->getMethods());
+                return $this->output->color($class, Output::CYAN) . 
+                       " {$propCount} props, {$methodCount} methods}";
+            
+            case 'array':
+                $count = count($value);
+                $type = array_keys($value) === range(0, $count - 1) ? 'indexed' : 'assoc';
+                return $this->output->color("array($count, $type)", Output::MAGENTA);
+            
+            default:
+                return $this->formatValue($value);
+        }
+    }
+
     private function formatValue($value): string
     {
         switch (gettype($value)) {
@@ -570,7 +754,44 @@ class ReplSession
             case 'array':
                 return 'array('.count($value).')';
             case 'object':
-                return get_class($value);
+                $class = get_class($value);
+                $lastSlash = strrchr($class, '\\');
+                $shortClass = $lastSlash !== false ? substr($lastSlash, 1) : $class;
+                
+                // Try to get object info using reflection for better display
+                try {
+                    $reflection = new \ReflectionObject($value);
+                    
+                    // Check for __toString method
+                    if ($reflection->hasMethod('__toString')) {
+                        $string = (string) $value;
+                        if (strlen($string) > 30) {
+                            $string = substr($string, 0, 27) . '...';
+                        }
+                        return $this->output->color($shortClass . ' "' . $string . '"', Output::CYAN);
+                    }
+                    
+                    // Try to get any identifying property (id, ID, name, title, etc.)
+                    $publicProps = get_object_vars($value);
+                    if (!empty($publicProps)) {
+                        // Just show first few public properties
+                        $info = [];
+                        $count = 0;
+                        foreach ($publicProps as $key => $val) {
+                            if ($count++ >= 2) break; // Show max 2 properties
+                            if (is_scalar($val)) {
+                                $info[] = $key . ': ' . (is_string($val) ? '"' . substr($val, 0, 20) . '"' : $val);
+                            }
+                        }
+                        if (!empty($info)) {
+                            return $this->output->color($shortClass . ' {' . implode(', ', $info) . '}', Output::CYAN);
+                        }
+                    }
+                } catch (\Exception $e) {
+                    // Fall back to simple class name
+                }
+                
+                return $this->output->color($shortClass . ' object', Output::CYAN);
             default:
                 return (string) $value;
         }

@@ -3,6 +3,7 @@
 [![Tests](https://github.com/Marwen-Brini/Yalla/actions/workflows/run-tests.yml/badge.svg)](https://github.com/Marwen-Brini/Yalla/actions/workflows/run-tests.yml)
 [![Code Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)](https://github.com/Marwen-Brini/Yalla)
 [![PHP Version](https://img.shields.io/badge/PHP-8.1%20to%208.4-blue)](https://www.php.net)
+[![Latest Version](https://img.shields.io/badge/version-1.3.0-orange)](https://github.com/Marwen-Brini/Yalla/releases)
 
 A standalone PHP CLI framework built from scratch without dependencies.
 
@@ -190,6 +191,7 @@ Yalla includes a powerful REPL (Read-Eval-Print-Loop) for interactive PHP develo
 - `:imports` - Show imported classes
 - `:clear` - Clear the screen
 - `:history` - Show command history
+- `:mode [mode]` - Switch display mode (compact, verbose, json, dump)
 
 ### REPL Features
 
@@ -198,6 +200,45 @@ Yalla includes a powerful REPL (Read-Eval-Print-Loop) for interactive PHP develo
 - **Shortcuts**: Define shortcuts for frequently used classes
 - **Auto-imports**: Automatically import specified classes
 - **Custom Extensions**: Add your own commands and functionality
+- **Multiple Display Modes**: Choose between compact, verbose, JSON, or dump output formats
+- **Smart Object Display**: Enhanced display for objects with public properties or `__toString()` methods
+- **Semicolon Support**: Natural PHP syntax with trailing semicolons
+- **ORM-Friendly**: Properly handles objects with protected/private properties
+
+### Display Modes
+
+The REPL supports multiple display modes for different use cases:
+
+```php
+# Compact mode (default) - Clean, colorized output
+[1] > ['id' => 1, 'name' => 'Alice']
+['id' => 1, 'name' => "Alice"]
+
+# Verbose mode - Detailed object/array information
+[2] > :mode verbose
+[3] > $user
+═══ Object Details ═══
+Class: User
+Properties:
+  public $id = 1
+  public $name = "Alice"
+Public Methods:
+  - save($params)
+  - delete()
+
+# JSON mode - Perfect for API data
+[4] > :mode json
+[5] > ['status' => 'success', 'data' => ['id' => 1]]
+{
+  "status": "success",
+  "data": {"id": 1}
+}
+
+# Dump mode - Traditional PHP debugging
+[6] > :mode dump
+[7] > "test"
+string(4) "test"
+```
 
 ### REPL Configuration
 
@@ -219,6 +260,7 @@ return [
     'display' => [
         'prompt' => 'myapp> ',
         'performance' => true, // Show execution time and memory
+        'mode' => 'compact',   // Options: compact, verbose, json, dump
     ],
     
     'history' => [
