@@ -92,9 +92,10 @@ test('variable assignments work with trailing semicolons', function () {
     foreach ($testInputs as $input) {
         // Capture output to prevent it from being displayed during tests
         ob_start();
+
         try {
             // This should not throw an exception
-            expect(fn() => $method->invoke($this->session, $input))->not->toThrow(\Exception::class);
+            expect(fn () => $method->invoke($this->session, $input))->not->toThrow(\Exception::class);
         } finally {
             ob_end_clean();
         }
