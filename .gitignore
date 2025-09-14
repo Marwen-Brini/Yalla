@@ -9,7 +9,6 @@ phpunit.xml.dist.bak
 
 # Node
 node_modules
-package-lock.json
 
 # VitePress
 docs/.vitepress/dist
