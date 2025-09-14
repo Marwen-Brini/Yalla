@@ -368,40 +368,42 @@ class ReplContext
     {
         $validModes = ['compact', 'verbose', 'json', 'dump'];
         $currentMode = $this->config->get('display.mode', 'compact');
-        
+
         // If no argument provided, show current mode and available modes
         if (empty($args)) {
             $output->section('Display Mode');
-            $output->writeln('Current mode: ' . $output->color($currentMode, Output::CYAN));
+            $output->writeln('Current mode: '.$output->color($currentMode, Output::CYAN));
             $output->writeln('');
             $output->writeln('Available modes:');
             foreach ($validModes as $mode) {
-                $description = match($mode) {
+                $description = match ($mode) {
                     'compact' => 'Default concise output',
                     'verbose' => 'Detailed object and array information',
                     'json' => 'JSON representation',
                     'dump' => 'PHP var_dump() style',
                     default => ''
                 };
-                $output->writeln('  ' . $output->color($mode, Output::YELLOW) . ' - ' . $description);
+                $output->writeln('  '.$output->color($mode, Output::YELLOW).' - '.$description);
             }
             $output->writeln('');
             $output->dim('Usage: :mode <mode>');
+
             return;
         }
-        
+
         $newMode = trim($args);
-        
+
         // Validate the mode
-        if (!in_array($newMode, $validModes)) {
+        if (! in_array($newMode, $validModes)) {
             $output->error("Invalid mode: $newMode");
-            $output->writeln('Valid modes: ' . implode(', ', $validModes));
+            $output->writeln('Valid modes: '.implode(', ', $validModes));
+
             return;
         }
-        
+
         // Update the configuration
         $this->config->set('display.mode', $newMode);
-        
+
         $output->success("Display mode changed to: $newMode");
     }
 }
