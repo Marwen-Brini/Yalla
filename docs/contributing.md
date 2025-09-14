@@ -252,7 +252,7 @@ class ExampleCommand extends Command
 
 ### Resources
 
-- [Documentation](https://marwen-brini.github.io/yalla/)
+- [Documentation](https://marwen-brini.github.io/Yalla/)
 - [GitHub Issues](https://github.com/marwen-brini/yalla/issues)
 - [Discussions](https://github.com/marwen-brini/yalla/discussions)
 

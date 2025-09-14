@@ -4,11 +4,11 @@
 [![Code Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)](https://github.com/marwen-brini/yalla)
 [![PHP Version](https://img.shields.io/badge/PHP-8.1%20to%208.4-blue)](https://www.php.net)
 [![Latest Version](https://img.shields.io/badge/version-1.3.0-orange)](https://github.com/marwen-brini/yalla/releases)
-[![Documentation](https://img.shields.io/badge/docs-vitepress-blue)](https://marwen-brini.github.io/yalla/)
+[![Documentation](https://img.shields.io/badge/docs-vitepress-blue)](https://marwen-brini.github.io/Yalla/)
 
 A standalone PHP CLI framework built from scratch without dependencies.
 
-📚 **[Read the full documentation](https://marwen-brini.github.io/yalla/)**
+📚 **[Read the full documentation](https://marwen-brini.github.io/Yalla/)**
 
 ## Features
 
@@ -425,14 +425,14 @@ vendor/bin/pest tests/ApplicationTest.php
 
 ## Documentation
 
-Full documentation is available at [https://marwen-brini.github.io/yalla/](https://marwen-brini.github.io/yalla/)
+Full documentation is available at [https://marwen-brini.github.io/Yalla/](https://marwen-brini.github.io/Yalla/)
 
 ### Quick Links
 
-- [Getting Started Guide](https://marwen-brini.github.io/yalla/guide/getting-started)
-- [API Reference](https://marwen-brini.github.io/yalla/api/application)
-- [Examples](https://marwen-brini.github.io/yalla/examples/basic-usage)
-- [REPL Documentation](https://marwen-brini.github.io/yalla/guide/repl)
+- [Getting Started Guide](https://marwen-brini.github.io/Yalla/guide/getting-started)
+- [API Reference](https://marwen-brini.github.io/Yalla/api/application)
+- [Examples](https://marwen-brini.github.io/Yalla/examples/basic-usage)
+- [REPL Documentation](https://marwen-brini.github.io/Yalla/guide/repl)
 
 ## Contributing
 

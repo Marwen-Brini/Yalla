@@ -3,7 +3,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: 'Yalla CLI',
   description: 'A standalone PHP CLI framework built from scratch',
-  base: '/yalla/',
+  base: '/Yalla/',
 
   themeConfig: {
 
