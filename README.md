@@ -1,11 +1,14 @@
 # Yalla CLI
 
-[![Tests](https://github.com/Marwen-Brini/Yalla/actions/workflows/run-tests.yml/badge.svg)](https://github.com/Marwen-Brini/Yalla/actions/workflows/run-tests.yml)
-[![Code Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)](https://github.com/Marwen-Brini/Yalla)
+[![Tests](https://github.com/marwen-brini/yalla/actions/workflows/run-tests.yml/badge.svg)](https://github.com/marwen-brini/yalla/actions/workflows/run-tests.yml)
+[![Code Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)](https://github.com/marwen-brini/yalla)
 [![PHP Version](https://img.shields.io/badge/PHP-8.1%20to%208.4-blue)](https://www.php.net)
-[![Latest Version](https://img.shields.io/badge/version-1.3.0-orange)](https://github.com/Marwen-Brini/Yalla/releases)
+[![Latest Version](https://img.shields.io/badge/version-1.3.0-orange)](https://github.com/marwen-brini/yalla/releases)
+[![Documentation](https://img.shields.io/badge/docs-vitepress-blue)](https://marwen-brini.github.io/yalla/)
 
 A standalone PHP CLI framework built from scratch without dependencies.
+
+📚 **[Read the full documentation](https://marwen-brini.github.io/yalla/)**
 
 ## Features
 
@@ -420,6 +423,39 @@ composer test-coverage-html
 vendor/bin/pest tests/ApplicationTest.php
 ```
 
+## Documentation
+
+Full documentation is available at [https://marwen-brini.github.io/yalla/](https://marwen-brini.github.io/yalla/)
+
+### Quick Links
+
+- [Getting Started Guide](https://marwen-brini.github.io/yalla/guide/getting-started)
+- [API Reference](https://marwen-brini.github.io/yalla/api/application)
+- [Examples](https://marwen-brini.github.io/yalla/examples/basic-usage)
+- [REPL Documentation](https://marwen-brini.github.io/yalla/guide/repl)
+
+## Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
+### Quick Start
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
 ## License
 
-MIT
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Author
+
+**Marwen-Brini** - *Initial work* - [GitHub](https://github.com/marwen-brini)
+
+## Acknowledgments
+
+- Thanks to all contributors who have helped shape Yalla CLI
+- Inspired by the simplicity and power of modern CLI tools
+- Built with love for the PHP community

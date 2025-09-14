@@ -6,3 +6,12 @@ coverage
 .phpunit.cache
 .php-cs-fixer.cache
 phpunit.xml.dist.bak
+
+# Node
+node_modules
+package-lock.json
+
+# VitePress
+docs/.vitepress/dist
+docs/.vitepress/cache
+.temp

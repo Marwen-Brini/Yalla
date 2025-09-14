@@ -81,7 +81,7 @@ test('evaluateExpression preserves semicolons within strings', function () {
 test('variable assignments work with trailing semicolons', function () {
     $method = $this->reflectionClass->getMethod('executeVariableAssignment');
     $method->setAccessible(true);
-    
+
     // Test variable assignments with semicolons
     $testInputs = [
         '$x = 5;',
@@ -89,10 +89,16 @@ test('variable assignments work with trailing semicolons', function () {
         '$z = true;',
         '$arr = [1, 2, 3];',
     ];
-    
+
     foreach ($testInputs as $input) {
-        // This should not throw an exception
-        expect(fn() => $method->invoke($this->session, $input))->not->toThrow(\Exception::class);
+        // Capture output to prevent it from being displayed during tests
+        ob_start();
+        try {
+            // This should not throw an exception
+            expect(fn() => $method->invoke($this->session, $input))->not->toThrow(\Exception::class);
+        } finally {
+            ob_end_clean();
+        }
     }
 });
 
