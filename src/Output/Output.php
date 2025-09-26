@@ -131,11 +131,12 @@ class Output
     public function table(array $headers, array $rows, array $options = []): void
     {
         // Use new Table class if options are provided
-        if (!empty($options)) {
+        if (! empty($options)) {
             $table = new Table($this, $options);
             $table->setHeaders($headers)
-                  ->setRows($rows)
-                  ->render();
+                ->setRows($rows)
+                ->render();
+
             return;
         }
 

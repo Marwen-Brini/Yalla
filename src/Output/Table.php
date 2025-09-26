@@ -7,24 +7,37 @@ namespace Yalla\Output;
 class Table
 {
     protected array $headers = [];
+
     protected array $rows = [];
+
     protected array $columnWidths = [];
+
     protected array $options = [];
+
     protected Output $output;
+
     protected array $cellFormatters = [];
 
     // Border styles
     const BORDER_NONE = 'none';
+
     const BORDER_ASCII = 'ascii';
+
     const BORDER_UNICODE = 'unicode';
+
     const BORDER_COMPACT = 'compact';
+
     const BORDER_MARKDOWN = 'markdown';
+
     const BORDER_DOUBLE = 'double';
+
     const BORDER_ROUNDED = 'rounded';
 
     // Alignment options
     const ALIGN_LEFT = 'left';
+
     const ALIGN_CENTER = 'center';
+
     const ALIGN_RIGHT = 'right';
 
     private array $borderChars = [
@@ -92,7 +105,7 @@ class Table
     public function __clone()
     {
         // Deep clone the rows array to prevent modifications from affecting the original
-        $this->rows = array_map(function($row) {
+        $this->rows = array_map(function ($row) {
             return is_array($row) ? array_values($row) : $row;
         }, $this->rows);
     }
@@ -103,6 +116,7 @@ class Table
             array_unshift($headers, $this->options['index_name']);
         }
         $this->headers = $headers;
+
         return $this;
     }
 
@@ -112,6 +126,7 @@ class Table
         foreach ($rows as $index => $row) {
             $this->addRow($row, $index);
         }
+
         return $this;
     }
 
@@ -122,18 +137,20 @@ class Table
             array_unshift($row, $displayIndex);
         }
         $this->rows[] = $row;
+
         return $this;
     }
 
     public function setCellFormatter(int $column, callable $formatter): self
     {
         $this->cellFormatters[$column] = $formatter;
+
         return $this;
     }
 
     public function sortBy(int $column, string $direction = 'asc'): self
     {
-        usort($this->rows, function($a, $b) use ($column, $direction) {
+        usort($this->rows, function ($a, $b) use ($column, $direction) {
             $aVal = $a[$column] ?? '';
             $bVal = $b[$column] ?? '';
 
@@ -141,17 +158,19 @@ class Table
             if (is_numeric($aVal) && is_numeric($bVal)) {
                 $result = $aVal <=> $bVal;
             } else {
-                $result = strcasecmp((string)$aVal, (string)$bVal);
+                $result = strcasecmp((string) $aVal, (string) $bVal);
             }
 
             return $direction === 'desc' ? -$result : $result;
         });
+
         return $this;
     }
 
     public function filter(callable $callback): self
     {
         $this->rows = array_values(array_filter($this->rows, $callback));
+
         return $this;
     }
 
@@ -245,9 +264,11 @@ class Table
         arsort($sortedWidths);
 
         foreach ($sortedWidths as $index => $width) {
-            if ($excess <= 0) break;
+            if ($excess <= 0) {
+                break;
+            }
 
-            $reduction = min($excess, (int)($width * 0.3)); // Reduce by up to 30%
+            $reduction = min($excess, (int) ($width * 0.3)); // Reduce by up to 30%
             $this->columnWidths[$index] = max(3, $width - $reduction);
             $excess -= $reduction;
         }
@@ -261,7 +282,7 @@ class Table
             $this->renderBorder('top');
         }
 
-        if (!empty($this->headers)) {
+        if (! empty($this->headers)) {
             $this->renderRow($this->headers, true);
 
             if ($borderStyle === self::BORDER_MARKDOWN) {
@@ -305,7 +326,7 @@ class Table
         }
         $line .= $chars[3];
 
-        if (!empty(trim($line))) {
+        if (! empty(trim($line))) {
             $this->output->writeln($line);
         }
     }
@@ -321,12 +342,12 @@ class Table
 
             // Add alignment indicators for markdown
             if ($alignment === self::ALIGN_CENTER) {
-                $separator = ':' . substr($separator, 2) . ':';
+                $separator = ':'.substr($separator, 2).':';
             } elseif ($alignment === self::ALIGN_RIGHT) {
-                $separator = substr($separator, 0, -1) . ':';
+                $separator = substr($separator, 0, -1).':';
             }
 
-            $line .= $separator . '|';
+            $line .= $separator.'|';
         }
 
         $this->output->writeln($line);
@@ -351,10 +372,10 @@ class Table
 
             // Apply padding
             $padding = str_repeat(' ', $this->options['padding']);
-            $cellContent = $padding . $aligned . $padding;
+            $cellContent = $padding.$aligned.$padding;
 
             // Apply colors for header
-            if ($isHeader && $this->options['colors'] && !empty($this->options['header_color'])) {
+            if ($isHeader && $this->options['colors'] && ! empty($this->options['header_color'])) {
                 $cellContent = $this->output->color($cellContent, $this->options['header_color']);
             }
 
@@ -377,15 +398,16 @@ class Table
             // Truncate with ellipsis if text is too long
             // We need to be careful with emojis when truncating
             $truncated = $this->truncateString($text, $width - 3);
-            return $truncated . '...';
+
+            return $truncated.'...';
         }
 
         $spaces = $width - $textWidth;
 
         return match ($alignment) {
-            self::ALIGN_CENTER => str_repeat(' ', intval($spaces / 2)) . $text . str_repeat(' ', $spaces - intval($spaces / 2)),
-            self::ALIGN_RIGHT => str_repeat(' ', $spaces) . $text,
-            default => $text . str_repeat(' ', $spaces),
+            self::ALIGN_CENTER => str_repeat(' ', intval($spaces / 2)).$text.str_repeat(' ', $spaces - intval($spaces / 2)),
+            self::ALIGN_RIGHT => str_repeat(' ', $spaces).$text,
+            default => $text.str_repeat(' ', $spaces),
         };
     }
 
@@ -427,6 +449,7 @@ class Table
     public function clear(): self
     {
         $this->rows = [];
+
         return $this;
     }
 }
