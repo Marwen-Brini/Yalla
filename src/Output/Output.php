@@ -128,8 +128,19 @@ class Output
         return $color.$text.self::RESET;
     }
 
-    public function table(array $headers, array $rows): void
+    public function table(array $headers, array $rows, array $options = []): void
     {
+        // Use new Table class if options are provided
+        if (! empty($options)) {
+            $table = new Table($this, $options);
+            $table->setHeaders($headers)
+                ->setRows($rows)
+                ->render();
+
+            return;
+        }
+
+        // Legacy table rendering for backward compatibility
         $columnWidths = [];
 
         foreach ($headers as $i => $header) {
@@ -148,6 +159,11 @@ class Output
         foreach ($rows as $row) {
             $this->drawTableRow($row, $columnWidths);
         }
+    }
+
+    public function createTable(array $options = []): Table
+    {
+        return new Table($this, $options);
     }
 
     private function drawTableRow(array $row, array $columnWidths, bool $isHeader = false): void

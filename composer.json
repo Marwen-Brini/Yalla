@@ -1,5 +1,6 @@
 {
     "name": "marwen-brini/yalla",
+    "version": "1.4.0",
     "description": "A standalone PHP CLI framework built from scratch",
     "keywords": [
         "cli",
