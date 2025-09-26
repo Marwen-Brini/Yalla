@@ -3,7 +3,7 @@
 [![Tests](https://github.com/marwen-brini/yalla/actions/workflows/run-tests.yml/badge.svg)](https://github.com/marwen-brini/yalla/actions/workflows/run-tests.yml)
 [![Code Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)](https://github.com/marwen-brini/yalla)
 [![PHP Version](https://img.shields.io/badge/PHP-8.1%20to%208.4-blue)](https://www.php.net)
-[![Latest Version](https://img.shields.io/badge/version-1.3.0-orange)](https://github.com/marwen-brini/yalla/releases)
+[![Latest Version](https://img.shields.io/badge/version-1.4.0-orange)](https://github.com/marwen-brini/yalla/releases)
 [![Documentation](https://img.shields.io/badge/docs-vitepress-blue)](https://marwen-brini.github.io/Yalla/)
 
 A standalone PHP CLI framework built from scratch without dependencies.
@@ -16,7 +16,8 @@ A standalone PHP CLI framework built from scratch without dependencies.
 - **Interactive REPL**: Full-featured Read-Eval-Print-Loop for interactive PHP development
 - **Command Routing**: Custom command parser and router
 - **Colored Output**: ANSI color support for beautiful terminal output (cross-platform)
-- **Table Rendering**: Built-in table formatter with Unicode box drawing
+- **Advanced Table Rendering**: Professional table formatter with multiple border styles, emoji support, and alignment options
+- **Migration Tables**: Specialized table formatter for database migration systems
 - **Input Parsing**: Handles commands, arguments, and options (long and short formats)
 - **Command Scaffolding**: Built-in `create:command` to generate new command boilerplate
 - **History & Autocomplete**: REPL with command history and intelligent autocompletion
@@ -49,7 +50,7 @@ require 'vendor/autoload.php';
 
 use Yalla\Application;
 
-$app = new Application('Yalla CLI', '1.1.0');
+$app = new Application('Yalla CLI', '1.4.0');
 $app->run();
 ```
 
@@ -93,7 +94,7 @@ class GreetCommand extends Command
 }
 
 // Register in your application
-$app = new Application('Yalla CLI', '1.1.0');
+$app = new Application('Yalla CLI', '1.4.0');
 $app->register(new GreetCommand());
 $app->run();
 ```
@@ -309,7 +310,7 @@ class MyExtension implements ReplExtension
     
     public function getVersion(): string
     {
-        return '1.0.0';
+        return '1.4.0';
     }
     
     public function getDescription(): string
@@ -359,12 +360,17 @@ class MyCommand extends Command
         $output->error('Something went wrong!');
         $output->warning('Be careful!');
         
-        // Draw tables
+        // Draw tables with enhanced formatting
         $output->table(
-            ['Name', 'Age', 'City'],
+            ['Name', 'Age', 'City', 'Status'],
             [
-                ['John', '30', 'New York'],
-                ['Jane', '25', 'London'],
+                ['John', '30', 'New York', '✅ Active'],
+                ['Jane', '25', 'London', '⏳ Pending'],
+                ['Bob', '35', 'Paris', '❌ Inactive'],
+            ],
+            [
+                'borders' => 'unicode',
+                'alignment' => ['left', 'center', 'left', 'center']
             ]
         );
         
@@ -391,8 +397,83 @@ $output->info('Info');             // Cyan
 // Custom colors
 $output->writeln($output->color('Custom', Output::MAGENTA));
 
-// Tables
+// Basic tables
 $output->table(['Header 1', 'Header 2'], $rows);
+```
+
+### Advanced Table Formatting (New in v1.4)
+
+Yalla 1.4 introduces a powerful table formatter with multiple border styles, emoji support, and advanced formatting options:
+
+```php
+use Yalla\Output\Table;
+
+// Create table with options
+$table = $output->createTable([
+    'borders' => Table::BORDER_UNICODE,  // unicode, ascii, markdown, etc.
+    'alignment' => [Table::ALIGN_LEFT, Table::ALIGN_CENTER, Table::ALIGN_RIGHT],
+    'colors' => true,
+    'max_width' => 120
+]);
+
+$table->setHeaders(['Migration', 'Batch', 'Status', 'Date'])
+      ->addRow(['2024_01_create_users', '1', '✅ Migrated', '2024-01-15'])
+      ->addRow(['2024_02_create_posts', '2', '⏳ Pending', null])
+      ->addRow(['2024_03_add_indexes', '3', '❌ Error', null])
+      ->render();
+```
+
+#### Border Styles
+
+```php
+// Available border styles
+Table::BORDER_UNICODE   // ┌─┬─┐ (default)
+Table::BORDER_ASCII     // +---+
+Table::BORDER_MARKDOWN  // | --- |
+Table::BORDER_DOUBLE    // ╔═╦═╗
+Table::BORDER_ROUNDED   // ╭─┬─╮
+Table::BORDER_COMPACT   // minimal
+Table::BORDER_NONE      // no borders
+```
+
+#### Advanced Features
+
+```php
+// Column alignment
+$table->setOptions(['alignment' => [
+    Table::ALIGN_LEFT,    // Left align
+    Table::ALIGN_CENTER,  // Center align
+    Table::ALIGN_RIGHT    // Right align
+]]);
+
+// Cell formatters
+$table->setCellFormatter(2, function($value) {
+    return is_numeric($value) ? number_format($value) : $value;
+});
+
+// Sorting and filtering
+$table->sortBy(1, 'desc')        // Sort by column 1 descending
+      ->filter(fn($row) => $row[2] === 'Active'); // Filter rows
+
+// Row indices
+$table->setOptions(['show_index' => true, 'index_name' => 'ID']);
+```
+
+#### Migration Tables
+
+For database migration systems, use the specialized `MigrationTable`:
+
+```php
+use Yalla\Output\MigrationTable;
+
+$migrationTable = new MigrationTable($output);
+$migrationTable->addMigration('2024_01_create_users', 1, 'migrated', '2024-01-15')
+               ->addMigration('2024_02_create_posts', 2, 'pending', null)
+               ->addMigration('2024_03_add_indexes', null, 'error: Constraint violation', null)
+               ->render();
+
+// Render summary
+$migrationTable->renderSummary();
 ```
 
 ## Architecture
