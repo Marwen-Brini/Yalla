@@ -103,10 +103,25 @@ test('progress bar displays custom messages', function () {
 
     ob_start();
     $progress->start();
-    ob_end_clean();
+    $result = ob_get_clean();
 
     // Test that the message was set
     expect($progress)->toBeInstanceOf(ProgressBar::class);
+    // Verify the output contains the message
+    expect($result)->toContain('Processing...');
+});
+
+test('progress bar updates message after started', function () {
+    $output = new Output();
+    $progress = new ProgressBar($output, 10);
+
+    ob_start();
+    $progress->start();
+    $progress->setMessage('Updated message');
+    $result = ob_get_clean();
+
+    // Setting message after start should trigger display
+    expect($result)->toContain('0/10');
 });
 
 test('progress bar handles custom format template', function () {
