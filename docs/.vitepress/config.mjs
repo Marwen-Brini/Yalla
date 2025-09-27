@@ -12,7 +12,7 @@ export default defineConfig({
       { text: 'API', link: '/api/application' },
       { text: 'Examples', link: '/examples/basic-usage' },
       {
-        text: 'v1.4.0',
+        text: 'v1.5.0',
         items: [
           { text: 'Changelog', link: '/changelog' },
           { text: 'Contributing', link: '/contributing' },
@@ -38,6 +38,7 @@ export default defineConfig({
             { text: 'Arguments & Options', link: '/guide/arguments-options' },
             { text: 'Output Formatting', link: '/guide/output' },
             { text: 'Table Formatting', link: '/guide/tables' },
+            { text: 'Progress Indicators', link: '/guide/progress-indicators' },
             { text: 'Input Parsing', link: '/guide/input' }
           ]
         },

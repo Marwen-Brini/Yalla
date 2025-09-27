@@ -19,7 +19,7 @@ features:
     details: Built entirely from scratch without relying on Symfony Console or other frameworks
   - icon: 🎨
     title: Beautiful Output
-    details: ANSI color support, table rendering, progress bars, and more formatting options
+    details: ANSI colors, tables, progress bars, spinners, step indicators and more
   - icon: 🔧
     title: Interactive REPL
     details: Full-featured Read-Eval-Print-Loop for interactive PHP development with history and autocomplete

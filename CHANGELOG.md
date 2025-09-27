@@ -2,6 +2,58 @@
 
 All notable changes to `yalla` will be documented in this file.
 
+## v1.5.0 - 2025-01-27
+
+### Added
+
+- **Progress Indicators**: Comprehensive progress tracking for long-running tasks
+  - **Progress Bars**: Multiple formats (normal, verbose, detailed, minimal, memory)
+    - Automatic time estimation and elapsed time tracking
+    - Memory usage monitoring
+    - Custom format templates
+    - Configurable redraw frequency for performance
+  - **Spinners**: Animated indicators with 6 built-in frame styles
+    - dots, line, pipe, arrow, bounce, box animations
+    - Dynamic message updates during execution
+    - Success, error, warning, and info completion states
+  - **Step Indicators**: Multi-step process tracking
+    - Visual step-by-step progress display
+    - Individual step timing
+    - Complete, fail, skip, and running states
+    - Automatic summary with timing information
+
+- **Output Integration**: Seamless integration with Output class
+  - `$output->createProgressBar()`
+  - `$output->createSpinner()`
+  - `$output->steps()`
+
+### Changed
+
+- Updated version to 1.5.0 across all documentation
+- Enhanced Output class with progress indicator factory methods
+
+### Fixed
+
+- Fixed progress bar display issue where `setMessage()` would output before `start()` was called
+- Added `started` property to prevent premature display
+
+## v1.4.0 - 2025-01-25
+
+### Added
+
+- **Advanced Table Formatting**: Professional table rendering system
+  - Multiple border styles (classic, modern, none, double, rounded, heavy)
+  - Column alignment options (left, right, center)
+  - Cell formatters for custom data transformation
+  - Row filtering and sorting capabilities
+  - Markdown table export format
+  - Emoji and Unicode support
+
+- **Migration Tables**: Specialized formatter for database migrations
+  - Status indicators with colors
+  - Batch filtering
+  - Summary statistics
+
 ## v1.3.0 - 2025-09-05
 
 This version adds:

@@ -3,7 +3,7 @@
 [![Tests](https://github.com/marwen-brini/yalla/actions/workflows/run-tests.yml/badge.svg)](https://github.com/marwen-brini/yalla/actions/workflows/run-tests.yml)
 [![Code Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)](https://github.com/marwen-brini/yalla)
 [![PHP Version](https://img.shields.io/badge/PHP-8.1%20to%208.4-blue)](https://www.php.net)
-[![Latest Version](https://img.shields.io/badge/version-1.4.0-orange)](https://github.com/marwen-brini/yalla/releases)
+[![Latest Version](https://img.shields.io/badge/version-1.5.0-orange)](https://github.com/marwen-brini/yalla/releases)
 [![Documentation](https://img.shields.io/badge/docs-vitepress-blue)](https://marwen-brini.github.io/Yalla/)
 
 A standalone PHP CLI framework built from scratch without dependencies.
@@ -18,6 +18,7 @@ A standalone PHP CLI framework built from scratch without dependencies.
 - **Colored Output**: ANSI color support for beautiful terminal output (cross-platform)
 - **Advanced Table Rendering**: Professional table formatter with multiple border styles, emoji support, and alignment options
 - **Migration Tables**: Specialized table formatter for database migration systems
+- **Progress Indicators** *(v1.5.0)*: Progress bars, spinners, and step indicators for long-running tasks
 - **Input Parsing**: Handles commands, arguments, and options (long and short formats)
 - **Command Scaffolding**: Built-in `create:command` to generate new command boilerplate
 - **History & Autocomplete**: REPL with command history and intelligent autocompletion
@@ -50,7 +51,7 @@ require 'vendor/autoload.php';
 
 use Yalla\Application;
 
-$app = new Application('Yalla CLI', '1.4.0');
+$app = new Application('Yalla CLI', '1.5.0');
 $app->run();
 ```
 
@@ -94,7 +95,7 @@ class GreetCommand extends Command
 }
 
 // Register in your application
-$app = new Application('Yalla CLI', '1.4.0');
+$app = new Application('Yalla CLI', '1.5.0');
 $app->register(new GreetCommand());
 $app->run();
 ```
@@ -474,6 +475,73 @@ $migrationTable->addMigration('2024_01_create_users', 1, 'migrated', '2024-01-15
 
 // Render summary
 $migrationTable->renderSummary();
+```
+
+### Progress Indicators (New in v1.5)
+
+Yalla provides powerful progress indicators for long-running tasks:
+
+#### Progress Bars
+
+```php
+use Yalla\Output\Output;
+
+$output = new Output();
+$progress = $output->createProgressBar(100);
+$progress->start();
+
+for ($i = 0; $i < 100; $i++) {
+    // Do work...
+    $progress->advance();
+}
+
+$progress->finish();
+```
+
+Multiple formats available:
+- **normal**: Basic progress bar with percentage
+- **verbose**: Includes custom messages
+- **detailed**: Shows time estimates
+- **minimal**: Compact display
+- **memory**: Displays memory usage
+
+#### Spinners
+
+```php
+$spinner = $output->createSpinner('Processing...', 'dots');
+$spinner->start();
+
+// Do work...
+for ($i = 0; $i < 30; $i++) {
+    usleep(100000);
+    $spinner->advance();
+}
+
+$spinner->success('Process complete!');
+// Also available: ->error(), ->warning(), ->info()
+```
+
+Frame styles: `dots`, `line`, `pipe`, `arrow`, `bounce`, `box`
+
+#### Step Indicators
+
+```php
+$steps = $output->steps([
+    'Download files',
+    'Install dependencies',
+    'Run migrations',
+    'Clear cache'
+]);
+
+$steps->start();
+
+// Mark steps as you complete them
+$steps->complete(0, 'Files downloaded');
+$steps->complete(1, 'Dependencies installed');
+$steps->skip(2, 'Migrations skipped');
+$steps->fail(3, 'Cache clear failed');
+
+$steps->finish();
 ```
 
 ## Architecture
