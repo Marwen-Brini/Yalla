@@ -112,7 +112,7 @@ test('progress bar displays custom messages', function () {
 });
 
 test('progress bar updates message after started', function () {
-    $output = new Output();
+    $output = new Output;
     $progress = new ProgressBar($output, 10);
 
     ob_start();
