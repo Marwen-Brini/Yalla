@@ -12,7 +12,7 @@ export default defineConfig({
       { text: 'API', link: '/api/application' },
       { text: 'Examples', link: '/examples/basic-usage' },
       {
-        text: 'v1.3.0',
+        text: 'v1.4.0',
         items: [
           { text: 'Changelog', link: '/changelog' },
           { text: 'Contributing', link: '/contributing' },
@@ -37,6 +37,7 @@ export default defineConfig({
             { text: 'Commands', link: '/guide/commands' },
             { text: 'Arguments & Options', link: '/guide/arguments-options' },
             { text: 'Output Formatting', link: '/guide/output' },
+            { text: 'Table Formatting', link: '/guide/tables' },
             { text: 'Input Parsing', link: '/guide/input' }
           ]
         },
@@ -58,6 +59,8 @@ export default defineConfig({
             { text: 'Command', link: '/api/command' },
             { text: 'CommandRegistry', link: '/api/command-registry' },
             { text: 'Output', link: '/api/output' },
+            { text: 'Table', link: '/api/table' },
+            { text: 'MigrationTable', link: '/api/migration-table' },
             { text: 'InputParser', link: '/api/input-parser' }
           ]
         },

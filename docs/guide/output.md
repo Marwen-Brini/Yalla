@@ -117,6 +117,29 @@ $rows = array_map(fn($user) => [
 $output->table($headers, $rows);
 ```
 
+### Advanced Table Formatting (New in v1.4)
+
+For more sophisticated table formatting, use the `createTable()` method:
+
+```php
+use Yalla\Output\Table;
+
+$table = $output->createTable([
+    'borders' => Table::BORDER_UNICODE,
+    'alignment' => [Table::ALIGN_LEFT, Table::ALIGN_CENTER, Table::ALIGN_RIGHT],
+    'colors' => true,
+    'max_width' => 120
+]);
+
+$table->setHeaders(['Service', 'Status', 'Uptime'])
+      ->addRow(['Database', '✅ Online', '99.9%'])
+      ->addRow(['Cache', '⏳ Starting', '0.0%'])
+      ->addRow(['API', '❌ Offline', '89.2%'])
+      ->render();
+```
+
+See the complete [Table Formatting Guide](/guide/tables) for all available features.
+
 ## Progress Indicators
 
 ### Progress Bar

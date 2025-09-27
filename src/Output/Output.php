@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Yalla\Output;
 
+use Yalla\Input\InteractiveInput;
+
 class Output
 {
     const RESET = "\033[0m";
@@ -47,6 +49,8 @@ class Output
     const UNDERLINE = "\033[4m";
 
     private bool $supportsColors;
+
+    private ?InteractiveInput $interactiveInput = null;
 
     public function __construct()
     {
@@ -128,8 +132,19 @@ class Output
         return $color.$text.self::RESET;
     }
 
-    public function table(array $headers, array $rows): void
+    public function table(array $headers, array $rows, array $options = []): void
     {
+        // Use new Table class if options are provided
+        if (! empty($options)) {
+            $table = new Table($this, $options);
+            $table->setHeaders($headers)
+                ->setRows($rows)
+                ->render();
+
+            return;
+        }
+
+        // Legacy table rendering for backward compatibility
         $columnWidths = [];
 
         foreach ($headers as $i => $header) {
@@ -148,6 +163,11 @@ class Output
         foreach ($rows as $row) {
             $this->drawTableRow($row, $columnWidths);
         }
+    }
+
+    public function createTable(array $options = []): Table
+    {
+        return new Table($this, $options);
     }
 
     private function drawTableRow(array $row, array $columnWidths, bool $isHeader = false): void
@@ -268,5 +288,100 @@ class Output
                 $this->writeln($prefix.$key.': '.$this->color((string) $value, self::GREEN));
             }
         }
+    }
+
+    /**
+     * Get or create the InteractiveInput instance
+     */
+    protected function getInteractiveInput(): InteractiveInput
+    {
+        if ($this->interactiveInput === null) {
+            $this->interactiveInput = new InteractiveInput($this);
+        }
+
+        return $this->interactiveInput;
+    }
+
+    /**
+     * Ask for confirmation (yes/no)
+     */
+    public function confirm(
+        string $question,
+        bool $default = false,
+        ?string $yesText = null,
+        ?string $noText = null
+    ): bool {
+        return $this->getInteractiveInput()->confirm($question, $default, $yesText, $noText);
+    }
+
+    /**
+     * Ask for a single choice from a list
+     */
+    public function choice(
+        string $question,
+        array $choices,
+        $default = null,
+        int $maxAttempts = 3
+    ): string {
+        return $this->getInteractiveInput()->choice($question, $choices, $default, $maxAttempts);
+    }
+
+    /**
+     * Ask for multiple choices from a list
+     */
+    public function multiChoice(
+        string $question,
+        array $choices,
+        array $defaults = [],
+        int $maxAttempts = 3
+    ): array {
+        return $this->getInteractiveInput()->multiChoice($question, $choices, $defaults, $maxAttempts);
+    }
+
+    /**
+     * Ask for text input
+     */
+    public function ask(string $question, ?string $default = null): string
+    {
+        return $this->getInteractiveInput()->ask($question, $default);
+    }
+
+    /**
+     * Ask for text input with validation
+     */
+    public function askValid(
+        string $question,
+        callable $validator,
+        string $error = 'Invalid input. Please try again.',
+        ?string $default = null,
+        int $maxAttempts = 3
+    ): string {
+        return $this->getInteractiveInput()->askValid($question, $validator, $error, $default, $maxAttempts);
+    }
+
+    /**
+     * Ask for hidden input (e.g., passwords)
+     */
+    public function askHidden(string $question): string
+    {
+        return $this->getInteractiveInput()->askHidden($question);
+    }
+
+    /**
+     * Set interactive mode
+     */
+    public function setInteractive(bool $interactive): self
+    {
+        $this->getInteractiveInput()->setInteractive($interactive);
+
+        return $this;
+    }
+
+    /**
+     * Check if interactive mode is enabled
+     */
+    public function isInteractive(): bool
+    {
+        return $this->getInteractiveInput()->isInteractiveMode();
     }
 }

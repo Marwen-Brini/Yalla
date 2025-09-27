@@ -1,6 +1,6 @@
 {
   "name": "yalla-cli-docs",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Documentation for Yalla CLI - A standalone PHP CLI framework built from scratch",
   "homepage": "https://github.com/marwen-brini/yalla",
   "repository": {
