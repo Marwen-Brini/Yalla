@@ -1,13 +1,13 @@
 #!/usr/bin/env php
 <?php
 
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__.'/../vendor/autoload.php';
 
+use Yalla\Output\MigrationTable;
 use Yalla\Output\Output;
 use Yalla\Output\Table;
-use Yalla\Output\MigrationTable;
 
-$output = new Output();
+$output = new Output;
 
 // Example 1: Basic table with default Unicode borders
 $output->section('Example 1: Basic Table');
@@ -17,7 +17,7 @@ $output->table(
         ['John Doe', '30', 'New York', 'USA'],
         ['Jane Smith', '25', 'London', 'UK'],
         ['Pierre Dubois', '35', 'Paris', 'France'],
-        ['Yuki Tanaka', '28', 'Tokyo', 'Japan']
+        ['Yuki Tanaka', '28', 'Tokyo', 'Japan'],
     ]
 );
 
@@ -29,7 +29,7 @@ $output->table(
         ['Laptop', '$999', '15', 'Available'],
         ['Mouse', '$25', '0', 'Out of Stock'],
         ['Keyboard', '$75', '8', 'Low Stock'],
-        ['Monitor', '$299', '22', 'Available']
+        ['Monitor', '$299', '22', 'Available'],
     ],
     ['borders' => Table::BORDER_ASCII]
 );
@@ -42,7 +42,7 @@ $output->table(
         ['UserTest::testLogin', 'PASS', '45'],
         ['UserTest::testLogout', 'PASS', '12'],
         ['UserTest::testRegister', 'FAIL', '156'],
-        ['ProductTest::testCreate', 'PASS', '89']
+        ['ProductTest::testCreate', 'PASS', '89'],
     ],
     ['borders' => Table::BORDER_COMPACT]
 );
@@ -55,7 +55,7 @@ $output->table(
         ['Table Output', 'Complete', 'Critical', 'Team A'],
         ['Confirmations', 'In Progress', 'Critical', 'Team B'],
         ['Progress Bar', 'Pending', 'High', 'Team A'],
-        ['File Generation', 'Pending', 'High', 'Team C']
+        ['File Generation', 'Pending', 'High', 'Team C'],
     ],
     [
         'borders' => Table::BORDER_MARKDOWN,
@@ -63,8 +63,8 @@ $output->table(
             Table::ALIGN_LEFT,
             Table::ALIGN_CENTER,
             Table::ALIGN_CENTER,
-            Table::ALIGN_RIGHT
-        ]
+            Table::ALIGN_RIGHT,
+        ],
     ]
 );
 
@@ -75,7 +75,7 @@ $output->table(
     [
         ['Production', '✅ Online', 'https://app.example.com'],
         ['Staging', '✅ Online', 'https://staging.example.com'],
-        ['Development', '⚠️ Maintenance', 'https://dev.example.com']
+        ['Development', '⚠️ Maintenance', 'https://dev.example.com'],
     ],
     ['borders' => Table::BORDER_DOUBLE]
 );
@@ -87,7 +87,7 @@ $output->table(
     [
         ['users_db', '1.2 GB', '15', '2024-01-26 03:00'],
         ['products_db', '856 MB', '8', '2024-01-26 03:00'],
-        ['logs_db', '5.4 GB', '3', '2024-01-25 23:00']
+        ['logs_db', '5.4 GB', '3', '2024-01-25 23:00'],
     ],
     ['borders' => Table::BORDER_ROUNDED]
 );
@@ -100,15 +100,15 @@ $output->table(
         ['Widget A', '10', '$5.99', '$59.90'],
         ['Gadget B', '5', '$12.50', '$62.50'],
         ['Tool C', '25', '$2.00', '$50.00'],
-        ['Device D', '3', '$89.99', '$269.97']
+        ['Device D', '3', '$89.99', '$269.97'],
     ],
     [
         'alignment' => [
             Table::ALIGN_LEFT,   // Item
             Table::ALIGN_CENTER, // Quantity
             Table::ALIGN_RIGHT,  // Price
-            Table::ALIGN_RIGHT   // Total
-        ]
+            Table::ALIGN_RIGHT,   // Total
+        ],
     ]
 );
 
@@ -120,11 +120,11 @@ $output->table(
         ['Build', 'Compile source code', '2m 15s', '✅ Complete'],
         ['Test', 'Run unit tests', '5m 32s', '✅ Complete'],
         ['Deploy', 'Deploy to staging', '1m 45s', '🔄 Running'],
-        ['Verify', 'Health checks', '-', '⏳ Pending']
+        ['Verify', 'Health checks', '-', '⏳ Pending'],
     ],
     [
         'row_separator' => true,
-        'borders' => Table::BORDER_UNICODE
+        'borders' => Table::BORDER_UNICODE,
     ]
 );
 
@@ -132,30 +132,30 @@ $output->table(
 $output->section('Example 9: Fluent Interface');
 $table = $output->createTable(['borders' => Table::BORDER_ASCII]);
 $table->setHeaders(['ID', 'Task', 'Priority', 'Completed'])
-      ->addRow(['1', 'Write documentation', 'High', 'Yes'])
-      ->addRow(['2', 'Fix bugs', 'Critical', 'No'])
-      ->addRow(['3', 'Add tests', 'Medium', 'Yes'])
-      ->addRow(['4', 'Code review', 'Medium', 'No'])
-      ->sortBy(2) // Sort by priority
-      ->render();
+    ->addRow(['1', 'Write documentation', 'High', 'Yes'])
+    ->addRow(['2', 'Fix bugs', 'Critical', 'No'])
+    ->addRow(['3', 'Add tests', 'Medium', 'Yes'])
+    ->addRow(['4', 'Code review', 'Medium', 'No'])
+    ->sortBy(2) // Sort by priority
+    ->render();
 
 // Example 10: Table with cell formatters
 $output->section('Example 10: Cell Formatters');
 $table = $output->createTable();
 $table->setHeaders(['Service', 'Status', 'Uptime', 'Memory'])
-      ->setCellFormatter(1, function($status) use ($output) {
-          return match($status) {
-              'running' => $output->color('● Running', Output::GREEN),
-              'stopped' => $output->color('● Stopped', Output::RED),
-              'paused' => $output->color('● Paused', Output::YELLOW),
-              default => $status
-          };
-      })
-      ->addRow(['nginx', 'running', '15 days', '128 MB'])
-      ->addRow(['mysql', 'running', '15 days', '512 MB'])
-      ->addRow(['redis', 'stopped', '-', '-'])
-      ->addRow(['elasticsearch', 'paused', '3 days', '1.2 GB'])
-      ->render();
+    ->setCellFormatter(1, function ($status) use ($output) {
+        return match ($status) {
+            'running' => $output->color('● Running', Output::GREEN),
+            'stopped' => $output->color('● Stopped', Output::RED),
+            'paused' => $output->color('● Paused', Output::YELLOW),
+            default => $status
+        };
+    })
+    ->addRow(['nginx', 'running', '15 days', '128 MB'])
+    ->addRow(['mysql', 'running', '15 days', '512 MB'])
+    ->addRow(['redis', 'stopped', '-', '-'])
+    ->addRow(['elasticsearch', 'paused', '3 days', '1.2 GB'])
+    ->render();
 
 // Example 11: Migration table
 $output->section('Example 11: Migration Table');
@@ -192,12 +192,12 @@ $output->table(
         ['Bob', '8200', '9'],
         ['Charlie', '7800', '8'],
         ['Diana', '9800', '10'],
-        ['Eve', '6500', '7']
+        ['Eve', '6500', '7'],
     ],
     [
         'show_index' => true,
         'index_name' => 'Rank',
-        'borders' => Table::BORDER_UNICODE
+        'borders' => Table::BORDER_UNICODE,
     ]
 );
 
@@ -208,11 +208,11 @@ $output->table(
     [
         ['very_long_filename_that_exceeds_normal_width.php', 'This is a very long description that would normally make the table extremely wide', '1.2 MB'],
         ['short.js', 'Brief', '15 KB'],
-        ['another_extremely_long_filename_here.css', 'Another lengthy description to demonstrate width constraints', '458 KB']
+        ['another_extremely_long_filename_here.css', 'Another lengthy description to demonstrate width constraints', '458 KB'],
     ],
     [
         'max_width' => 80,
-        'borders' => Table::BORDER_ASCII
+        'borders' => Table::BORDER_ASCII,
     ]
 );
 
@@ -225,7 +225,7 @@ $output->table(
         ['name', true, '', 'User name'],
         ['email', true, null, 'Email address'],
         ['bio', false, null, ''],
-        ['age', false, 18, 'User age']
+        ['age', false, 18, 'User age'],
     ],
     ['borders' => Table::BORDER_UNICODE]
 );
@@ -239,16 +239,16 @@ $perfTable = $output->createTable([
         Table::ALIGN_RIGHT,
         Table::ALIGN_RIGHT,
         Table::ALIGN_RIGHT,
-        Table::ALIGN_CENTER
-    ]
+        Table::ALIGN_CENTER,
+    ],
 ]);
 
 $perfTable->setHeaders(['Endpoint', 'Requests', 'Avg Time', 'Max Time', 'Status'])
-          ->addRow(['/api/users', '45,231', '45ms', '230ms', '✅'])
-          ->addRow(['/api/products', '28,456', '67ms', '450ms', '✅'])
-          ->addRow(['/api/orders', '12,789', '125ms', '1,200ms', '⚠️'])
-          ->addRow(['/api/search', '89,234', '250ms', '3,400ms', '❌'])
-          ->render();
+    ->addRow(['/api/users', '45,231', '45ms', '230ms', '✅'])
+    ->addRow(['/api/products', '28,456', '67ms', '450ms', '✅'])
+    ->addRow(['/api/orders', '12,789', '125ms', '1,200ms', '⚠️'])
+    ->addRow(['/api/search', '89,234', '250ms', '3,400ms', '❌'])
+    ->render();
 
 $output->writeln('');
 $output->success('All table examples completed successfully!');

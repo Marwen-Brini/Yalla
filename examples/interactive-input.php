@@ -8,11 +8,11 @@
  * including confirmations, choices, and text input with validation.
  */
 
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__.'/../vendor/autoload.php';
 
 use Yalla\Output\Output;
 
-$output = new Output();
+$output = new Output;
 
 $output->section('Yalla CLI v1.5 - Interactive Input Examples');
 
@@ -58,7 +58,7 @@ $features = $output->multiChoice(
     [0, 1]  // Default to Caching and Logging
 );
 
-$output->success('You selected: ' . implode(', ', $features));
+$output->success('You selected: '.implode(', ', $features));
 
 // Example 5: Text Input
 $output->section('5. Text Input');
@@ -75,10 +75,11 @@ try {
     $port = $output->askValid(
         'Enter port number (1024-65535)',
         function ($value) {
-            if (!is_numeric($value)) {
+            if (! is_numeric($value)) {
                 return false;
             }
             $port = (int) $value;
+
             return $port >= 1024 && $port <= 65535;
         },
         'Port must be a number between 1024 and 65535',
@@ -96,7 +97,7 @@ $output->info('Enter a password (input will be hidden)...');
 
 $password = $output->askHidden('Enter database password');
 if ($password) {
-    $output->success('Password received (length: ' . strlen($password) . ' characters)');
+    $output->success('Password received (length: '.strlen($password).' characters)');
 } else {
     $output->warning('No password entered');
 }
@@ -147,13 +148,13 @@ $output->setInteractive(false);
 $output->writeln('In non-interactive mode, defaults are used automatically');
 
 $result = $output->confirm('This will use default (false)', false);
-$output->writeln('Result: ' . ($result ? 'true' : 'false'));
+$output->writeln('Result: '.($result ? 'true' : 'false'));
 
 $choice = $output->choice('This will use default', ['A', 'B', 'C'], 1);
-$output->writeln('Choice: ' . $choice);
+$output->writeln('Choice: '.$choice);
 
 $text = $output->ask('This will use default', 'default-value');
-$output->writeln('Text: ' . $text);
+$output->writeln('Text: '.$text);
 
 // Re-enable interactive mode
 $output->setInteractive(true);
@@ -166,7 +167,7 @@ $migrations = [
     '2024_01_02_add_email_verified',
     '2024_01_03_create_posts_table',
     '2024_01_04_add_user_avatar',
-    '2024_01_05_create_comments_table'
+    '2024_01_05_create_comments_table',
 ];
 
 $selectedMigration = $output->choice(
@@ -186,7 +187,7 @@ $availableFeatures = [
     'cache_warming' => 'Cache Warming',
     'query_optimization' => 'Query Optimization',
     'debug_toolbar' => 'Debug Toolbar',
-    'profiling' => 'Performance Profiling'
+    'profiling' => 'Performance Profiling',
 ];
 
 $selected = $output->multiChoice(
@@ -197,7 +198,7 @@ $selected = $output->multiChoice(
 
 $output->success('Enabled features:');
 foreach ($selected as $feature) {
-    $output->writeln('  ✓ ' . $feature);
+    $output->writeln('  ✓ '.$feature);
 }
 
 // Example 13: Chaining Interactive Methods
@@ -216,7 +217,7 @@ $env = $output->choice(
 if ($env === 'production') {
     $output->warning('Production environment selected - some options will be restricted');
 
-    if (!$output->confirm('Enable debug mode in production?', false)) {
+    if (! $output->confirm('Enable debug mode in production?', false)) {
         $output->info('Debug mode disabled (recommended for production)');
     }
 } else {
@@ -230,7 +231,7 @@ $dbName = $output->ask('Database name', 'app_db');
 $dbHost = $output->ask('Database host', 'localhost');
 $dbPort = $output->askValid(
     'Database port',
-    fn($v) => is_numeric($v) && $v > 0 && $v <= 65535,
+    fn ($v) => is_numeric($v) && $v > 0 && $v <= 65535,
     'Invalid port number',
     '3306'
 );
@@ -242,7 +243,7 @@ $output->table(
         ['Environment', $env],
         ['Database Name', $dbName],
         ['Database Host', $dbHost],
-        ['Database Port', $dbPort]
+        ['Database Port', $dbPort],
     ]
 );
 
