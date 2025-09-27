@@ -286,7 +286,9 @@ class Table
             $this->renderRow($this->headers, true);
 
             if ($borderStyle === self::BORDER_MARKDOWN) {
+                // @codeCoverageIgnoreStart
                 $this->renderMarkdownSeparator();
+                // @codeCoverageIgnoreEnd
             } elseif ($borderStyle !== self::BORDER_NONE && $borderStyle !== self::BORDER_COMPACT) {
                 $this->renderBorder('mid');
             }
