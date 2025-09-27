@@ -6,7 +6,7 @@ use Yalla\Output\Output;
 use Yalla\Progress\StepIndicator;
 
 test('step indicator can be created with steps', function () {
-    $output = new Output();
+    $output = new Output;
     $steps = ['Step 1', 'Step 2', 'Step 3'];
     $indicator = new StepIndicator($output, $steps);
 
@@ -16,7 +16,7 @@ test('step indicator can be created with steps', function () {
 });
 
 test('step indicator starts and sets first step as running', function () {
-    $output = new Output();
+    $output = new Output;
     $steps = ['Initialize', 'Configure', 'Deploy'];
     $indicator = new StepIndicator($output, $steps);
 
@@ -32,7 +32,7 @@ test('step indicator starts and sets first step as running', function () {
 });
 
 test('step indicator advances through steps', function () {
-    $output = new Output();
+    $output = new Output;
     $steps = ['Step 1', 'Step 2', 'Step 3'];
     $indicator = new StepIndicator($output, $steps);
 
@@ -47,7 +47,7 @@ test('step indicator advances through steps', function () {
 });
 
 test('step indicator completes steps with messages', function () {
-    $output = new Output();
+    $output = new Output;
     $steps = ['Download', 'Install', 'Configure'];
     $indicator = new StepIndicator($output, $steps);
 
@@ -60,7 +60,7 @@ test('step indicator completes steps with messages', function () {
 });
 
 test('step indicator skips steps', function () {
-    $output = new Output();
+    $output = new Output;
     $steps = ['Step 1', 'Step 2', 'Step 3'];
     $indicator = new StepIndicator($output, $steps);
 
@@ -73,7 +73,7 @@ test('step indicator skips steps', function () {
 });
 
 test('step indicator fails steps', function () {
-    $output = new Output();
+    $output = new Output;
     $steps = ['Build', 'Test', 'Deploy'];
     $indicator = new StepIndicator($output, $steps);
 
@@ -86,7 +86,7 @@ test('step indicator fails steps', function () {
 });
 
 test('step indicator can set step as running', function () {
-    $output = new Output();
+    $output = new Output;
     $steps = ['Step 1', 'Step 2', 'Step 3'];
     $indicator = new StepIndicator($output, $steps);
 
@@ -100,7 +100,7 @@ test('step indicator can set step as running', function () {
 });
 
 test('step indicator finishes and shows summary', function () {
-    $output = new Output();
+    $output = new Output;
     $steps = ['Step 1', 'Step 2', 'Step 3'];
     $indicator = new StepIndicator($output, $steps);
 
@@ -120,10 +120,10 @@ test('step indicator finishes and shows summary', function () {
 });
 
 test('step indicator handles array format steps', function () {
-    $output = new Output();
+    $output = new Output;
     $steps = [
         ['name' => 'Initialize', 'description' => 'Setting up environment'],
-        ['name' => 'Deploy', 'description' => 'Deploying to server']
+        ['name' => 'Deploy', 'description' => 'Deploying to server'],
     ];
     $indicator = new StepIndicator($output, $steps);
 
@@ -135,14 +135,14 @@ test('step indicator handles array format steps', function () {
 });
 
 test('step indicator supports custom symbols', function () {
-    $output = new Output();
+    $output = new Output;
     $steps = ['Step 1', 'Step 2'];
     $indicator = new StepIndicator($output, $steps);
 
     $indicator->setSymbols([
         'pending' => '○',
         'running' => '◉',
-        'complete' => '●'
+        'complete' => '●',
     ]);
 
     ob_start();
@@ -153,14 +153,14 @@ test('step indicator supports custom symbols', function () {
 });
 
 test('step indicator supports custom colors', function () {
-    $output = new Output();
+    $output = new Output;
     $steps = ['Step 1', 'Step 2'];
     $indicator = new StepIndicator($output, $steps);
 
     $indicator->setColors([
         'pending' => Output::WHITE,
         'running' => Output::BLUE,
-        'complete' => Output::GREEN
+        'complete' => Output::GREEN,
     ]);
 
     ob_start();
@@ -171,7 +171,7 @@ test('step indicator supports custom colors', function () {
 });
 
 test('step indicator shows step numbers', function () {
-    $output = new Output();
+    $output = new Output;
     $steps = ['First', 'Second', 'Third'];
     $indicator = new StepIndicator($output, $steps);
 
@@ -185,7 +185,7 @@ test('step indicator shows step numbers', function () {
 });
 
 test('step indicator tracks time for steps', function () {
-    $output = new Output();
+    $output = new Output;
     $steps = ['Quick step', 'Another step'];
     $indicator = new StepIndicator($output, $steps);
 
@@ -200,7 +200,7 @@ test('step indicator tracks time for steps', function () {
 });
 
 test('step indicator auto-completes running step on next', function () {
-    $output = new Output();
+    $output = new Output;
     $steps = ['Step 1', 'Step 2', 'Step 3'];
     $indicator = new StepIndicator($output, $steps);
 
@@ -214,7 +214,7 @@ test('step indicator auto-completes running step on next', function () {
 });
 
 test('step indicator finishes when advancing past last step', function () {
-    $output = new Output();
+    $output = new Output;
     $steps = ['Step 1', 'Step 2'];
     $indicator = new StepIndicator($output, $steps);
 
@@ -228,7 +228,7 @@ test('step indicator finishes when advancing past last step', function () {
 });
 
 test('step indicator marks pending steps as skipped on finish', function () {
-    $output = new Output();
+    $output = new Output;
     $steps = ['Step 1', 'Step 2', 'Step 3'];
     $indicator = new StepIndicator($output, $steps);
 
@@ -244,7 +244,7 @@ test('step indicator marks pending steps as skipped on finish', function () {
 });
 
 test('step indicator does nothing when already finished', function () {
-    $output = new Output();
+    $output = new Output;
     $steps = ['Step 1'];
     $indicator = new StepIndicator($output, $steps);
 
@@ -262,7 +262,7 @@ test('step indicator does nothing when already finished', function () {
 });
 
 test('step indicator handles invalid step index gracefully', function () {
-    $output = new Output();
+    $output = new Output;
     $steps = ['Step 1', 'Step 2'];
     $indicator = new StepIndicator($output, $steps);
 
@@ -276,7 +276,7 @@ test('step indicator handles invalid step index gracefully', function () {
 });
 
 test('step indicator Output integration', function () {
-    $output = new Output();
+    $output = new Output;
     $steps = ['Initialize', 'Process', 'Complete'];
     $indicator = $output->steps($steps);
 
@@ -285,7 +285,7 @@ test('step indicator Output integration', function () {
 });
 
 test('step indicator formats time correctly', function () {
-    $output = new Output();
+    $output = new Output;
     $steps = ['Long running task'];
     $indicator = new StepIndicator($output, $steps);
 
@@ -300,7 +300,7 @@ test('step indicator formats time correctly', function () {
 });
 
 test('step indicator handles start when already started', function () {
-    $output = new Output();
+    $output = new Output;
     $steps = ['Step 1', 'Step 2'];
     $indicator = new StepIndicator($output, $steps);
 
@@ -315,7 +315,7 @@ test('step indicator handles start when already started', function () {
 });
 
 test('step indicator skip with non-existent step', function () {
-    $output = new Output();
+    $output = new Output;
     $steps = ['Step 1', 'Step 2'];
     $indicator = new StepIndicator($output, $steps);
 
@@ -329,7 +329,7 @@ test('step indicator skip with non-existent step', function () {
 });
 
 test('step indicator complete with non-existent step', function () {
-    $output = new Output();
+    $output = new Output;
     $steps = ['Step 1', 'Step 2'];
     $indicator = new StepIndicator($output, $steps);
 
@@ -343,7 +343,7 @@ test('step indicator complete with non-existent step', function () {
 });
 
 test('step indicator fail with non-existent step', function () {
-    $output = new Output();
+    $output = new Output;
     $steps = ['Step 1', 'Step 2'];
     $indicator = new StepIndicator($output, $steps);
 
@@ -357,7 +357,7 @@ test('step indicator fail with non-existent step', function () {
 });
 
 test('step indicator running with non-existent step', function () {
-    $output = new Output();
+    $output = new Output;
     $steps = ['Step 1', 'Step 2'];
     $indicator = new StepIndicator($output, $steps);
 
@@ -371,7 +371,7 @@ test('step indicator running with non-existent step', function () {
 });
 
 test('step indicator getStepTime with no start time', function () {
-    $output = new Output();
+    $output = new Output;
     $steps = ['Step 1'];
     $indicator = new StepIndicator($output, $steps);
 
@@ -386,7 +386,7 @@ test('step indicator getStepTime with no start time', function () {
 });
 
 test('step indicator formatTime for very long durations', function () {
-    $output = new Output();
+    $output = new Output;
     $steps = ['Long step'];
     $indicator = new StepIndicator($output, $steps);
 

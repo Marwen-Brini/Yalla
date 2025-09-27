@@ -6,7 +6,7 @@ use Yalla\Output\Output;
 use Yalla\Progress\ProgressBar;
 
 test('progress bar can be created and started', function () {
-    $output = new Output();
+    $output = new Output;
     $progress = new ProgressBar($output, 100);
 
     expect($progress)->toBeInstanceOf(ProgressBar::class);
@@ -25,7 +25,7 @@ test('progress bar can be created and started', function () {
 });
 
 test('progress bar advances correctly', function () {
-    $output = new Output();
+    $output = new Output;
     $progress = new ProgressBar($output, 10);
 
     ob_start();
@@ -43,7 +43,7 @@ test('progress bar advances correctly', function () {
 });
 
 test('progress bar completes at 100%', function () {
-    $output = new Output();
+    $output = new Output;
     $progress = new ProgressBar($output, 5);
 
     ob_start();
@@ -63,7 +63,7 @@ test('progress bar completes at 100%', function () {
 });
 
 test('progress bar handles custom width', function () {
-    $output = new Output();
+    $output = new Output;
     $progress = new ProgressBar($output, 100);
 
     $progress->setBarWidth(50);
@@ -77,7 +77,7 @@ test('progress bar handles custom width', function () {
 });
 
 test('progress bar supports different formats', function () {
-    $output = new Output();
+    $output = new Output;
     $progress = new ProgressBar($output, 100);
 
     $formats = ['normal', 'verbose', 'detailed', 'minimal', 'memory'];
@@ -95,7 +95,7 @@ test('progress bar supports different formats', function () {
 });
 
 test('progress bar displays custom messages', function () {
-    $output = new Output();
+    $output = new Output;
     $progress = new ProgressBar($output, 10);
 
     $progress->setFormat('verbose');
@@ -110,7 +110,7 @@ test('progress bar displays custom messages', function () {
 });
 
 test('progress bar handles custom format template', function () {
-    $output = new Output();
+    $output = new Output;
     $progress = new ProgressBar($output, 100);
 
     $progress->setCustomFormat('Progress: {current} of {total} ({percent}%)');
@@ -125,7 +125,7 @@ test('progress bar handles custom format template', function () {
 });
 
 test('progress bar respects redraw frequency', function () {
-    $output = new Output();
+    $output = new Output;
     $progress = new ProgressBar($output, 100);
 
     $progress->setRedrawFrequency(10);
@@ -149,7 +149,7 @@ test('progress bar respects redraw frequency', function () {
 });
 
 test('progress bar prevents overflow beyond total', function () {
-    $output = new Output();
+    $output = new Output;
     $progress = new ProgressBar($output, 10);
 
     ob_start();
@@ -160,14 +160,14 @@ test('progress bar prevents overflow beyond total', function () {
 });
 
 test('progress bar handles zero total gracefully', function () {
-    $output = new Output();
+    $output = new Output;
     $progress = new ProgressBar($output, 0);
 
     expect($progress->getTotal())->toBe(1); // Should be set to 1 minimum
 });
 
 test('progress bar can be cleared', function () {
-    $output = new Output();
+    $output = new Output;
     $progress = new ProgressBar($output, 10);
 
     ob_start();
@@ -180,7 +180,7 @@ test('progress bar can be cleared', function () {
 });
 
 test('progress bar formats time correctly', function () {
-    $output = new Output();
+    $output = new Output;
     $progress = new ProgressBar($output, 100);
 
     $progress->setFormat('detailed');
@@ -196,7 +196,7 @@ test('progress bar formats time correctly', function () {
 });
 
 test('progress bar shows memory usage', function () {
-    $output = new Output();
+    $output = new Output;
     $progress = new ProgressBar($output, 10);
 
     $progress->setFormat('memory');
@@ -209,7 +209,7 @@ test('progress bar shows memory usage', function () {
 });
 
 test('progress bar finishes only once', function () {
-    $output = new Output();
+    $output = new Output;
     $progress = new ProgressBar($output, 10);
 
     ob_start();
@@ -227,7 +227,7 @@ test('progress bar finishes only once', function () {
 });
 
 test('progress bar Output integration', function () {
-    $output = new Output();
+    $output = new Output;
     $progress = $output->createProgressBar(50);
 
     expect($progress)->toBeInstanceOf(ProgressBar::class);
@@ -235,7 +235,7 @@ test('progress bar Output integration', function () {
 });
 
 test('progress bar handles invalid format gracefully', function () {
-    $output = new Output();
+    $output = new Output;
     $progress = new ProgressBar($output, 100);
 
     // Test invalid format fallback to 'normal'
@@ -249,7 +249,7 @@ test('progress bar handles invalid format gracefully', function () {
 });
 
 test('progress bar calculates percentage correctly for zero total', function () {
-    $output = new Output();
+    $output = new Output;
     $progress = new ProgressBar($output, 0); // This gets normalized to 1
 
     ob_start();
@@ -262,7 +262,7 @@ test('progress bar calculates percentage correctly for zero total', function () 
 });
 
 test('progress bar handles true zero total in percentage calculation', function () {
-    $output = new Output();
+    $output = new Output;
     $progress = new ProgressBar($output, 100);
 
     // Use reflection to set total to 0 directly
@@ -279,7 +279,7 @@ test('progress bar handles true zero total in percentage calculation', function 
 });
 
 test('progress bar formats minutes correctly without hours', function () {
-    $output = new Output();
+    $output = new Output;
     $progress = new ProgressBar($output, 100);
 
     $reflection = new ReflectionClass($progress);
@@ -292,7 +292,7 @@ test('progress bar formats minutes correctly without hours', function () {
 });
 
 test('progress bar estimates time correctly with zero rate', function () {
-    $output = new Output();
+    $output = new Output;
     $progress = new ProgressBar($output, 100);
 
     // Start but don't advance - rate will be 0
@@ -305,7 +305,7 @@ test('progress bar estimates time correctly with zero rate', function () {
 });
 
 test('progress bar returns dash when rate is zero in getEstimatedTime', function () {
-    $output = new Output();
+    $output = new Output;
     $progress = new ProgressBar($output, 100);
 
     $reflection = new ReflectionClass($progress);
@@ -326,7 +326,7 @@ test('progress bar returns dash when rate is zero in getEstimatedTime', function
 });
 
 test('progress bar formats time correctly for hours', function () {
-    $output = new Output();
+    $output = new Output;
     $progress = new ProgressBar($output, 1);
 
     ob_start();

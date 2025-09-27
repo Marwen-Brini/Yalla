@@ -9,18 +9,28 @@ use Yalla\Output\Output;
 class StepIndicator
 {
     protected Output $output;
+
     protected array $steps = [];
+
     protected array $statuses = [];
+
     protected int $currentStep = -1;
+
     protected float $startTime;
+
     protected bool $started = false;
+
     protected bool $finished = false;
 
     // Status constants
     public const STATUS_PENDING = 'pending';
+
     public const STATUS_RUNNING = 'running';
+
     public const STATUS_COMPLETE = 'complete';
+
     public const STATUS_SKIPPED = 'skipped';
+
     public const STATUS_FAILED = 'failed';
 
     // Display options
@@ -118,7 +128,7 @@ class StepIndicator
         $this->renderAll();
         $this->output->writeln('');
 
-        if (!empty($this->steps)) {
+        if (! empty($this->steps)) {
             $this->statuses[0]['status'] = self::STATUS_RUNNING;
             $this->statuses[0]['startTime'] = microtime(true);
             $this->updateStep(0);
@@ -130,7 +140,7 @@ class StepIndicator
     /**
      * Move to next step
      */
-    public function next(string $message = null): self
+    public function next(?string $message = null): self
     {
         if ($this->currentStep >= 0 && $this->currentStep < count($this->steps)) {
             $this->complete($this->currentStep, $message);
@@ -152,9 +162,9 @@ class StepIndicator
     /**
      * Complete a step
      */
-    public function complete(int $step, string $message = null): self
+    public function complete(int $step, ?string $message = null): self
     {
-        if (!isset($this->statuses[$step])) {
+        if (! isset($this->statuses[$step])) {
             return $this;
         }
 
@@ -173,9 +183,9 @@ class StepIndicator
     /**
      * Skip a step
      */
-    public function skip(int $step, string $message = null): self
+    public function skip(int $step, ?string $message = null): self
     {
-        if (!isset($this->statuses[$step])) {
+        if (! isset($this->statuses[$step])) {
             return $this;
         }
 
@@ -194,9 +204,9 @@ class StepIndicator
     /**
      * Fail a step
      */
-    public function fail(int $step, string $message = null): self
+    public function fail(int $step, ?string $message = null): self
     {
-        if (!isset($this->statuses[$step])) {
+        if (! isset($this->statuses[$step])) {
             return $this;
         }
 
@@ -215,9 +225,9 @@ class StepIndicator
     /**
      * Set a step as running
      */
-    public function running(int $step, string $message = null): self
+    public function running(int $step, ?string $message = null): self
     {
-        if (!isset($this->statuses[$step])) {
+        if (! isset($this->statuses[$step])) {
             return $this;
         }
 
@@ -306,18 +316,18 @@ class StepIndicator
         $symbol = $this->options['symbols'][$status['status']] ?? '?';
         $stepNumber = $this->options['showStepNumbers'] ? sprintf('[%d/%d] ', $key + 1, count($this->steps)) : '';
 
-        $stepText = $indent . $symbol . ' ' . $stepNumber . $step;
+        $stepText = $indent.$symbol.' '.$stepNumber.$step;
 
         // Add message if available
         if ($status['message']) {
-            $stepText .= ' - ' . $status['message'];
+            $stepText .= ' - '.$status['message'];
         }
 
         // Add time if enabled and available
         if ($this->options['showTime'] && $status['startTime']) {
             $time = $this->getStepTime($key);
             if ($time) {
-                $stepText .= ' (' . $time . ')';
+                $stepText .= ' ('.$time.')';
             }
         }
 
@@ -337,7 +347,7 @@ class StepIndicator
     {
         $status = $this->statuses[$key];
 
-        if (!$status['startTime']) {
+        if (! $status['startTime']) {
             return null;
         }
 
@@ -362,6 +372,7 @@ class StepIndicator
         } else {
             $minutes = floor($seconds / 60);
             $seconds = $seconds % 60;
+
             return sprintf('%dm %ds', $minutes, $seconds);
         }
     }
