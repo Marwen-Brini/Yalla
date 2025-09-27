@@ -9,11 +9,17 @@ use Yalla\Output\Output;
 class Spinner
 {
     protected Output $output;
+
     protected string $message;
+
     protected bool $running = false;
+
     protected int $currentFrame = 0;
+
     protected float $startTime;
+
     protected string $lastOutput = '';
+
     protected ?int $pid = null;
 
     // Spinner frames sets
@@ -39,7 +45,9 @@ class Spinner
     ];
 
     protected string $frameSet = 'dots';
+
     protected float $interval = 0.1; // Frame update interval in seconds
+
     protected float $lastUpdate = 0;
 
     public function __construct(Output $output, string $message = '', string $frameSet = 'dots')
@@ -122,7 +130,7 @@ class Spinner
      */
     public function advance(): self
     {
-        if (!$this->running) {
+        if (! $this->running) {
             return $this;
         }
 
@@ -173,7 +181,7 @@ class Spinner
      */
     public function stop(string $symbol = '', string $message = '', ?string $color = null): self
     {
-        if (!$this->running) {
+        if (! $this->running) {
             return $this;
         }
 
@@ -186,7 +194,7 @@ class Spinner
         $finalMessage = $message ?: $this->message;
 
         if ($symbol) {
-            $output = $symbol . ' ' . $finalMessage;
+            $output = $symbol.' '.$finalMessage;
         } else {
             $output = $finalMessage;
         }
@@ -205,8 +213,8 @@ class Spinner
      */
     public function clear(): self
     {
-        $clear = "\r" . str_repeat(' ', strlen($this->lastOutput));
-        $this->output->write($clear . "\r");
+        $clear = "\r".str_repeat(' ', strlen($this->lastOutput));
+        $this->output->write($clear."\r");
         $this->lastOutput = '';
 
         return $this;
@@ -218,14 +226,14 @@ class Spinner
     protected function render(): void
     {
         $frame = $this->frames[$this->frameSet][$this->currentFrame];
-        $output = $frame . ' ' . $this->message;
+        $output = $frame.' '.$this->message;
 
         // Clear previous output
-        $clear = "\r" . str_repeat(' ', strlen($this->lastOutput));
+        $clear = "\r".str_repeat(' ', strlen($this->lastOutput));
         $this->output->write($clear);
 
         // Write new frame
-        $this->output->write("\r" . $output);
+        $this->output->write("\r".$output);
         $this->lastOutput = $output;
     }
 
@@ -234,7 +242,7 @@ class Spinner
      */
     public function getElapsedTime(): float
     {
-        if (!isset($this->startTime)) {
+        if (! isset($this->startTime)) {
             return 0;
         }
 

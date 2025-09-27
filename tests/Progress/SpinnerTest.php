@@ -6,7 +6,7 @@ use Yalla\Output\Output;
 use Yalla\Progress\Spinner;
 
 test('spinner can be created and started', function () {
-    $output = new Output();
+    $output = new Output;
     $spinner = new Spinner($output, 'Loading...');
 
     expect($spinner)->toBeInstanceOf(Spinner::class);
@@ -21,7 +21,7 @@ test('spinner can be created and started', function () {
 });
 
 test('spinner advances through frames', function () {
-    $output = new Output();
+    $output = new Output;
     $spinner = new Spinner($output, 'Test');
 
     $spinner->setFrames('simple');
@@ -42,7 +42,7 @@ test('spinner advances through frames', function () {
 });
 
 test('spinner supports different frame sets', function () {
-    $output = new Output();
+    $output = new Output;
 
     $frameSets = ['dots', 'dots2', 'line', 'pipe', 'simple', 'arrow', 'bounce', 'box'];
 
@@ -59,7 +59,7 @@ test('spinner supports different frame sets', function () {
 });
 
 test('spinner can set custom frames', function () {
-    $output = new Output();
+    $output = new Output;
     $spinner = new Spinner($output, 'Test');
 
     $customFrames = ['A', 'B', 'C', 'D'];
@@ -73,7 +73,7 @@ test('spinner can set custom frames', function () {
 });
 
 test('spinner message can be updated', function () {
-    $output = new Output();
+    $output = new Output;
     $spinner = new Spinner($output, 'Initial');
 
     ob_start();
@@ -88,7 +88,7 @@ test('spinner message can be updated', function () {
 });
 
 test('spinner stops with success', function () {
-    $output = new Output();
+    $output = new Output;
     $spinner = new Spinner($output, 'Processing');
 
     ob_start();
@@ -102,7 +102,7 @@ test('spinner stops with success', function () {
 });
 
 test('spinner stops with error', function () {
-    $output = new Output();
+    $output = new Output;
     $spinner = new Spinner($output, 'Processing');
 
     ob_start();
@@ -116,7 +116,7 @@ test('spinner stops with error', function () {
 });
 
 test('spinner stops with warning', function () {
-    $output = new Output();
+    $output = new Output;
     $spinner = new Spinner($output, 'Processing');
 
     ob_start();
@@ -130,7 +130,7 @@ test('spinner stops with warning', function () {
 });
 
 test('spinner stops with info', function () {
-    $output = new Output();
+    $output = new Output;
     $spinner = new Spinner($output, 'Processing');
 
     ob_start();
@@ -144,7 +144,7 @@ test('spinner stops with info', function () {
 });
 
 test('spinner can be cleared', function () {
-    $output = new Output();
+    $output = new Output;
     $spinner = new Spinner($output, 'Test');
 
     ob_start();
@@ -156,7 +156,7 @@ test('spinner can be cleared', function () {
 });
 
 test('spinner tracks elapsed time', function () {
-    $output = new Output();
+    $output = new Output;
     $spinner = new Spinner($output, 'Test');
 
     ob_start();
@@ -171,7 +171,7 @@ test('spinner tracks elapsed time', function () {
 });
 
 test('spinner interval can be configured', function () {
-    $output = new Output();
+    $output = new Output;
     $spinner = new Spinner($output, 'Test');
 
     $spinner->setInterval(0.5);
@@ -192,7 +192,7 @@ test('spinner interval can be configured', function () {
 });
 
 test('spinner stops gracefully when not running', function () {
-    $output = new Output();
+    $output = new Output;
     $spinner = new Spinner($output, 'Test');
 
     ob_start();
@@ -204,7 +204,7 @@ test('spinner stops gracefully when not running', function () {
 });
 
 test('spinner Output integration', function () {
-    $output = new Output();
+    $output = new Output;
     $spinner = $output->createSpinner('Loading...', 'dots');
 
     expect($spinner)->toBeInstanceOf(Spinner::class);
@@ -212,7 +212,7 @@ test('spinner Output integration', function () {
 });
 
 test('spinner handles empty message', function () {
-    $output = new Output();
+    $output = new Output;
     $spinner = new Spinner($output);
 
     ob_start();
@@ -224,7 +224,7 @@ test('spinner handles empty message', function () {
 });
 
 test('spinner restart when already running returns early', function () {
-    $output = new Output();
+    $output = new Output;
     $spinner = new Spinner($output, 'Test');
 
     ob_start();
@@ -238,7 +238,7 @@ test('spinner restart when already running returns early', function () {
 });
 
 test('spinner start with empty message parameter', function () {
-    $output = new Output();
+    $output = new Output;
     $spinner = new Spinner($output, 'Original message');
 
     ob_start();
@@ -249,7 +249,7 @@ test('spinner start with empty message parameter', function () {
 });
 
 test('spinner start with non-empty message parameter', function () {
-    $output = new Output();
+    $output = new Output;
     $spinner = new Spinner($output, 'Original message');
 
     ob_start();
@@ -260,7 +260,7 @@ test('spinner start with non-empty message parameter', function () {
 });
 
 test('spinner setMessage when not running', function () {
-    $output = new Output();
+    $output = new Output;
     $spinner = new Spinner($output, 'Test');
 
     // Try to set message when not running
@@ -272,7 +272,7 @@ test('spinner setMessage when not running', function () {
 });
 
 test('spinner advance when not running returns early', function () {
-    $output = new Output();
+    $output = new Output;
     $spinner = new Spinner($output, 'Test');
 
     // Try to advance when not running
@@ -284,7 +284,7 @@ test('spinner advance when not running returns early', function () {
 });
 
 test('spinner clear when not running', function () {
-    $output = new Output();
+    $output = new Output;
     $spinner = new Spinner($output, 'Test');
 
     // Try to clear when not running
@@ -296,7 +296,7 @@ test('spinner clear when not running', function () {
 });
 
 test('spinner stop with empty symbol shows only message', function () {
-    $output = new Output();
+    $output = new Output;
     $spinner = new Spinner($output, 'Test');
 
     ob_start();
@@ -309,7 +309,7 @@ test('spinner stop with empty symbol shows only message', function () {
 });
 
 test('spinner getElapsedTime when not started', function () {
-    $output = new Output();
+    $output = new Output;
     $spinner = new Spinner($output, 'Test');
 
     // Get elapsed time without starting
@@ -319,7 +319,7 @@ test('spinner getElapsedTime when not started', function () {
 });
 
 test('spinner advances when interval not reached', function () {
-    $output = new Output();
+    $output = new Output;
     $spinner = new Spinner($output, 'Test');
 
     // Set very long interval
@@ -338,7 +338,7 @@ test('spinner advances when interval not reached', function () {
 });
 
 test('spinner with undefined frame set falls back to dots', function () {
-    $output = new Output();
+    $output = new Output;
     $spinner = new Spinner($output, 'Test', 'nonexistent_frameset');
 
     ob_start();
@@ -351,7 +351,7 @@ test('spinner with undefined frame set falls back to dots', function () {
 });
 
 test('spinner clear output', function () {
-    $output = new Output();
+    $output = new Output;
     $spinner = new Spinner($output, 'Test message');
 
     ob_start();

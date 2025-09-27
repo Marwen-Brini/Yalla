@@ -9,16 +9,27 @@ use Yalla\Output\Output;
 class ProgressBar
 {
     protected Output $output;
+
     protected int $total;
+
     protected int $current = 0;
+
     protected int $barWidth = 30;
+
     protected string $format = 'normal';
+
     protected ?string $message = null;
+
     protected float $startTime;
+
     protected bool $started = false;
+
     protected bool $finished = false;
+
     protected int $redrawFrequency = 1;
+
     protected int $lastDrawn = 0;
+
     protected string $lastOutput = '';
 
     // Format templates
@@ -27,7 +38,7 @@ class ProgressBar
         'verbose' => ' {current}/{total} [{bar}] {percent}% - {message}',
         'detailed' => ' {current}/{total} [{bar}] {percent}% - {elapsed} / {estimated}',
         'minimal' => ' [{bar}] {percent}%',
-        'memory' => ' {current}/{total} [{bar}] {percent}% - Memory: {memory}'
+        'memory' => ' {current}/{total} [{bar}] {percent}% - Memory: {memory}',
     ];
 
     protected array $options = [
@@ -124,7 +135,7 @@ class ProgressBar
     public function setMessage(string $message): self
     {
         $this->message = $message;
-        if ($this->started && !$this->finished) {
+        if ($this->started && ! $this->finished) {
             $this->display();
         }
 
@@ -218,11 +229,11 @@ class ProgressBar
     protected function overwrite(string $text): void
     {
         // Clear the line
-        $clear = "\r" . str_repeat(' ', strlen($this->lastOutput));
+        $clear = "\r".str_repeat(' ', strlen($this->lastOutput));
         $this->output->write($clear);
 
         // Write new content
-        $this->output->write("\r" . $text);
+        $this->output->write("\r".$text);
     }
 
     /**

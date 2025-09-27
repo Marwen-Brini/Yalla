@@ -8,11 +8,11 @@
  * including progress bars, spinners, and step indicators.
  */
 
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__.'/../vendor/autoload.php';
 
 use Yalla\Output\Output;
 
-$output = new Output();
+$output = new Output;
 
 $output->section('Yalla CLI v1.6 - Progress Indicators Examples');
 $output->writeln('');
@@ -142,7 +142,7 @@ $steps = [
     'Reading table structures...',
     'Analyzing foreign keys...',
     'Checking indexes...',
-    'Generating report...'
+    'Generating report...',
 ];
 
 foreach ($steps as $step) {
@@ -178,12 +178,15 @@ foreach ($tasks as $task) {
     switch ($task[1]) {
         case 'success':
             $spinner->success($task[2]);
+
             break;
         case 'warning':
             $spinner->warning($task[2]);
+
             break;
         case 'error':
             $spinner->error($task[2]);
+
             break;
         default:
             $spinner->info($task[2]);
@@ -206,7 +209,7 @@ $steps = $output->steps([
     'Run database migrations',
     'Compile assets',
     'Run tests',
-    'Deploy application'
+    'Deploy application',
 ]);
 
 $steps->start();
@@ -240,7 +243,7 @@ $deploySteps = $output->steps([
     'Installing dependencies',
     'Running migrations',
     'Clearing cache',
-    'Restarting services'
+    'Restarting services',
 ]);
 
 $deploySteps->start();
@@ -273,7 +276,7 @@ $buildSteps = $output->steps([
     'Running unit tests',
     'Running integration tests',
     'Building Docker image',
-    'Pushing to registry'
+    'Pushing to registry',
 ]);
 
 $buildSteps->start();
@@ -326,7 +329,7 @@ $migrationSteps = $output->steps([
     'Run migrations',
     'Rebuild indexes',
     'Update cache',
-    'Verify integrity'
+    'Verify integrity',
 ]);
 
 $migrationSteps->start();
@@ -341,9 +344,15 @@ $backupProgress->setMessage('Backing up tables...');
 $backupProgress->start();
 
 for ($i = 0; $i < 100; $i++) {
-    if ($i === 25) $backupProgress->setMessage('Backing up users table...');
-    if ($i === 50) $backupProgress->setMessage('Backing up posts table...');
-    if ($i === 75) $backupProgress->setMessage('Backing up comments table...');
+    if ($i === 25) {
+        $backupProgress->setMessage('Backing up users table...');
+    }
+    if ($i === 50) {
+        $backupProgress->setMessage('Backing up posts table...');
+    }
+    if ($i === 75) {
+        $backupProgress->setMessage('Backing up comments table...');
+    }
     usleep(10000);
     $backupProgress->advance();
 }
@@ -359,7 +368,7 @@ $output->info('Running migrations...');
 $migrations = [
     '2024_01_01_create_users_table',
     '2024_01_02_add_email_verified',
-    '2024_01_03_create_posts_table'
+    '2024_01_03_create_posts_table',
 ];
 
 $migrationProgress = $output->createProgressBar(count($migrations));
