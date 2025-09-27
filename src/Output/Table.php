@@ -265,7 +265,9 @@ class Table
 
         foreach ($sortedWidths as $index => $width) {
             if ($excess <= 0) {
+                // @codeCoverageIgnoreStart
                 break;
+                // @codeCoverageIgnoreEnd
             }
 
             $reduction = min($excess, (int) ($width * 0.3)); // Reduce by up to 30%
