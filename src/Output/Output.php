@@ -384,4 +384,30 @@ class Output
     {
         return $this->getInteractiveInput()->isInteractiveMode();
     }
+
+    // ========== Progress Indicators ==========
+
+    /**
+     * Create a progress bar
+     */
+    public function createProgressBar(int $total): \Yalla\Progress\ProgressBar
+    {
+        return new \Yalla\Progress\ProgressBar($this, $total);
+    }
+
+    /**
+     * Create a spinner
+     */
+    public function createSpinner(string $message = '', string $frameSet = 'dots'): \Yalla\Progress\Spinner
+    {
+        return new \Yalla\Progress\Spinner($this, $message, $frameSet);
+    }
+
+    /**
+     * Create a step indicator
+     */
+    public function steps(array $steps): \Yalla\Progress\StepIndicator
+    {
+        return new \Yalla\Progress\StepIndicator($this, $steps);
+    }
 }

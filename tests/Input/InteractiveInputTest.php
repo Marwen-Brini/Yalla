@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use ReflectionClass;
 use Yalla\Input\InteractiveInput;
 use Yalla\Output\Output;
 
