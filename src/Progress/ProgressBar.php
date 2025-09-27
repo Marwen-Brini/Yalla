@@ -15,6 +15,7 @@ class ProgressBar
     protected string $format = 'normal';
     protected ?string $message = null;
     protected float $startTime;
+    protected bool $started = false;
     protected bool $finished = false;
     protected int $redrawFrequency = 1;
     protected int $lastDrawn = 0;
@@ -50,6 +51,7 @@ class ProgressBar
     {
         $this->current = 0;
         $this->startTime = microtime(true);
+        $this->started = true;
         $this->finished = false;
         $this->display();
 
@@ -122,7 +124,7 @@ class ProgressBar
     public function setMessage(string $message): self
     {
         $this->message = $message;
-        if (!$this->finished) {
+        if ($this->started && !$this->finished) {
             $this->display();
         }
 
