@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
+use Yalla\Output\MigrationTable;
 use Yalla\Output\Output;
 use Yalla\Output\Table;
-use Yalla\Output\MigrationTable;
 
 beforeEach(function () {
-    $this->output = new Output();
+    $this->output = new Output;
 });
 
 test('creates basic table with default options', function () {
     $table = new Table($this->output);
 
     $table->setHeaders(['Name', 'Age', 'City'])
-          ->setRows([
-              ['John', '30', 'New York'],
-              ['Jane', '25', 'London']
-          ]);
+        ->setRows([
+            ['John', '30', 'New York'],
+            ['Jane', '25', 'London'],
+        ]);
 
     expect($table->getColumnCount())->toBe(3);
     expect($table->getRowCount())->toBe(2);
@@ -27,9 +27,9 @@ test('handles empty cells correctly', function () {
     $table = new Table($this->output);
 
     $table->setHeaders(['Name', 'Value', 'Status'])
-          ->addRow(['Test', null, 'Active'])
-          ->addRow(['', 'Value', ''])
-          ->addRow(['Another', '', null]);
+        ->addRow(['Test', null, 'Active'])
+        ->addRow(['', 'Value', ''])
+        ->addRow(['Another', '', null]);
 
     expect($table->getRowCount())->toBe(3);
 });
@@ -38,8 +38,8 @@ test('formats boolean values', function () {
     $table = new Table($this->output);
 
     $table->setHeaders(['Feature', 'Enabled'])
-          ->addRow(['Feature A', true])
-          ->addRow(['Feature B', false]);
+        ->addRow(['Feature A', true])
+        ->addRow(['Feature B', false]);
 
     ob_start();
     $table->render();
@@ -57,13 +57,13 @@ test('supports different border styles', function () {
         Table::BORDER_ROUNDED,
         Table::BORDER_COMPACT,
         Table::BORDER_MARKDOWN,
-        Table::BORDER_NONE
+        Table::BORDER_NONE,
     ];
 
     foreach ($borderStyles as $style) {
         $table = new Table($this->output, ['borders' => $style]);
         $table->setHeaders(['Col1', 'Col2'])
-              ->addRow(['A', 'B']);
+            ->addRow(['A', 'B']);
 
         ob_start();
         $table->render();
@@ -89,13 +89,13 @@ test('applies column alignment', function () {
         'alignment' => [
             Table::ALIGN_LEFT,
             Table::ALIGN_CENTER,
-            Table::ALIGN_RIGHT
+            Table::ALIGN_RIGHT,
         ],
-        'borders' => Table::BORDER_ASCII
+        'borders' => Table::BORDER_ASCII,
     ]);
 
     $table->setHeaders(['Left', 'Center', 'Right'])
-          ->addRow(['A', 'B', 'C']);
+        ->addRow(['A', 'B', 'C']);
 
     ob_start();
     $table->render();
@@ -110,7 +110,7 @@ test('truncates long text with ellipsis', function () {
 
     $longText = str_repeat('Very long text ', 20);
     $table->setHeaders(['Content'])
-          ->addRow([$longText]);
+        ->addRow([$longText]);
 
     ob_start();
     $table->render();
@@ -123,10 +123,10 @@ test('sorts table by column', function () {
     $table = new Table($this->output);
 
     $table->setHeaders(['Name', 'Score'])
-          ->addRow(['Alice', 90])
-          ->addRow(['Bob', 85])
-          ->addRow(['Charlie', 95])
-          ->sortBy(1, 'desc'); // Sort by score descending
+        ->addRow(['Alice', 90])
+        ->addRow(['Bob', 85])
+        ->addRow(['Charlie', 95])
+        ->sortBy(1, 'desc'); // Sort by score descending
 
     ob_start();
     $table->render();
@@ -143,10 +143,10 @@ test('filters table rows', function () {
     $table = new Table($this->output);
 
     $table->setHeaders(['Name', 'Status'])
-          ->addRow(['Item 1', 'active'])
-          ->addRow(['Item 2', 'inactive'])
-          ->addRow(['Item 3', 'active'])
-          ->filter(fn($row) => $row[1] === 'active');
+        ->addRow(['Item 1', 'active'])
+        ->addRow(['Item 2', 'inactive'])
+        ->addRow(['Item 3', 'active'])
+        ->filter(fn ($row) => $row[1] === 'active');
 
     expect($table->getRowCount())->toBe(2);
 });
@@ -155,10 +155,10 @@ test('applies cell formatters', function () {
     $table = new Table($this->output);
 
     $table->setHeaders(['Name', 'Status'])
-          ->setCellFormatter(1, function($status) {
-              return strtoupper($status);
-          })
-          ->addRow(['Test', 'active']);
+        ->setCellFormatter(1, function ($status) {
+            return strtoupper($status);
+        })
+        ->addRow(['Test', 'active']);
 
     ob_start();
     $table->render();
@@ -170,12 +170,12 @@ test('applies cell formatters', function () {
 test('shows row indices when enabled', function () {
     $table = new Table($this->output, [
         'show_index' => true,
-        'index_name' => '#'
+        'index_name' => '#',
     ]);
 
     $table->setHeaders(['Name', 'Value'])
-          ->addRow(['First', 'A'])
-          ->addRow(['Second', 'B']);
+        ->addRow(['First', 'A'])
+        ->addRow(['Second', 'B']);
 
     ob_start();
     $table->render();
@@ -204,8 +204,8 @@ test('creates table using fluent interface', function () {
     $table = $this->output->createTable(['borders' => Table::BORDER_COMPACT]);
 
     $table->setHeaders(['ID', 'Name'])
-          ->addRow([1, 'Item 1'])
-          ->addRow([2, 'Item 2']);
+        ->addRow([1, 'Item 1'])
+        ->addRow([2, 'Item 2']);
 
     expect($table)->toBeInstanceOf(Table::class);
     expect($table->getRowCount())->toBe(2);
@@ -215,8 +215,8 @@ test('clears table rows', function () {
     $table = new Table($this->output);
 
     $table->setHeaders(['Col1'])
-          ->addRow(['Row1'])
-          ->addRow(['Row2']);
+        ->addRow(['Row1'])
+        ->addRow(['Row2']);
 
     expect($table->getRowCount())->toBe(2);
 
@@ -313,7 +313,7 @@ test('Table handles JSON values in cells', function () {
     $table = new Table($this->output);
 
     $table->setHeaders(['Data'])
-          ->addRow([['key' => 'value', 'nested' => ['a' => 1]]]);
+        ->addRow([['key' => 'value', 'nested' => ['a' => 1]]]);
 
     ob_start();
     $table->render();
@@ -326,8 +326,8 @@ test('Table handles null values in cells', function () {
     $table = new Table($this->output);
 
     $table->setHeaders(['Col1', 'Col2'])
-          ->addRow([null, 'Value'])
-          ->addRow(['Value', null]);
+        ->addRow([null, 'Value'])
+        ->addRow(['Value', null]);
 
     expect($table->getRowCount())->toBe(2);
 });
@@ -336,7 +336,7 @@ test('Table truncateString works correctly', function () {
     $table = new Table($this->output, ['max_width' => 20]);
 
     $table->setHeaders(['Long Header That Will Be Truncated'])
-          ->addRow(['Very long content that exceeds maximum width']);
+        ->addRow(['Very long content that exceeds maximum width']);
 
     ob_start();
     $table->render();
@@ -349,7 +349,7 @@ test('Table applyMaxWidth adjusts column widths', function () {
     $table = new Table($this->output, ['max_width' => 30]);
 
     $table->setHeaders(['Column1', 'Column2', 'Column3'])
-          ->addRow(['Long content here', 'More long content', 'Even more content']);
+        ->addRow(['Long content here', 'More long content', 'Even more content']);
 
     ob_start();
     $table->render();
@@ -363,12 +363,12 @@ test('Table applyMaxWidth adjusts column widths', function () {
 test('Table handles row separator option', function () {
     $table = new Table($this->output, [
         'row_separator' => true,
-        'borders' => Table::BORDER_UNICODE
+        'borders' => Table::BORDER_UNICODE,
     ]);
 
     $table->setHeaders(['Col1', 'Col2'])
-          ->addRow(['A', 'B'])
-          ->addRow(['C', 'D']);
+        ->addRow(['A', 'B'])
+        ->addRow(['C', 'D']);
 
     ob_start();
     $table->render();
@@ -383,7 +383,7 @@ test('Table handles compact border style', function () {
     $table = new Table($this->output, ['borders' => Table::BORDER_COMPACT]);
 
     $table->setHeaders(['Col1', 'Col2'])
-          ->addRow(['A', 'B']);
+        ->addRow(['A', 'B']);
 
     ob_start();
     $table->render();
@@ -398,7 +398,7 @@ test('Table handles none border style', function () {
     $table = new Table($this->output, ['borders' => Table::BORDER_NONE]);
 
     $table->setHeaders(['Col1', 'Col2'])
-          ->addRow(['A', 'B']);
+        ->addRow(['A', 'B']);
 
     ob_start();
     $table->render();
@@ -412,11 +412,11 @@ test('Table handles none border style', function () {
 test('Table handles center alignment in markdown', function () {
     $table = new Table($this->output, [
         'borders' => Table::BORDER_MARKDOWN,
-        'alignment' => [Table::ALIGN_CENTER, Table::ALIGN_RIGHT]
+        'alignment' => [Table::ALIGN_CENTER, Table::ALIGN_RIGHT],
     ]);
 
     $table->setHeaders(['Centered', 'Right'])
-          ->addRow(['A', 'B']);
+        ->addRow(['A', 'B']);
 
     ob_start();
     $table->render();
@@ -429,11 +429,11 @@ test('Table handles center alignment in markdown', function () {
 test('handles markdown table format', function () {
     $table = new Table($this->output, [
         'borders' => Table::BORDER_MARKDOWN,
-        'alignment' => [Table::ALIGN_LEFT, Table::ALIGN_CENTER, Table::ALIGN_RIGHT]
+        'alignment' => [Table::ALIGN_LEFT, Table::ALIGN_CENTER, Table::ALIGN_RIGHT],
     ]);
 
     $table->setHeaders(['Left', 'Center', 'Right'])
-          ->addRow(['A', 'B', 'C']);
+        ->addRow(['A', 'B', 'C']);
 
     ob_start();
     $table->render();
@@ -448,10 +448,10 @@ test('Table sortBy handles string comparison', function () {
     $table = new Table($this->output);
 
     $table->setHeaders(['Name', 'Value'])
-          ->addRow(['Beta', 'B'])
-          ->addRow(['Alpha', 'A'])
-          ->addRow(['Gamma', 'C'])
-          ->sortBy(0); // Sort by name column
+        ->addRow(['Beta', 'B'])
+        ->addRow(['Alpha', 'A'])
+        ->addRow(['Gamma', 'C'])
+        ->sortBy(0); // Sort by name column
 
     ob_start();
     $table->render();
@@ -486,11 +486,11 @@ test('MigrationTable renderSummary with no migrations', function () {
 test('Table with markdown right alignment', function () {
     $table = new Table($this->output, [
         'borders' => Table::BORDER_MARKDOWN,
-        'alignment' => [Table::ALIGN_RIGHT]
+        'alignment' => [Table::ALIGN_RIGHT],
     ]);
 
     $table->setHeaders(['Right Aligned'])
-          ->addRow(['Value']);
+        ->addRow(['Value']);
 
     ob_start();
     $table->render();
@@ -503,11 +503,11 @@ test('Table with markdown right alignment', function () {
 test('Table with markdown center and all alignments', function () {
     $table = new Table($this->output, [
         'borders' => Table::BORDER_MARKDOWN,
-        'alignment' => [Table::ALIGN_LEFT, Table::ALIGN_CENTER, Table::ALIGN_RIGHT]
+        'alignment' => [Table::ALIGN_LEFT, Table::ALIGN_CENTER, Table::ALIGN_RIGHT],
     ]);
 
     $table->setHeaders(['Left', 'Center', 'Right'])
-          ->addRow(['A', 'B', 'C']);
+        ->addRow(['A', 'B', 'C']);
 
     ob_start();
     $table->render();
@@ -522,7 +522,7 @@ test('Table handles double border style', function () {
     $table = new Table($this->output, ['borders' => Table::BORDER_DOUBLE]);
 
     $table->setHeaders(['Header'])
-          ->addRow(['Value']);
+        ->addRow(['Value']);
 
     ob_start();
     $table->render();
@@ -536,7 +536,7 @@ test('Table handles rounded border style', function () {
     $table = new Table($this->output, ['borders' => Table::BORDER_ROUNDED]);
 
     $table->setHeaders(['Header'])
-          ->addRow(['Value']);
+        ->addRow(['Value']);
 
     ob_start();
     $table->render();
@@ -546,15 +546,14 @@ test('Table handles rounded border style', function () {
     expect($output)->toContain('╰');
 });
 
-
 test('Table handles formatCell with null input in formatter', function () {
     $table = new Table($this->output);
-    
+
     $table->setHeaders(['Test'])
-          ->setCellFormatter(0, function($value) {
-              return $value === null ? 'NULL' : $value;
-          })
-          ->addRow([null]);
+        ->setCellFormatter(0, function ($value) {
+            return $value === null ? 'NULL' : $value;
+        })
+        ->addRow([null]);
 
     ob_start();
     $table->render();
@@ -566,11 +565,11 @@ test('Table handles formatCell with null input in formatter', function () {
 test('Table renders markdown separator correctly', function () {
     $table = new Table($this->output, [
         'borders' => Table::BORDER_MARKDOWN,
-        'alignment' => [Table::ALIGN_LEFT, Table::ALIGN_CENTER, Table::ALIGN_RIGHT]
+        'alignment' => [Table::ALIGN_LEFT, Table::ALIGN_CENTER, Table::ALIGN_RIGHT],
     ]);
 
     $table->setHeaders(['Left', 'Center', 'Right'])
-          ->addRow(['A', 'B', 'C']);
+        ->addRow(['A', 'B', 'C']);
 
     ob_start();
     $table->render();
@@ -588,7 +587,7 @@ test('Table handles getCharWidth correctly', function () {
 
     // Test with emoji-containing text to trigger getCharWidth
     $table->setHeaders(['Emoji'])
-          ->addRow(['🎉']);
+        ->addRow(['🎉']);
 
     $reflection = new ReflectionClass($table);
     $method = $reflection->getMethod('getCharWidth');
@@ -597,7 +596,7 @@ test('Table handles getCharWidth correctly', function () {
     // Test the getCharWidth method directly
     $result = $method->invoke($table, '🎉');
     expect($result)->toBe(1);
-    
+
     $result = $method->invoke($table, 'a');
     expect($result)->toBe(1);
 });
@@ -606,7 +605,7 @@ test('Table handles truncateString with width 0', function () {
     $table = new Table($this->output, ['max_width' => 10]);
 
     $table->setHeaders(['Very very very long header that will trigger truncation'])
-          ->addRow(['Short']);
+        ->addRow(['Short']);
 
     ob_start();
     $table->render();
@@ -616,15 +615,14 @@ test('Table handles truncateString with width 0', function () {
     expect($output)->toBeString();
 });
 
-
 test('Table renderMarkdownSeparator with center alignment', function () {
     $table = new Table($this->output, [
         'borders' => Table::BORDER_MARKDOWN,
-        'alignment' => [Table::ALIGN_CENTER]
+        'alignment' => [Table::ALIGN_CENTER],
     ]);
 
     $table->setHeaders(['Center'])
-          ->addRow(['Test']);
+        ->addRow(['Test']);
 
     ob_start();
     $table->render();
@@ -639,11 +637,11 @@ test('Table renderMarkdownSeparator with center alignment', function () {
 test('Table renderMarkdownSeparator with right alignment', function () {
     $table = new Table($this->output, [
         'borders' => Table::BORDER_MARKDOWN,
-        'alignment' => [Table::ALIGN_RIGHT]
+        'alignment' => [Table::ALIGN_RIGHT],
     ]);
 
     $table->setHeaders(['Right'])
-          ->addRow(['Test']);
+        ->addRow(['Test']);
 
     ob_start();
     $table->render();
@@ -658,11 +656,11 @@ test('Table renderMarkdownSeparator with right alignment', function () {
 test('Table renderMarkdownSeparator with mixed alignments', function () {
     $table = new Table($this->output, [
         'borders' => Table::BORDER_MARKDOWN,
-        'alignment' => [Table::ALIGN_LEFT, Table::ALIGN_CENTER, Table::ALIGN_RIGHT]
+        'alignment' => [Table::ALIGN_LEFT, Table::ALIGN_CENTER, Table::ALIGN_RIGHT],
     ]);
 
     $table->setHeaders(['Left', 'Center', 'Right'])
-          ->addRow(['A', 'B', 'C']);
+        ->addRow(['A', 'B', 'C']);
 
     ob_start();
     $table->render();
@@ -671,19 +669,18 @@ test('Table renderMarkdownSeparator with mixed alignments', function () {
     // Check that the separator line has proper alignment indicators
     $lines = explode("\n", $output);
     $separatorLine = $lines[1] ?? '';
-    
+
     // Should have left (no indicator), center (:---:), and right (---:)
     expect($separatorLine)->toContain('|');
     expect($separatorLine)->toContain('-');
     expect($separatorLine)->toContain(':');
 });
 
-
 test('Table formatCell handles null value without formatter', function () {
     $table = new Table($this->output);
 
     $table->setHeaders(['Nullable'])
-          ->addRow([null]);
+        ->addRow([null]);
 
     // Use reflection to test formatCell directly
     $reflection = new ReflectionClass($table);

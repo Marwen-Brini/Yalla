@@ -30,8 +30,8 @@ class MigrationTable extends Table
         $this->setHeaders(['Migration', 'Batch', 'Status', 'Executed At']);
 
         // Set up status column formatter
-        $this->setCellFormatter($this->options['show_index'] ? 3 : 2, function($status) {
-            return $this->formatStatus((string)$status);
+        $this->setCellFormatter($this->options['show_index'] ? 3 : 2, function ($status) {
+            return $this->formatStatus((string) $status);
         });
     }
 
@@ -45,7 +45,7 @@ class MigrationTable extends Table
             $name,
             $batch ?? '-',
             $status,
-            $timestamp ?? '-'
+            $timestamp ?? '-',
         ]);
     }
 
@@ -68,16 +68,17 @@ class MigrationTable extends Table
         string $errorMessage = ''
     ): self {
         $status = 'error';
-        if (!empty($errorMessage)) {
-            $status .= ': ' . $errorMessage;
+        if (! empty($errorMessage)) {
+            $status .= ': '.$errorMessage;
         }
+
         return $this->addMigration($name, $batch, $status, null);
     }
 
     private function formatStatus(string $status): string
     {
-        if (!$this->options['colors']) {
-            return $this->getStatusIcon($status) . ' ' . ucfirst($status);
+        if (! $this->options['colors']) {
+            return $this->getStatusIcon($status).' '.ucfirst($status);
         }
 
         $statusLower = strtolower($status);
@@ -87,12 +88,12 @@ class MigrationTable extends Table
         $icon = $this->getStatusIcon($baseStatus);
         $text = ucfirst($status);
 
-        return $this->output->color($icon . ' ' . $text, $color);
+        return $this->output->color($icon.' '.$text, $color);
     }
 
     private function getStatusIcon(string $status): string
     {
-        return match(strtolower($status)) {
+        return match (strtolower($status)) {
             'migrated' => '✅',
             'pending' => '⏳',
             'error' => '❌',
@@ -135,7 +136,7 @@ class MigrationTable extends Table
         $statusColumn = $this->options['show_index'] ? 3 : 2;
 
         foreach ($this->rows as $row) {
-            $statusValue = (string)($row[$statusColumn] ?? 'unknown');
+            $statusValue = (string) ($row[$statusColumn] ?? 'unknown');
             $status = strtolower(explode(':', $statusValue)[0]);
             $counts[$status] = ($counts[$status] ?? 0) + 1;
         }
@@ -147,9 +148,10 @@ class MigrationTable extends Table
     {
         $statusColumn = $this->options['show_index'] ? 3 : 2;
 
-        return $this->filter(function($row) use ($status, $statusColumn) {
-            $statusValue = (string)($row[$statusColumn] ?? '');
+        return $this->filter(function ($row) use ($status, $statusColumn) {
+            $statusValue = (string) ($row[$statusColumn] ?? '');
             $rowStatus = strtolower(explode(':', $statusValue)[0]);
+
             return $rowStatus === strtolower($status);
         });
     }
@@ -158,7 +160,7 @@ class MigrationTable extends Table
     {
         $batchColumn = $this->options['show_index'] ? 2 : 1;
 
-        return $this->filter(function($row) use ($batch, $batchColumn) {
+        return $this->filter(function ($row) use ($batch, $batchColumn) {
             return $row[$batchColumn] == $batch;
         });
     }

@@ -49,6 +49,7 @@ class Output
     const UNDERLINE = "\033[4m";
 
     private bool $supportsColors;
+
     private ?InteractiveInput $interactiveInput = null;
 
     public function __construct()
@@ -134,11 +135,12 @@ class Output
     public function table(array $headers, array $rows, array $options = []): void
     {
         // Use new Table class if options are provided
-        if (!empty($options)) {
+        if (! empty($options)) {
             $table = new Table($this, $options);
             $table->setHeaders($headers)
-                  ->setRows($rows)
-                  ->render();
+                ->setRows($rows)
+                ->render();
+
             return;
         }
 
@@ -296,6 +298,7 @@ class Output
         if ($this->interactiveInput === null) {
             $this->interactiveInput = new InteractiveInput($this);
         }
+
         return $this->interactiveInput;
     }
 
@@ -370,6 +373,7 @@ class Output
     public function setInteractive(bool $interactive): self
     {
         $this->getInteractiveInput()->setInteractive($interactive);
+
         return $this;
     }
 

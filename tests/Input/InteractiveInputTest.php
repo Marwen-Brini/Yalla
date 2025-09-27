@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use ReflectionClass;
-use ReflectionMethod;
 use Yalla\Input\InteractiveInput;
 use Yalla\Output\Output;
 
@@ -108,6 +107,7 @@ test('choice handles invalid input with max attempts', function () {
     } catch (RuntimeException $e) {
         ob_end_clean();
         expect($e->getMessage())->toBe('Maximum attempts exceeded for choice selection');
+
         return;
     }
     ob_end_clean();
@@ -164,6 +164,7 @@ test('multiChoice handles invalid input with max attempts', function () {
     } catch (RuntimeException $e) {
         ob_end_clean();
         expect($e->getMessage())->toBe('Maximum attempts exceeded for multi-choice selection');
+
         return;
     }
     ob_end_clean();
@@ -198,7 +199,7 @@ test('ask returns default when non-interactive', function () {
 test('askValid validates input', function () {
     ob_start();
     $input = createInputWithMockedStream('5');
-    $validator = fn($value) => is_numeric($value) && $value > 0;
+    $validator = fn ($value) => is_numeric($value) && $value > 0;
     $result = $input->askValid('Enter number', $validator);
     ob_end_clean();
 
@@ -208,7 +209,7 @@ test('askValid validates input', function () {
 test('askValid retries on invalid input', function () {
     ob_start();
     $input = createInputWithMockedStream("invalid\n-5\n10");
-    $validator = fn($value) => is_numeric($value) && $value > 0;
+    $validator = fn ($value) => is_numeric($value) && $value > 0;
     $result = $input->askValid('Enter positive number', $validator, 'Must be positive');
     ob_end_clean();
 
@@ -218,13 +219,14 @@ test('askValid retries on invalid input', function () {
 test('askValid throws after max attempts', function () {
     ob_start();
     $input = createInputWithMockedStream("bad\nbad\nbad");
-    $validator = fn($value) => is_numeric($value);
+    $validator = fn ($value) => is_numeric($value);
 
     try {
         $input->askValid('Enter number', $validator, 'Invalid', null, 3);
     } catch (RuntimeException $e) {
         ob_end_clean();
         expect($e->getMessage())->toBe('Maximum attempts exceeded for validated input');
+
         return;
     }
     ob_end_clean();
@@ -254,7 +256,7 @@ test('isInteractive detects interactive mode', function () {
 });
 
 test('Output class integrates InteractiveInput methods', function () {
-    $output = new Output();
+    $output = new Output;
 
     // Test that methods exist and are callable
     expect(method_exists($output, 'confirm'))->toBeTrue();
@@ -268,7 +270,7 @@ test('Output class integrates InteractiveInput methods', function () {
 });
 
 test('Output proxy methods work correctly', function () {
-    $output = new Output();
+    $output = new Output;
     $output->setInteractive(false);
 
     // Test confirm proxy
@@ -288,7 +290,7 @@ test('Output proxy methods work correctly', function () {
     expect($result)->toBe('John');
 
     // Test askValid proxy
-    $result = $output->askValid('Age?', fn($v) => is_numeric($v), 'Invalid', '25');
+    $result = $output->askValid('Age?', fn ($v) => is_numeric($v), 'Invalid', '25');
     expect($result)->toBe('25');
 
     // Test askHidden proxy
@@ -300,7 +302,7 @@ test('Output proxy methods work correctly', function () {
 });
 
 test('Output setInteractive returns self for chaining', function () {
-    $output = new Output();
+    $output = new Output;
 
     expect($output->setInteractive(false))->toBe($output);
     expect($output->setInteractive(true))->toBe($output);
@@ -313,6 +315,7 @@ test('askValid handles exceptions from validator', function () {
         if ($value === 'test') {
             throw new \Exception('Custom validation error');
         }
+
         return is_numeric($value);
     };
     $result = $input->askValid('Enter number', $validator, 'Must be a number');
@@ -336,24 +339,29 @@ test('multiChoice handles mixed default types correctly', function () {
 });
 
 test('askHidden works on Unix systems', function () {
-    $output = new Output();
+    $output = new Output;
     $stream = fopen('php://memory', 'r+');
     fwrite($stream, "secretpassword\n");
     rewind($stream);
 
-    $input = new class($output, $stream) extends InteractiveInput {
-        public function isWindows(): bool {
+    $input = new class($output, $stream) extends InteractiveInput
+    {
+        public function isWindows(): bool
+        {
             return false; // Force Unix mode
         }
 
         // Override exec to prevent actual stty commands
-        protected function askHiddenUnix(): string {
+        protected function askHiddenUnix(): string
+        {
             $value = $this->readLine();
             $this->output->writeln('');
+
             return $value;
         }
 
-        public function readLine(): string {
+        public function readLine(): string
+        {
             return parent::readLine();
         }
     };
@@ -367,23 +375,28 @@ test('askHidden works on Unix systems', function () {
 });
 
 test('askHidden works on Windows systems with hiddeninput.exe', function () {
-    $output = new Output();
+    $output = new Output;
     $stream = fopen('php://memory', 'r+');
     fwrite($stream, "windowspassword\n");
     rewind($stream);
 
-    $input = new class($output, $stream) extends InteractiveInput {
-        public function isWindows(): bool {
+    $input = new class($output, $stream) extends InteractiveInput
+    {
+        public function isWindows(): bool
+        {
             return true; // Force Windows mode
         }
 
-        protected function askHiddenWindows(): string {
+        protected function askHiddenWindows(): string
+        {
             // Simulate hiddeninput.exe not existing
             $this->output->warning('Hidden input not available, input will be visible');
+
             return $this->readLine();
         }
 
-        public function readLine(): string {
+        public function readLine(): string
+        {
             return parent::readLine();
         }
     };
@@ -397,7 +410,7 @@ test('askHidden works on Windows systems with hiddeninput.exe', function () {
 });
 
 test('isWindows detects Windows correctly', function () {
-    $output = new Output();
+    $output = new Output;
     $input = new InteractiveInput($output);
 
     // Use reflection to test the protected method
@@ -412,7 +425,7 @@ test('isWindows detects Windows correctly', function () {
 });
 
 test('askHiddenUnix method implementation', function () {
-    $output = new Output();
+    $output = new Output;
     $stream = fopen('php://memory', 'r+');
     fwrite($stream, "unixpassword\n");
     rewind($stream);
@@ -432,16 +445,19 @@ test('askHiddenUnix method implementation', function () {
 });
 
 test('askHiddenWindows method when exe exists', function () {
-    $output = new Output();
+    $output = new Output;
     $stream = fopen('php://memory', 'r+');
     fwrite($stream, "windowspass\n");
     rewind($stream);
 
-    $input = new class($output, $stream) extends InteractiveInput {
-        protected function askHiddenWindows(): string {
+    $input = new class($output, $stream) extends InteractiveInput
+    {
+        protected function askHiddenWindows(): string
+        {
             // Simulate exe existing scenario
             $value = 'windowspass';
             $this->output->writeln('');
+
             return $value;
         }
     };
@@ -459,7 +475,7 @@ test('askHiddenWindows method when exe exists', function () {
 });
 
 test('askHiddenWindows method when exe does not exist', function () {
-    $output = new Output();
+    $output = new Output;
     $stream = fopen('php://memory', 'r+');
     fwrite($stream, "fallbackpass\n");
     rewind($stream);
@@ -479,9 +495,11 @@ test('askHiddenWindows method when exe does not exist', function () {
 });
 
 test('isInteractive returns false when not CLI', function () {
-    $output = new Output();
-    $input = new class($output) extends InteractiveInput {
-        protected function isInteractive(): bool {
+    $output = new Output;
+    $input = new class($output) extends InteractiveInput
+    {
+        protected function isInteractive(): bool
+        {
             // Simulate non-CLI environment
             return false;
         }
@@ -491,19 +509,23 @@ test('isInteractive returns false when not CLI', function () {
 });
 
 test('isInteractive returns true when Windows CLI without posix', function () {
-    $output = new Output();
-    $input = new class($output) extends InteractiveInput {
-        protected function isWindows(): bool {
+    $output = new Output;
+    $input = new class($output) extends InteractiveInput
+    {
+        protected function isWindows(): bool
+        {
             return true;
         }
 
-        protected function isInteractive(): bool {
+        protected function isInteractive(): bool
+        {
             // Simulate Windows CLI without posix functions
             if (PHP_SAPI === 'cli') {
                 if ($this->isWindows()) {
                     return true;
                 }
             }
+
             return false;
         }
     };
@@ -520,27 +542,29 @@ test('isInteractive returns true when Windows CLI without posix', function () {
 
 test('askHiddenWindows with exe file exists path', function () {
     // Create a temporary exe file to trigger the shell_exec path
-    $exePath = __DIR__ . '/../../bin/hiddeninput.exe';
+    $exePath = __DIR__.'/../../bin/hiddeninput.exe';
     $binDir = dirname($exePath);
 
     // Ensure bin directory exists
-    if (!is_dir($binDir)) {
+    if (! is_dir($binDir)) {
         mkdir($binDir, 0755, true);
     }
 
     // Create a fake exe file
     $exeCreated = false;
-    if (!file_exists($exePath)) {
-        file_put_contents($exePath, '#!/bin/sh' . PHP_EOL . 'echo "test_password"');
+    if (! file_exists($exePath)) {
+        file_put_contents($exePath, '#!/bin/sh'.PHP_EOL.'echo "test_password"');
         chmod($exePath, 0755);
         $exeCreated = true;
     }
 
-    $output = new Output();
+    $output = new Output;
     $stream = fopen('php://memory', 'r+');
 
-    $input = new class($output, $stream) extends InteractiveInput {
-        protected function isWindows(): bool {
+    $input = new class($output, $stream) extends InteractiveInput
+    {
+        protected function isWindows(): bool
+        {
             return true;
         }
     };
@@ -567,27 +591,32 @@ test('askHiddenWindows with exe file exists path', function () {
 
 test('isInteractive Windows path when posix_isatty does not exist', function () {
     // This test will execute the actual isInteractive method lines 405-407
-    $output = new Output();
+    $output = new Output;
 
     // Create an input that will trigger Windows path
-    $input = new class($output) extends InteractiveInput {
-        protected function isWindows(): bool {
+    $input = new class($output) extends InteractiveInput
+    {
+        protected function isWindows(): bool
+        {
             return true; // Force Windows detection
         }
 
         // Override isInteractive to actually test lines 405-407
-        public function testWindowsPath(): bool {
+        public function testWindowsPath(): bool
+        {
             if (PHP_SAPI === 'cli') {
                 // Simulate function_exists('posix_isatty') returning false
                 // to force lines 405-407
-                if (!function_exists('some_non_existent_posix_function')) {
+                if (! function_exists('some_non_existent_posix_function')) {
                     // Windows fallback - lines 405-407
                     if ($this->isWindows()) {
                         return true; // Line 406
                     }
+
                     return true; // Line 409
                 }
             }
+
             return false; // Line 412
         }
     };
@@ -596,20 +625,23 @@ test('isInteractive Windows path when posix_isatty does not exist', function () 
 });
 
 test('isInteractive returns true for CLI even without posix functions and not Windows', function () {
-    $output = new Output();
+    $output = new Output;
 
     // Create a mock that simulates CLI without posix and not Windows
-    $input = new class($output) extends InteractiveInput {
-        protected function isWindows(): bool {
+    $input = new class($output) extends InteractiveInput
+    {
+        protected function isWindows(): bool
+        {
             return false;
         }
 
-        public function testIsInteractive(): bool {
+        public function testIsInteractive(): bool
+        {
             // Simulate PHP_SAPI being 'cli' but no posix_isatty function
             if (PHP_SAPI === 'cli') {
                 // Simulate posix_isatty not existing by skipping that check
                 // And not Windows
-                if (!function_exists('some_fake_posix_function_that_does_not_exist')) {
+                if (! function_exists('some_fake_posix_function_that_does_not_exist')) {
                     // Windows fallback
                     if ($this->isWindows()) {
                         return true;
@@ -629,11 +661,13 @@ test('isInteractive returns true for CLI even without posix functions and not Wi
 });
 
 test('isInteractive returns false when not in CLI SAPI', function () {
-    $output = new Output();
+    $output = new Output;
 
     // Create a mock that simulates non-CLI SAPI
-    $input = new class($output) extends InteractiveInput {
-        protected function isInteractive(): bool {
+    $input = new class($output) extends InteractiveInput
+    {
+        protected function isInteractive(): bool
+        {
             // Simulate non-CLI SAPI
             // This will reach line 412
             if ('not-cli' === 'cli') {
@@ -655,21 +689,25 @@ test('isInteractive returns false when not in CLI SAPI', function () {
 });
 
 test('askHiddenWindows shell_exec line coverage', function () {
-    $output = new Output();
+    $output = new Output;
     $stream = fopen('php://memory', 'r+');
 
     // Mock that executes the shell_exec code path
-    $testInput = new class($output, $stream) extends InteractiveInput {
-        protected function isWindows(): bool {
+    $testInput = new class($output, $stream) extends InteractiveInput
+    {
+        protected function isWindows(): bool
+        {
             return true;
         }
 
-        public function testShellExecPath(): string {
+        public function testShellExecPath(): string
+        {
             // Directly simulate lines 364-367
             // This simulates what happens when file_exists returns true
             // and shell_exec is called
             $value = rtrim('password_from_shell_exec');
             $this->output->writeln(''); // Line 365
+
             return $value; // Line 367
         }
     };
@@ -682,14 +720,17 @@ test('askHiddenWindows shell_exec line coverage', function () {
 });
 
 test('isInteractive Windows CLI no posix coverage', function () {
-    $output = new Output();
+    $output = new Output;
 
-    $testInput = new class($output) extends InteractiveInput {
-        protected function isWindows(): bool {
+    $testInput = new class($output) extends InteractiveInput
+    {
+        protected function isWindows(): bool
+        {
             return true;
         }
 
-        public function testWindowsFallback(): bool {
+        public function testWindowsFallback(): bool
+        {
             // Simulates PHP_SAPI === 'cli' && !function_exists('posix_isatty')
             // This covers lines 405-410
             if (true) { // Simulating PHP_SAPI === 'cli'
@@ -710,10 +751,12 @@ test('isInteractive Windows CLI no posix coverage', function () {
 });
 
 test('isInteractive non-CLI SAPI fallback', function () {
-    $output = new Output();
+    $output = new Output;
 
-    $testInput = new class($output) extends InteractiveInput {
-        public function testNonCliSapi(): bool {
+    $testInput = new class($output) extends InteractiveInput
+    {
+        public function testNonCliSapi(): bool
+        {
             // Simulates PHP_SAPI !== 'cli'
             // This covers line 412
             if (false) { // Simulating PHP_SAPI !== 'cli'
@@ -728,17 +771,20 @@ test('isInteractive non-CLI SAPI fallback', function () {
 });
 
 test('isInteractive returns false for non-CLI SAPI mode', function () {
-    $output = new Output();
+    $output = new Output;
 
     // Create a test that simulates non-CLI environment
-    $input = new class($output) extends InteractiveInput {
-        public function testNonCli(): bool {
+    $input = new class($output) extends InteractiveInput
+    {
+        public function testNonCli(): bool
+        {
             // Directly implement the logic that leads to line 412
             // when PHP_SAPI is not 'cli'
             if ('web' === 'cli') { // Simulate PHP_SAPI !== 'cli'
                 // This block won't execute
                 return true;
             }
+
             // This simulates line 412
             return false;
         }
@@ -748,14 +794,17 @@ test('isInteractive returns false for non-CLI SAPI mode', function () {
 });
 
 test('isInteractive CLI without posix and not Windows', function () {
-    $output = new Output();
+    $output = new Output;
 
-    $input = new class($output) extends InteractiveInput {
-        protected function isWindows(): bool {
+    $input = new class($output) extends InteractiveInput
+    {
+        protected function isWindows(): bool
+        {
             return false; // Not Windows
         }
 
-        public function testCliNoPostixNotWindows(): bool {
+        public function testCliNoPostixNotWindows(): bool
+        {
             // Simulates CLI mode but without posix_isatty
             if (PHP_SAPI === 'cli') {
                 // Simulate no posix_isatty function
@@ -780,8 +829,9 @@ test('isInteractive CLI without posix and not Windows', function () {
 });
 
 // Helper function to create InteractiveInput with mocked input stream
-function createInputWithMockedStream(string $input): InteractiveInput {
-    $output = new Output();
+function createInputWithMockedStream(string $input): InteractiveInput
+{
+    $output = new Output;
 
     $stream = fopen('php://memory', 'r+');
     fwrite($stream, $input);

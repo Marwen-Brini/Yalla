@@ -9,8 +9,11 @@ use Yalla\Output\Output;
 class InteractiveInput
 {
     protected Output $output;
+
     protected bool $interactive = true;
+
     protected $inputStream = null;
+
     protected $outputStream = null;
 
     public function __construct(Output $output, $inputStream = null, $outputStream = null)
@@ -32,7 +35,7 @@ class InteractiveInput
         ?string $yesText = null,
         ?string $noText = null
     ): bool {
-        if (!$this->interactive) {
+        if (! $this->interactive) {
             return $default;
         }
 
@@ -40,7 +43,7 @@ class InteractiveInput
         $noText = $noText ?? 'no';
 
         $suffix = $default ? 'Y/n' : 'y/N';
-        $question = rtrim($question, ' ?') . ' [' . $suffix . ']: ';
+        $question = rtrim($question, ' ?').' ['.$suffix.']: ';
 
         $this->output->write($question);
 
@@ -66,6 +69,7 @@ class InteractiveInput
 
         // Invalid input, ask again
         $this->output->warning('Please answer with yes or no.');
+
         return $this->confirm($question, $default, $yesText, $noText);
     }
 
@@ -78,10 +82,11 @@ class InteractiveInput
         $default = null,
         int $maxAttempts = 3
     ): string {
-        if (!$this->interactive) {
+        if (! $this->interactive) {
             if ($default !== null) {
                 return is_int($default) ? ($choices[$default] ?? '') : $default;
             }
+
             return $choices[0] ?? '';
         }
 
@@ -132,7 +137,7 @@ class InteractiveInput
 
             $attempts++;
             if ($attempts < $maxAttempts) {
-                $this->output->warning("Invalid choice. Please enter a number between 0 and " . (count($indexedChoices) - 1));
+                $this->output->warning('Invalid choice. Please enter a number between 0 and '.(count($indexedChoices) - 1));
                 $this->output->write("Enter your choice$defaultText: ");
             }
         }
@@ -149,8 +154,8 @@ class InteractiveInput
         array $defaults = [],
         int $maxAttempts = 3
     ): array {
-        if (!$this->interactive) {
-            if (!empty($defaults)) {
+        if (! $this->interactive) {
+            if (! empty($defaults)) {
                 $result = [];
                 foreach ($defaults as $default) {
                     if (is_int($default) && isset($choices[$default])) {
@@ -159,8 +164,10 @@ class InteractiveInput
                         $result[] = $default;
                     }
                 }
+
                 return $result;
             }
+
             return [];
         }
 
@@ -180,7 +187,7 @@ class InteractiveInput
 
         // Build default text
         $defaultText = '';
-        if (!empty($defaults)) {
+        if (! empty($defaults)) {
             $defaultIndices = [];
             foreach ($defaults as $default) {
                 if (is_int($default)) {
@@ -192,8 +199,8 @@ class InteractiveInput
                     }
                 }
             }
-            if (!empty($defaultIndices)) {
-                $defaultText = " (default: " . implode(',', $defaultIndices) . ")";
+            if (! empty($defaultIndices)) {
+                $defaultText = ' (default: '.implode(',', $defaultIndices).')';
             }
         }
 
@@ -204,7 +211,7 @@ class InteractiveInput
             $answer = $this->readLine();
 
             // Use defaults if empty
-            if (empty($answer) && !empty($defaults)) {
+            if (empty($answer) && ! empty($defaults)) {
                 $result = [];
                 foreach ($defaults as $default) {
                     if (is_int($default) && isset($indexedChoices[$default])) {
@@ -213,6 +220,7 @@ class InteractiveInput
                         $result[] = $default;
                     }
                 }
+
                 return array_unique($result);
             }
 
@@ -233,21 +241,23 @@ class InteractiveInput
                         $selected[] = $indexedChoices[$index];
                     } else {
                         $valid = false;
+
                         break;
                     }
                 } else {
                     $valid = false;
+
                     break;
                 }
             }
 
-            if ($valid && !empty($selected)) {
+            if ($valid && ! empty($selected)) {
                 return array_unique($selected);
             }
 
             $attempts++;
             if ($attempts < $maxAttempts) {
-                $this->output->warning("Invalid selection. Please enter comma-separated numbers (e.g., 0,2,3)");
+                $this->output->warning('Invalid selection. Please enter comma-separated numbers (e.g., 0,2,3)');
                 $this->output->write("Enter your choices$defaultText: ");
             }
         }
@@ -260,11 +270,11 @@ class InteractiveInput
      */
     public function ask(string $question, ?string $default = null): string
     {
-        if (!$this->interactive && $default !== null) {
+        if (! $this->interactive && $default !== null) {
             return $default;
         }
 
-        $question = rtrim($question, ' :') . ': ';
+        $question = rtrim($question, ' :').': ';
         if ($default !== null) {
             $question = str_replace(': ', " [$default]: ", $question);
         }
@@ -316,11 +326,11 @@ class InteractiveInput
      */
     public function askHidden(string $question): string
     {
-        if (!$this->interactive) {
+        if (! $this->interactive) {
             return '';
         }
 
-        $question = rtrim($question, ' :') . ': ';
+        $question = rtrim($question, ' :').': ';
         $this->output->write($question);
 
         if ($this->isWindows()) {
@@ -353,11 +363,12 @@ class InteractiveInput
      */
     protected function askHiddenWindows(): string
     {
-        $exe = __DIR__ . '/../../bin/hiddeninput.exe';
+        $exe = __DIR__.'/../../bin/hiddeninput.exe';
 
         // Fallback to visible input if hiddeninput.exe is not available
-        if (!file_exists($exe)) {
+        if (! file_exists($exe)) {
             $this->output->warning('Hidden input not available, input will be visible');
+
             return $this->readLine();
         }
 
@@ -428,6 +439,7 @@ class InteractiveInput
     public function setInteractive(bool $interactive): self
     {
         $this->interactive = $interactive;
+
         return $this;
     }
 
