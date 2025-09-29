@@ -10,8 +10,6 @@ use RuntimeException;
  * Stub template generator for creating files from templates
  *
  * Supports variable replacement, conditionals, and loops in templates
- *
- * @package Yalla\Filesystem
  */
 class StubGenerator
 {
@@ -28,19 +26,18 @@ class StubGenerator
     /**
      * Create a new StubGenerator instance
      *
-     * @param string|null $stubPath Default directory for stub files
+     * @param  string|null  $stubPath  Default directory for stub files
      */
     public function __construct(?string $stubPath = null)
     {
-        $this->stubPath = $stubPath ?? __DIR__ . '/stubs';
+        $this->stubPath = $stubPath ?? __DIR__.'/stubs';
     }
 
     /**
      * Register a stub template
      *
-     * @param string $name Stub identifier
-     * @param string $path Path to stub file
-     * @return void
+     * @param  string  $name  Stub identifier
+     * @param  string  $path  Path to stub file
      */
     public function registerStub(string $name, string $path): void
     {
@@ -50,16 +47,15 @@ class StubGenerator
     /**
      * Register all stub files in a directory
      *
-     * @param string $directory Directory containing stub files
-     * @return void
+     * @param  string  $directory  Directory containing stub files
      */
     public function registerStubDirectory(string $directory): void
     {
-        if (!is_dir($directory)) {
+        if (! is_dir($directory)) {
             throw new RuntimeException("Stub directory not found: {$directory}");
         }
 
-        $files = glob($directory . '/*.stub');
+        $files = glob($directory.'/*.stub');
 
         // @codeCoverageIgnoreStart
         if ($files === false) {
@@ -76,9 +72,9 @@ class StubGenerator
     /**
      * Generate file from stub template
      *
-     * @param string $stub Stub name or path
-     * @param string $outputPath Output file path
-     * @param array $replacements Variable replacements
+     * @param  string  $stub  Stub name or path
+     * @param  string  $outputPath  Output file path
+     * @param  array  $replacements  Variable replacements
      * @return bool Success status
      * @throws RuntimeException If stub not found or write fails
      */
@@ -88,14 +84,16 @@ class StubGenerator
 
         // Ensure directory exists
         $directory = dirname($outputPath);
-        if (!is_dir($directory)) {
-            if (!mkdir($directory, 0755, true) && !is_dir($directory)) {
+        if (! is_dir($directory)) {
+            if (! mkdir($directory, 0755, true) && ! is_dir($directory)) {
                 throw new RuntimeException("Failed to create directory: {$directory}");
             }
         }
 
         // Write file with proper error handling
-        set_error_handler(function() { return true; });
+        set_error_handler(function () {
+            return true;
+        });
         $result = file_put_contents($outputPath, $content);
         restore_error_handler();
 
@@ -109,22 +107,23 @@ class StubGenerator
     /**
      * Render stub template to string
      *
-     * @param string $stub Stub name or path
-     * @param array $replacements Variable replacements
+     * @param  string  $stub  Stub name or path
+     * @param  array  $replacements  Variable replacements
      * @return string Rendered content
      * @throws RuntimeException If stub not found
      */
     public function render(string $stub, array $replacements = []): string
     {
         $content = $this->getStubContent($stub);
+
         return $this->applyReplacements($content, $replacements);
     }
 
     /**
      * Generate content from inline template string
      *
-     * @param string $template Template string
-     * @param array $replacements Variable replacements
+     * @param  string  $template  Template string
+     * @param  array  $replacements  Variable replacements
      * @return string Rendered content
      */
     public function renderString(string $template, array $replacements = []): string
@@ -135,7 +134,7 @@ class StubGenerator
     /**
      * Get stub file content
      *
-     * @param string $stub Stub name or path
+     * @param  string  $stub  Stub name or path
      * @return string Stub content
      * @throws RuntimeException If stub not found
      */
@@ -149,10 +148,10 @@ class StubGenerator
             $path = $stub;
         } else {
             // Try default stub directory
-            $path = $this->stubPath . '/' . $stub . '.stub';
+            $path = $this->stubPath.'/'.$stub.'.stub';
         }
 
-        if (!file_exists($path)) {
+        if (! file_exists($path)) {
             throw new RuntimeException("Stub not found: {$stub}");
         }
 
@@ -168,8 +167,8 @@ class StubGenerator
     /**
      * Apply replacements to template content
      *
-     * @param string $content Template content
-     * @param array $replacements Variable replacements
+     * @param  string  $content  Template content
+     * @param  array  $replacements  Variable replacements
      * @return string Processed content
      */
     protected function applyReplacements(string $content, array $replacements): string
@@ -189,8 +188,8 @@ class StubGenerator
     /**
      * Replace simple variables in content
      *
-     * @param string $content Template content
-     * @param array $replacements Variable replacements
+     * @param  string  $content  Template content
+     * @param  array  $replacements  Variable replacements
      * @return string Content with variables replaced
      */
     protected function replaceVariables(string $content, array $replacements): string
@@ -205,15 +204,15 @@ class StubGenerator
 
             // Multiple placeholder formats
             $patterns = [
-                '{{' . $key . '}}',                    // {{key}}
-                '{{ ' . $key . ' }}',                   // {{ key }}
-                '${' . $key . '}',                      // ${key}
-                '{{' . strtoupper($key) . '}}',        // {{KEY}}
-                '{{ ' . strtoupper($key) . ' }}',      // {{ KEY }}
-                '{{' . ucfirst($key) . '}}',           // {{Key}}
-                '{{ ' . ucfirst($key) . ' }}',         // {{ Key }}
-                '{{' . strtolower($key) . '}}',        // {{key}} lowercase
-                '{{ ' . strtolower($key) . ' }}',      // {{ key }} lowercase
+                '{{'.$key.'}}',                    // {{key}}
+                '{{ '.$key.' }}',                   // {{ key }}
+                '${'.$key.'}',                      // ${key}
+                '{{'.strtoupper($key).'}}',        // {{KEY}}
+                '{{ '.strtoupper($key).' }}',      // {{ KEY }}
+                '{{'.ucfirst($key).'}}',           // {{Key}}
+                '{{ '.ucfirst($key).' }}',         // {{ Key }}
+                '{{'.strtolower($key).'}}',        // {{key}} lowercase
+                '{{ '.strtolower($key).' }}',      // {{ key }} lowercase
             ];
 
             $content = str_replace($patterns, $stringValue, $content);
@@ -225,8 +224,8 @@ class StubGenerator
     /**
      * Process conditional blocks in template
      *
-     * @param string $content Template content
-     * @param array $data Template data
+     * @param  string  $content  Template content
+     * @param  array  $data  Template data
      * @return string Processed content
      */
     protected function processConditionals(string $content, array $data): string
@@ -242,7 +241,7 @@ class StubGenerator
             $block = $matches[2];
 
             // Check if condition is falsy
-            if (!$this->evaluateCondition($condition, $data)) {
+            if (! $this->evaluateCondition($condition, $data)) {
                 return $block;
             }
 
@@ -272,13 +271,13 @@ class StubGenerator
     /**
      * Evaluate condition for conditionals
      *
-     * @param string $condition Condition to evaluate
-     * @param array $data Template data
+     * @param  string  $condition  Condition to evaluate
+     * @param  array  $data  Template data
      * @return bool Evaluation result
      */
     protected function evaluateCondition(string $condition, array $data): bool
     {
-        if (!isset($data[$condition])) {
+        if (! isset($data[$condition])) {
             return false;
         }
 
@@ -298,7 +297,7 @@ class StubGenerator
         }
 
         if (is_array($value)) {
-            return !empty($value);
+            return ! empty($value);
         }
 
         if (is_object($value)) {
@@ -313,8 +312,8 @@ class StubGenerator
     /**
      * Process nested conditional blocks properly
      *
-     * @param string $content Template content
-     * @param array $data Template data
+     * @param  string  $content  Template content
+     * @param  array  $data  Template data
      * @return string Processed content
      */
     protected function processNestedConditionals(string $content, array $data): string
@@ -323,7 +322,9 @@ class StubGenerator
         while (($startPos = strpos($content, '{{#if ', $pos)) !== false) {
             // Find the condition name
             $conditionEnd = strpos($content, '}}', $startPos);
-            if ($conditionEnd === false) break;
+            if ($conditionEnd === false) {
+                break;
+            }
 
             $conditionPart = substr($content, $startPos + 6, $conditionEnd - $startPos - 6);
             $condition = trim($conditionPart);
@@ -331,6 +332,7 @@ class StubGenerator
             // Skip special conditions like @first, @last etc - let other processors handle them
             if (str_starts_with($condition, '@')) {
                 $pos = $startPos + 1;
+
                 continue;
             }
 
@@ -343,7 +345,9 @@ class StubGenerator
                 $nextIf = strpos($content, '{{#if ', $searchPos);
                 $nextEnd = strpos($content, '{{/if}}', $searchPos);
 
-                if ($nextEnd === false) break;
+                if ($nextEnd === false) {
+                    break;
+                }
 
                 if ($nextIf !== false && $nextIf < $nextEnd) {
                     $level++;
@@ -351,6 +355,7 @@ class StubGenerator
                 } else {
                     if ($level === 0) {
                         $endPos = $nextEnd;
+
                         break;
                     }
                     $level--;
@@ -360,6 +365,7 @@ class StubGenerator
 
             if ($endPos === false) {
                 $pos = $startPos + 1;
+
                 continue;
             }
 
@@ -373,7 +379,7 @@ class StubGenerator
                 $replacement = $block;
             }
 
-            $content = substr($content, 0, $startPos) . $replacement . substr($content, $endPos + 7);
+            $content = substr($content, 0, $startPos).$replacement.substr($content, $endPos + 7);
             $pos = $startPos;
         }
 
@@ -383,8 +389,8 @@ class StubGenerator
     /**
      * Process loop blocks in template
      *
-     * @param string $content Template content
-     * @param array $data Template data
+     * @param  string  $content  Template content
+     * @param  array  $data  Template data
      * @return string Processed content
      */
     protected function processLoops(string $content, array $data): string
@@ -396,7 +402,7 @@ class StubGenerator
             $arrayKey = $matches[1];
             $template = $matches[2];
 
-            if (!isset($data[$arrayKey]) || !is_array($data[$arrayKey])) {
+            if (! isset($data[$arrayKey]) || ! is_array($data[$arrayKey])) {
                 return '';
             }
 
@@ -415,17 +421,17 @@ class StubGenerator
                 if (is_array($item)) {
                     // Replace item properties
                     foreach ($item as $key => $value) {
-                        if (!is_array($value) && !is_object($value)) {
-                            $itemContent = str_replace('{{' . $key . '}}', (string) $value, $itemContent);
-                            $itemContent = str_replace('{{ ' . $key . ' }}', (string) $value, $itemContent);
+                        if (! is_array($value) && ! is_object($value)) {
+                            $itemContent = str_replace('{{'.$key.'}}', (string) $value, $itemContent);
+                            $itemContent = str_replace('{{ '.$key.' }}', (string) $value, $itemContent);
                         }
                     }
 
                     // Replace {{this.property}} syntax
                     foreach ($item as $key => $value) {
-                        if (!is_array($value) && !is_object($value)) {
-                            $itemContent = str_replace('{{this.' . $key . '}}', (string) $value, $itemContent);
-                            $itemContent = str_replace('{{ this.' . $key . ' }}', (string) $value, $itemContent);
+                        if (! is_array($value) && ! is_object($value)) {
+                            $itemContent = str_replace('{{this.'.$key.'}}', (string) $value, $itemContent);
+                            $itemContent = str_replace('{{ this.'.$key.' }}', (string) $value, $itemContent);
                         }
                     }
                 } else {
@@ -456,8 +462,7 @@ class StubGenerator
     /**
      * Check if stub is registered
      *
-     * @param string $name Stub name
-     * @return bool
+     * @param  string  $name  Stub name
      */
     public function hasStub(string $name): bool
     {
@@ -467,8 +472,7 @@ class StubGenerator
     /**
      * Remove a registered stub
      *
-     * @param string $name Stub name
-     * @return void
+     * @param  string  $name  Stub name
      */
     public function unregisterStub(string $name): void
     {
@@ -477,8 +481,6 @@ class StubGenerator
 
     /**
      * Clear all registered stubs
-     *
-     * @return void
      */
     public function clearStubs(): void
     {

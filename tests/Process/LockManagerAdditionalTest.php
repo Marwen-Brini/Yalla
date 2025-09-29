@@ -5,13 +5,13 @@ declare(strict_types=1);
 use Yalla\Process\LockManager;
 
 beforeEach(function () {
-    $this->tempDir = sys_get_temp_dir() . '/yalla_lock_additional_test_' . uniqid();
+    $this->tempDir = sys_get_temp_dir().'/yalla_lock_additional_test_'.uniqid();
 });
 
 afterEach(function () {
     // Clean up temp directory and any remaining lock files
     if (is_dir($this->tempDir)) {
-        $files = glob($this->tempDir . '/*.lock');
+        $files = glob($this->tempDir.'/*.lock');
         if ($files) {
             array_map('unlink', $files);
         }
@@ -23,11 +23,12 @@ test('constructor throws exception when mkdir fails', function () {
     // Skip this test if running as root (mkdir might succeed)
     if (function_exists('posix_getuid') && posix_getuid() === 0) {
         expect(true)->toBeTrue(); // Skip test when running as root
+
         return;
     }
 
     // Try to use a path that would fail mkdir
-    $invalidPath = '/invalid/path/that/cannot/be/created/' . uniqid();
+    $invalidPath = '/invalid/path/that/cannot/be/created/'.uniqid();
 
     try {
         new LockManager($invalidPath);
@@ -98,7 +99,7 @@ test('forceRelease returns false when unlink fails', function () {
 
 test('isStale returns true when no lock data available', function () {
     // Create empty lock file
-    $lockFile = $this->tempDir . '/empty.lock';
+    $lockFile = $this->tempDir.'/empty.lock';
     mkdir($this->tempDir, 0755, true);
     touch($lockFile);
 
@@ -111,10 +112,10 @@ test('isStale returns false when process check cannot determine status', functio
     $manager = new LockManager($this->tempDir);
 
     // Create lock with no PID info to test fallback behavior
-    $lockFile = $this->tempDir . '/no-pid.lock';
+    $lockFile = $this->tempDir.'/no-pid.lock';
     file_put_contents($lockFile, json_encode([
         'time' => time() - 100, // Recent time
-        'host' => 'localhost'
+        'host' => 'localhost',
         // No 'pid' field
     ]));
 
@@ -174,7 +175,7 @@ test('getLockInfo returns null when file_get_contents fails', function () {
     $manager = new LockManager($this->tempDir);
 
     // Create directory instead of file to make file_get_contents fail
-    $lockPath = $this->tempDir . '/directory.lock';
+    $lockPath = $this->tempDir.'/directory.lock';
     mkdir($lockPath, 0755, true);
 
     expect($manager->getLockInfo('directory'))->toBeNull();
@@ -249,11 +250,11 @@ test('getLockStatus handles stale lock cleanup', function () {
     $manager = new LockManager($this->tempDir);
 
     // Create stale lock manually
-    $lockFile = $this->tempDir . '/stale-status.lock';
+    $lockFile = $this->tempDir.'/stale-status.lock';
     file_put_contents($lockFile, json_encode([
         'pid' => 999999,
         'time' => time() - 7200, // 2 hours old
-        'host' => 'localhost'
+        'host' => 'localhost',
     ]));
 
     $manager->setDefaultMaxAge(3600); // 1 hour max age
@@ -269,7 +270,7 @@ test('ownsLock returns false for non-existent lock info', function () {
     $manager = new LockManager($this->tempDir);
 
     // Create lock file with invalid JSON
-    $lockFile = $this->tempDir . '/invalid.lock';
+    $lockFile = $this->tempDir.'/invalid.lock';
     file_put_contents($lockFile, 'invalid json data');
 
     expect($manager->ownsLock('invalid'))->toBeFalse();
@@ -279,11 +280,11 @@ test('release returns false for lock owned by different process', function () {
     $manager = new LockManager($this->tempDir);
 
     // Create lock with different PID
-    $lockFile = $this->tempDir . '/other-pid.lock';
+    $lockFile = $this->tempDir.'/other-pid.lock';
     file_put_contents($lockFile, json_encode([
         'pid' => 999999, // Different PID
         'time' => time(),
-        'host' => function_exists('gethostname') ? gethostname() : 'localhost'
+        'host' => function_exists('gethostname') ? gethostname() : 'localhost',
     ]));
 
     $result = $manager->release('other-pid');

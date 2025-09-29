@@ -8,7 +8,7 @@ use Yalla\Commands\Middleware\MiddlewarePipeline;
 use Yalla\Output\Output;
 
 test('add middleware', function () {
-    $pipeline = new MiddlewarePipeline();
+    $pipeline = new MiddlewarePipeline;
     $middleware = \Mockery::mock(MiddlewareInterface::class);
     $middleware->shouldReceive('getPriority')->andReturn(100);
 
@@ -17,7 +17,7 @@ test('add middleware', function () {
 });
 
 test('add multiple middleware', function () {
-    $pipeline = new MiddlewarePipeline();
+    $pipeline = new MiddlewarePipeline;
     $middleware1 = \Mockery::mock(MiddlewareInterface::class);
     $middleware1->shouldReceive('getPriority')->andReturn(100);
     $middleware2 = \Mockery::mock(MiddlewareInterface::class);
@@ -28,23 +28,32 @@ test('add multiple middleware', function () {
 });
 
 test('add multiple with invalid middleware throws exception', function () {
-    $pipeline = new MiddlewarePipeline();
-    $invalidMiddleware = new stdClass();
+    $pipeline = new MiddlewarePipeline;
+    $invalidMiddleware = new stdClass;
 
-    expect(fn() => $pipeline->addMultiple([$invalidMiddleware]))
+    expect(fn () => $pipeline->addMultiple([$invalidMiddleware]))
         ->toThrow(InvalidArgumentException::class, 'Middleware must implement MiddlewareInterface');
 });
 
 test('remove middleware', function () {
-    $pipeline = new MiddlewarePipeline();
+    $pipeline = new MiddlewarePipeline;
 
-    $middleware1 = new class implements MiddlewareInterface {
+    $middleware1 = new class implements MiddlewareInterface
+    {
         public function handle(Command $command, array $input, Output $output, Closure $next): int
         {
             return $next($command, $input, $output);
         }
-        public function getPriority(): int { return 100; }
-        public function shouldApply(Command $command, array $input): bool { return true; }
+
+        public function getPriority(): int
+        {
+            return 100;
+        }
+
+        public function shouldApply(Command $command, array $input): bool
+        {
+            return true;
+        }
     };
 
     $middleware2 = \Mockery::mock(MiddlewareInterface::class);
@@ -60,10 +69,11 @@ test('remove middleware', function () {
 });
 
 test('middleware execution', function () {
-    $pipeline = new MiddlewarePipeline();
+    $pipeline = new MiddlewarePipeline;
     $executionOrder = [];
 
-    $middleware1 = new class($executionOrder) implements MiddlewareInterface {
+    $middleware1 = new class($executionOrder) implements MiddlewareInterface
+    {
         private array $order;
 
         public function __construct(array &$order)
@@ -76,14 +86,23 @@ test('middleware execution', function () {
             $this->order[] = 'middleware1_before';
             $result = $next($command, $input, $output);
             $this->order[] = 'middleware1_after';
+
             return $result;
         }
 
-        public function getPriority(): int { return 100; }
-        public function shouldApply(Command $command, array $input): bool { return true; }
+        public function getPriority(): int
+        {
+            return 100;
+        }
+
+        public function shouldApply(Command $command, array $input): bool
+        {
+            return true;
+        }
     };
 
-    $middleware2 = new class($executionOrder) implements MiddlewareInterface {
+    $middleware2 = new class($executionOrder) implements MiddlewareInterface
+    {
         private array $order;
 
         public function __construct(array &$order)
@@ -96,11 +115,19 @@ test('middleware execution', function () {
             $this->order[] = 'middleware2_before';
             $result = $next($command, $input, $output);
             $this->order[] = 'middleware2_after';
+
             return $result;
         }
 
-        public function getPriority(): int { return 50; }
-        public function shouldApply(Command $command, array $input): bool { return true; }
+        public function getPriority(): int
+        {
+            return 50;
+        }
+
+        public function shouldApply(Command $command, array $input): bool
+        {
+            return true;
+        }
     };
 
     $pipeline->add($middleware1);
@@ -109,8 +136,9 @@ test('middleware execution', function () {
     $command = createTestCommand();
     $output = createOutput();
 
-    $destination = function($cmd, $in, $out) use (&$executionOrder) {
+    $destination = function ($cmd, $in, $out) use (&$executionOrder) {
         $executionOrder[] = 'destination';
+
         return 0;
     };
 
@@ -122,15 +150,16 @@ test('middleware execution', function () {
         'middleware2_before',
         'destination',
         'middleware2_after',
-        'middleware1_after'
+        'middleware1_after',
     ]);
 });
 
 test('middleware priority', function () {
-    $pipeline = new MiddlewarePipeline();
+    $pipeline = new MiddlewarePipeline;
     $executionOrder = [];
 
-    $lowPriority = new class($executionOrder) implements MiddlewareInterface {
+    $lowPriority = new class($executionOrder) implements MiddlewareInterface
+    {
         private array $order;
 
         public function __construct(array &$order)
@@ -141,14 +170,23 @@ test('middleware priority', function () {
         public function handle(Command $command, array $input, Output $output, Closure $next): int
         {
             $this->order[] = 'low';
+
             return $next($command, $input, $output);
         }
 
-        public function getPriority(): int { return 10; }
-        public function shouldApply(Command $command, array $input): bool { return true; }
+        public function getPriority(): int
+        {
+            return 10;
+        }
+
+        public function shouldApply(Command $command, array $input): bool
+        {
+            return true;
+        }
     };
 
-    $highPriority = new class($executionOrder) implements MiddlewareInterface {
+    $highPriority = new class($executionOrder) implements MiddlewareInterface
+    {
         private array $order;
 
         public function __construct(array &$order)
@@ -159,11 +197,19 @@ test('middleware priority', function () {
         public function handle(Command $command, array $input, Output $output, Closure $next): int
         {
             $this->order[] = 'high';
+
             return $next($command, $input, $output);
         }
 
-        public function getPriority(): int { return 200; }
-        public function shouldApply(Command $command, array $input): bool { return true; }
+        public function getPriority(): int
+        {
+            return 200;
+        }
+
+        public function shouldApply(Command $command, array $input): bool
+        {
+            return true;
+        }
     };
 
     $pipeline->add($lowPriority);
@@ -172,8 +218,9 @@ test('middleware priority', function () {
     $command = createTestCommand();
     $output = createOutput();
 
-    $destination = function($cmd, $in, $out) use (&$executionOrder) {
+    $destination = function ($cmd, $in, $out) use (&$executionOrder) {
         $executionOrder[] = 'destination';
+
         return 0;
     };
 
@@ -183,10 +230,11 @@ test('middleware priority', function () {
 });
 
 test('conditional middleware', function () {
-    $pipeline = new MiddlewarePipeline();
+    $pipeline = new MiddlewarePipeline;
     $executed = false;
 
-    $conditionalMiddleware = new class($executed) implements MiddlewareInterface {
+    $conditionalMiddleware = new class($executed) implements MiddlewareInterface
+    {
         private bool $executed;
 
         public function __construct(bool &$executed)
@@ -197,10 +245,14 @@ test('conditional middleware', function () {
         public function handle(Command $command, array $input, Output $output, Closure $next): int
         {
             $this->executed = true;
+
             return $next($command, $input, $output);
         }
 
-        public function getPriority(): int { return 100; }
+        public function getPriority(): int
+        {
+            return 100;
+        }
 
         public function shouldApply(Command $command, array $input): bool
         {
@@ -213,7 +265,7 @@ test('conditional middleware', function () {
     $command = createTestCommand();
     $output = createOutput();
 
-    $destination = function($cmd, $in, $out) {
+    $destination = function ($cmd, $in, $out) {
         return 0;
     };
 
@@ -227,7 +279,7 @@ test('conditional middleware', function () {
 });
 
 test('clear middleware', function () {
-    $pipeline = new MiddlewarePipeline();
+    $pipeline = new MiddlewarePipeline;
     $middleware = \Mockery::mock(MiddlewareInterface::class);
 
     $pipeline->add($middleware);
@@ -239,7 +291,7 @@ test('clear middleware', function () {
 });
 
 test('count middleware', function () {
-    $pipeline = new MiddlewarePipeline();
+    $pipeline = new MiddlewarePipeline;
 
     expect($pipeline->count())->toBe(0);
 
@@ -256,18 +308,27 @@ test('count middleware', function () {
 });
 
 test('middleware modifies exit code', function () {
-    $pipeline = new MiddlewarePipeline();
+    $pipeline = new MiddlewarePipeline;
 
-    $modifyingMiddleware = new class implements MiddlewareInterface {
+    $modifyingMiddleware = new class implements MiddlewareInterface
+    {
         public function handle(Command $command, array $input, Output $output, Closure $next): int
         {
             $result = $next($command, $input, $output);
+
             // Modify the exit code
             return $result === 0 ? 42 : $result;
         }
 
-        public function getPriority(): int { return 100; }
-        public function shouldApply(Command $command, array $input): bool { return true; }
+        public function getPriority(): int
+        {
+            return 100;
+        }
+
+        public function shouldApply(Command $command, array $input): bool
+        {
+            return true;
+        }
     };
 
     $pipeline->add($modifyingMiddleware);
@@ -275,7 +336,7 @@ test('middleware modifies exit code', function () {
     $command = createTestCommand();
     $output = createOutput();
 
-    $destination = function($cmd, $in, $out) {
+    $destination = function ($cmd, $in, $out) {
         return 0; // Original exit code
     };
 

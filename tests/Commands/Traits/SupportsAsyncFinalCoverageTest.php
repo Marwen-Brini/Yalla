@@ -9,7 +9,8 @@ use Yalla\Output\Output;
 use Yalla\Process\Promise;
 
 test('executeAsync progress callback actually executes (line 36)', function () {
-    $command = new class extends Command implements AsyncCommandInterface {
+    $command = new class extends Command implements AsyncCommandInterface
+    {
         use SupportsAsync;
 
         protected string $name = 'test:async';
@@ -37,7 +38,8 @@ test('executeAsync progress callback actually executes (line 36)', function () {
 });
 
 test('runParallel method execution and error handling (lines 119-145)', function () {
-    $command = new class extends Command implements AsyncCommandInterface {
+    $command = new class extends Command implements AsyncCommandInterface
+    {
         use SupportsAsync;
 
         protected string $name = 'test:async';
@@ -61,9 +63,15 @@ test('runParallel method execution and error handling (lines 119-145)', function
 
     // Test successful parallel execution (lines 131-142)
     $operations = [
-        'op1' => function() { return 'result1'; },
-        'op2' => function() { return 'result2'; },
-        'op3' => function() { return 'result3'; }
+        'op1' => function () {
+            return 'result1';
+        },
+        'op2' => function () {
+            return 'result2';
+        },
+        'op3' => function () {
+            return 'result3';
+        },
     ];
 
     try {
@@ -80,7 +88,8 @@ test('runParallel method execution and error handling (lines 119-145)', function
 });
 
 test('runParallel error handling (lines 143-145)', function () {
-    $command = new class extends Command implements AsyncCommandInterface {
+    $command = new class extends Command implements AsyncCommandInterface
+    {
         use SupportsAsync;
 
         protected string $name = 'test:async';
@@ -106,13 +115,13 @@ test('runParallel error handling (lines 143-145)', function () {
 
     // Operations that will cause a failure
     $operations = [
-        'failing_op' => function() {
+        'failing_op' => function () {
             throw new \RuntimeException('Operation failed');
-        }
+        },
     ];
 
     // This should trigger the catch block (lines 143-145)
-    expect(function() use ($command, $operations, $output) {
+    expect(function () use ($command, $operations, $output) {
         $command->testRunParallel($operations, $output);
     })->toThrow(\RuntimeException::class);
 });
@@ -120,11 +129,14 @@ test('runParallel error handling (lines 143-145)', function () {
 test('handleAsyncError returns default code when no mapExceptionToExitCode method', function () {
     // Test line 119: return 1 when no mapping method exists
     // Create a class that doesn't extend Command to avoid the mapExceptionToExitCode method
-    $command = new class implements AsyncCommandInterface {
+    $command = new class implements AsyncCommandInterface
+    {
         use SupportsAsync;
 
         protected string $name = 'test:async';
+
         protected array $arguments = [];
+
         protected array $options = [];
 
         public function execute(array $input, Output $output): int
@@ -132,11 +144,30 @@ test('handleAsyncError returns default code when no mapExceptionToExitCode metho
             return 0;
         }
 
-        public function getName(): string { return $this->name; }
-        public function getDescription(): string { return 'Test'; }
-        public function getArguments(): array { return $this->arguments; }
-        public function getOptions(): array { return $this->options; }
-        public function run(array $input, Output $output): int { return 0; }
+        public function getName(): string
+        {
+            return $this->name;
+        }
+
+        public function getDescription(): string
+        {
+            return 'Test';
+        }
+
+        public function getArguments(): array
+        {
+            return $this->arguments;
+        }
+
+        public function getOptions(): array
+        {
+            return $this->options;
+        }
+
+        public function run(array $input, Output $output): int
+        {
+            return 0;
+        }
     };
 
     $output = \Mockery::mock(Output::class);
@@ -156,7 +187,8 @@ test('handleAsyncError returns default code when no mapExceptionToExitCode metho
 
 test('progress callback with manual trigger to test line 36', function () {
     // Direct test of the progress callback code (line 36)
-    $command = new class extends Command implements AsyncCommandInterface {
+    $command = new class extends Command implements AsyncCommandInterface
+    {
         use SupportsAsync;
 
         protected string $name = 'test:async';
@@ -170,7 +202,7 @@ test('progress callback with manual trigger to test line 36', function () {
         public function testProgressCallback(Output $output): callable
         {
             // Return the exact callback that would be created in executeAsync
-            return function($progress) use ($output) {
+            return function ($progress) use ($output) {
                 $output->write('.'); // This is line 36
             };
         }
@@ -187,7 +219,8 @@ test('progress callback with manual trigger to test line 36', function () {
 });
 
 test('runParallel with mixed operation results', function () {
-    $command = new class extends Command implements AsyncCommandInterface {
+    $command = new class extends Command implements AsyncCommandInterface
+    {
         use SupportsAsync;
 
         protected string $name = 'test:async';
@@ -209,10 +242,18 @@ test('runParallel with mixed operation results', function () {
     try {
         // Test with different types of operations to ensure full coverage
         $operations = [
-            'string_result' => function() { return 'text'; },
-            'number_result' => function() { return 42; },
-            'array_result' => function() { return ['key' => 'value']; },
-            'null_result' => function() { return null; }
+            'string_result' => function () {
+                return 'text';
+            },
+            'number_result' => function () {
+                return 42;
+            },
+            'array_result' => function () {
+                return ['key' => 'value'];
+            },
+            'null_result' => function () {
+                return null;
+            },
         ];
 
         $results = $command->testRunParallel($operations, $output);
@@ -229,12 +270,14 @@ test('runParallel with mixed operation results', function () {
 });
 
 test('configureAsyncOptions when options already exist', function () {
-    $command = new class extends Command implements AsyncCommandInterface {
+    $command = new class extends Command implements AsyncCommandInterface
+    {
         use SupportsAsync;
 
         protected string $name = 'test:async';
+
         protected array $options = [
-            ['name' => 'async', 'shortcut' => null, 'description' => 'Existing async option', 'default' => false]
+            ['name' => 'async', 'shortcut' => null, 'description' => 'Existing async option', 'default' => false],
         ];
 
         public function execute(array $input, Output $output): int
@@ -251,12 +294,12 @@ test('configureAsyncOptions when options already exist', function () {
     $command->testConfigureAsyncOptions();
 
     $options = $command->getOptions();
-    $asyncOptions = array_filter($options, fn($opt) => $opt['name'] === 'async');
+    $asyncOptions = array_filter($options, fn ($opt) => $opt['name'] === 'async');
 
     // Should not add duplicate async option
     expect(count($asyncOptions))->toBe(1);
 
     // Should still add timeout option
-    $timeoutOptions = array_filter($options, fn($opt) => $opt['name'] === 'timeout');
+    $timeoutOptions = array_filter($options, fn ($opt) => $opt['name'] === 'timeout');
     expect(count($timeoutOptions))->toBe(1);
 });

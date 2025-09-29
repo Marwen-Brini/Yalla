@@ -5,13 +5,13 @@ declare(strict_types=1);
 use Yalla\Process\LockManager;
 
 beforeEach(function () {
-    $this->tempDir = sys_get_temp_dir() . '/yalla_lock_perfect_' . uniqid();
+    $this->tempDir = sys_get_temp_dir().'/yalla_lock_perfect_'.uniqid();
 });
 
 afterEach(function () {
     // Clean up temp directory and any remaining lock files
     if (is_dir($this->tempDir)) {
-        $files = glob($this->tempDir . '/*.lock') ?: [];
+        $files = glob($this->tempDir.'/*.lock') ?: [];
         array_map('unlink', $files);
         @rmdir($this->tempDir);
     }
@@ -83,7 +83,7 @@ test('isProcessRunning fallback logic (lines 248-254)', function () {
 
             // Test: PID that doesn't exist - should hit fallback (lines 253-254)
             $veryHighPid = 999999999;
-            if (!file_exists("/proc/{$veryHighPid}")) {
+            if (! file_exists("/proc/{$veryHighPid}")) {
                 $result = $method->invoke($manager, $veryHighPid);
                 // Should hit lines 253-254: return true (assume running fallback)
                 expect($result)->toBeTrue();
@@ -97,7 +97,7 @@ test('getLockInfo file_get_contents failure (line 273)', function () {
 
     // Create a lock file that will cause file_get_contents to return false
     // The most reliable way is to create a directory instead of a file
-    $lockPath = $this->tempDir . '/bad-lock.lock';
+    $lockPath = $this->tempDir.'/bad-lock.lock';
     mkdir($lockPath, 0755, true);
 
     // This should cause file_get_contents to return false, hitting line 273
@@ -108,7 +108,7 @@ test('getLockInfo file_get_contents failure (line 273)', function () {
 
 test('listLocks with glob failure (line 317)', function () {
     // Create a restricted directory to cause glob to fail
-    $restrictedDir = sys_get_temp_dir() . '/restricted_locks_' . uniqid();
+    $restrictedDir = sys_get_temp_dir().'/restricted_locks_'.uniqid();
     mkdir($restrictedDir, 0755, true);
 
     $manager = new LockManager($restrictedDir);
@@ -139,7 +139,7 @@ test('listLocks with glob failure (line 317)', function () {
 
 test('clearStale with glob failure (line 344)', function () {
     // Create a restricted directory to cause glob to fail
-    $restrictedDir = sys_get_temp_dir() . '/restricted_clear_' . uniqid();
+    $restrictedDir = sys_get_temp_dir().'/restricted_clear_'.uniqid();
     mkdir($restrictedDir, 0755, true);
 
     $manager = new LockManager($restrictedDir);
@@ -173,7 +173,7 @@ test('ownsLock with null getLockInfo (line 500)', function () {
 
     // Create a lock file that will cause getLockInfo to return null
     // Use the same technique as the file_get_contents test
-    $lockPath = $this->tempDir . '/null-info.lock';
+    $lockPath = $this->tempDir.'/null-info.lock';
     mkdir($lockPath, 0755, true);
 
     // This should cause getLockInfo to return null, triggering line 500
@@ -215,7 +215,7 @@ test('edge cases for file system operations', function () {
     expect($manager->ownsLock('never-existed'))->toBeFalse();
 
     // 3. Test listLocks when directory is empty (create if not exists)
-    if (!is_dir($this->tempDir)) {
+    if (! is_dir($this->tempDir)) {
         mkdir($this->tempDir, 0755, true);
     }
     $locks = $manager->listLocks();

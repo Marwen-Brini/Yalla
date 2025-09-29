@@ -5,15 +5,22 @@ declare(strict_types=1);
 use Yalla\Commands\Traits\HasSignature;
 
 // Test class without addArgument and addOption methods
-class MinimalCommand {
+class MinimalCommand
+{
     use HasSignature;
 
     protected string $signature = '';
+
     protected string $name = 'test';
+
     protected string $description = 'Test command';
+
     protected array $arguments = [];
+
     protected array $options = [];
+
     protected array $argumentMetadata = [];
+
     protected array $optionMetadata = [];
 
     public function __construct(string $signature = '')
@@ -103,7 +110,8 @@ test('option with optional value using question mark', function () {
 
 test('parseDefaultValue handles false boolean', function () {
     // Create a test class that exposes parseDefaultValue
-    $command = new class {
+    $command = new class
+    {
         use HasSignature {
             parseDefaultValue as public;
         }
@@ -148,12 +156,16 @@ test('multiple options with different formats', function () {
 
 test('argument metadata initialization when not set', function () {
     // Create command and unset argumentMetadata before parsing
-    $command = new class {
+    $command = new class
+    {
         use HasSignature;
 
         protected string $name = 'test';
+
         protected string $description = 'Test';
+
         protected array $arguments = [];
+
         protected array $options = [];
 
         public function __construct()
@@ -176,12 +188,16 @@ test('argument metadata initialization when not set', function () {
 
 test('option metadata initialization when not set', function () {
     // Create command and unset optionMetadata before parsing
-    $command = new class {
+    $command = new class
+    {
         use HasSignature;
 
         protected string $name = 'test';
+
         protected string $description = 'Test';
+
         protected array $arguments = [];
+
         protected array $options = [];
 
         public function __construct()

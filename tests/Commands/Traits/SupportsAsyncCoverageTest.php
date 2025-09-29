@@ -9,7 +9,8 @@ use Yalla\Output\Output;
 use Yalla\Process\Promise;
 
 test('executeAsync throws exception from command execution', function () {
-    $command = new class extends Command implements AsyncCommandInterface {
+    $command = new class extends Command implements AsyncCommandInterface
+    {
         use SupportsAsync;
 
         protected string $name = 'test:async';
@@ -26,13 +27,14 @@ test('executeAsync throws exception from command execution', function () {
     $promise = $command->executeAsync([], $output);
 
     // The promise should throw the exception when we wait for it
-    expect(function() use ($promise) {
+    expect(function () use ($promise) {
         $promise->wait();
     })->toThrow(RuntimeException::class, 'Command execution failed');
 });
 
 test('executeAsync shows progress indicator when verbose', function () {
-    $command = new class extends Command implements AsyncCommandInterface {
+    $command = new class extends Command implements AsyncCommandInterface
+    {
         use SupportsAsync;
 
         protected string $name = 'test:async';
@@ -55,7 +57,8 @@ test('executeAsync shows progress indicator when verbose', function () {
 });
 
 test('runParallel method exists and can be called', function () {
-    $command = new class extends Command implements AsyncCommandInterface {
+    $command = new class extends Command implements AsyncCommandInterface
+    {
         use SupportsAsync;
 
         protected string $name = 'test:async';
@@ -77,7 +80,8 @@ test('runParallel method exists and can be called', function () {
 });
 
 test('executeAsync with non-verbose output', function () {
-    $command = new class extends Command implements AsyncCommandInterface {
+    $command = new class extends Command implements AsyncCommandInterface
+    {
         use SupportsAsync;
 
         protected string $name = 'test:async';
@@ -100,10 +104,12 @@ test('executeAsync with non-verbose output', function () {
 });
 
 test('executeAsync handles command that returns different types', function () {
-    $command = new class extends Command implements AsyncCommandInterface {
+    $command = new class extends Command implements AsyncCommandInterface
+    {
         use SupportsAsync;
 
         protected string $name = 'test:async';
+
         private mixed $returnValue;
 
         public function setReturnValue(mixed $value): void

@@ -12,7 +12,8 @@ use Yalla\Process\Promise;
 const EXIT_SOFTWARE = 70;
 
 test('async command execution', function () {
-    $command = new class extends Command implements AsyncCommandInterface {
+    $command = new class extends Command implements AsyncCommandInterface
+    {
         use SupportsAsync;
 
         protected string $name = 'test:async';
@@ -20,6 +21,7 @@ test('async command execution', function () {
         public function execute(array $input, Output $output): int
         {
             $output->writeln('Executing command');
+
             return 0;
         }
     };
@@ -40,7 +42,8 @@ test('async command execution', function () {
 });
 
 test('should run async with option', function () {
-    $command = new class extends Command implements AsyncCommandInterface {
+    $command = new class extends Command implements AsyncCommandInterface
+    {
         use SupportsAsync;
 
         protected string $name = 'test:async';
@@ -62,7 +65,8 @@ test('should run async with option', function () {
 });
 
 test('should run async by default', function () {
-    $command = new class extends Command implements AsyncCommandInterface {
+    $command = new class extends Command implements AsyncCommandInterface
+    {
         use SupportsAsync;
 
         protected string $name = 'test:async';
@@ -82,7 +86,8 @@ test('should run async by default', function () {
 });
 
 test('async timeout', function () {
-    $command = new class extends Command implements AsyncCommandInterface {
+    $command = new class extends Command implements AsyncCommandInterface
+    {
         use SupportsAsync;
 
         protected string $name = 'test:async';
@@ -100,7 +105,8 @@ test('async timeout', function () {
 });
 
 test('handle async completion', function () {
-    $command = new class extends Command implements AsyncCommandInterface {
+    $command = new class extends Command implements AsyncCommandInterface
+    {
         use SupportsAsync;
 
         protected string $name = 'test:async';
@@ -122,7 +128,8 @@ test('handle async completion', function () {
 });
 
 test('handle async error', function () {
-    $command = new class extends Command implements AsyncCommandInterface, ExitCodes {
+    $command = new class extends Command implements AsyncCommandInterface, ExitCodes
+    {
         use SupportsAsync;
 
         protected string $name = 'test:async';
@@ -148,7 +155,8 @@ test('handle async error', function () {
 });
 
 test('handle async error with debug', function () {
-    $command = new class extends Command implements AsyncCommandInterface, ExitCodes {
+    $command = new class extends Command implements AsyncCommandInterface, ExitCodes
+    {
         use SupportsAsync;
 
         protected string $name = 'test:async';
@@ -177,7 +185,8 @@ test('handle async error with debug', function () {
 });
 
 test('run parallel', function () {
-    $command = new class extends Command implements AsyncCommandInterface {
+    $command = new class extends Command implements AsyncCommandInterface
+    {
         use SupportsAsync;
 
         protected string $name = 'test:async';
@@ -191,15 +200,15 @@ test('run parallel', function () {
         {
             // Use simple synchronous operations for testing
             $operations = [
-                'first' => function() {
+                'first' => function () {
                     return 'result1';
                 },
-                'second' => function() {
+                'second' => function () {
                     return 'result2';
                 },
-                'third' => function() {
+                'third' => function () {
                     return 'result3';
-                }
+                },
             ];
 
             // Create resolved promises directly for testing
@@ -211,6 +220,7 @@ test('run parallel', function () {
 
             // Wait for all promises (should be instant since they're resolved)
             $allPromise = \Yalla\Process\Promise::all($promises);
+
             return $allPromise->wait();
         }
     };
@@ -221,12 +231,13 @@ test('run parallel', function () {
     expect($results)->toBe([
         'first' => 'result1',
         'second' => 'result2',
-        'third' => 'result3'
+        'third' => 'result3',
     ]);
 });
 
 test('configure async options', function () {
-    $command = new class extends Command implements AsyncCommandInterface {
+    $command = new class extends Command implements AsyncCommandInterface
+    {
         use SupportsAsync;
 
         protected string $name = 'test:async';
@@ -250,7 +261,8 @@ test('configure async options', function () {
 });
 
 test('async progress indicator', function () {
-    $command = new class extends Command implements AsyncCommandInterface {
+    $command = new class extends Command implements AsyncCommandInterface
+    {
         use SupportsAsync;
 
         protected string $name = 'test:async';
@@ -271,7 +283,8 @@ test('async progress indicator', function () {
 });
 
 test('shouldRunAsync returns true when runAsync is set', function () {
-    $command = new class extends Command implements AsyncCommandInterface {
+    $command = new class extends Command implements AsyncCommandInterface
+    {
         use SupportsAsync;
 
         protected string $name = 'test:async';
@@ -297,7 +310,8 @@ test('shouldRunAsync returns true when runAsync is set', function () {
 });
 
 test('handleAsyncError with output', function () {
-    $command = new class extends Command implements AsyncCommandInterface {
+    $command = new class extends Command implements AsyncCommandInterface
+    {
         use SupportsAsync;
 
         protected string $name = 'test:async';
@@ -320,4 +334,3 @@ test('handleAsyncError with output', function () {
     $exitCode = $command->handleAsyncError($exception, $output);
     expect($exitCode)->toBe(EXIT_SOFTWARE);
 });
-

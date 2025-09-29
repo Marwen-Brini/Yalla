@@ -6,13 +6,15 @@ use Yalla\Output\Output;
 use Yalla\Output\OutputSection;
 
 // Helper function to create testable output instance
-function createTestOutput() {
-    return new class extends Output {
+function createTestOutput()
+{
+    return new class extends Output
+    {
         private array $buffer = [];
 
         public function write(string $message, bool $newline = false): void
         {
-            $this->buffer[] = $message . ($newline ? PHP_EOL : '');
+            $this->buffer[] = $message.($newline ? PHP_EOL : '');
         }
 
         public function getBuffer(): array
@@ -167,7 +169,7 @@ test('timestamped output', function () {
     $this->output->withTimestamps(false);
     $this->output->writeln('No timestamp');
     $buffer = $this->output->getBuffer();
-    expect($buffer[0])->toBe("No timestamp" . PHP_EOL);
+    expect($buffer[0])->toBe('No timestamp'.PHP_EOL);
 });
 
 test('sql query logging', function () {
@@ -183,7 +185,7 @@ test('sql query logging', function () {
 });
 
 test('grouped output', function () {
-    $this->output->group('Test Group', function(Output $output) {
+    $this->output->group('Test Group', function (Output $output) {
         $output->writeln('Inside group');
         $output->writeln('Another line');
     });
@@ -244,17 +246,17 @@ test('interpolate query', function () {
         [
             'query' => 'SELECT * FROM users WHERE id = ?',
             'bindings' => [42],
-            'expected' => 'SELECT * FROM users WHERE id = 42'
+            'expected' => 'SELECT * FROM users WHERE id = 42',
         ],
         [
             'query' => 'INSERT INTO posts (title, content) VALUES (?, ?)',
             'bindings' => ['Test Title', 'Test Content'],
-            'expected' => "INSERT INTO posts (title, content) VALUES ('Test Title', 'Test Content')"
+            'expected' => "INSERT INTO posts (title, content) VALUES ('Test Title', 'Test Content')",
         ],
         [
             'query' => 'UPDATE users SET active = ? WHERE id = ?',
             'bindings' => [true, 100],
-            'expected' => 'UPDATE users SET active = 1 WHERE id = 100'
+            'expected' => 'UPDATE users SET active = 1 WHERE id = 100',
         ],
     ];
 

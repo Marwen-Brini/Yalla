@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-use Yalla\Output\Output;
 use Yalla\Commands\Command;
-use Yalla\Commands\Middleware\MiddlewareInterface;
+use Yalla\Output\Output;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,24 +17,28 @@ use Yalla\Commands\Middleware\MiddlewareInterface;
 // Simple helper to create actual Output instances for testing
 function createOutput(): Output
 {
-    return new Output();
+    return new Output;
 }
 
 // Helper to create command instances for testing
 function createTestCommand(string $name = 'test:command'): Command
 {
-    return new class($name) extends Command {
+    return new class($name) extends Command
+    {
         private string $commandName;
 
-        public function __construct(string $name) {
+        public function __construct(string $name)
+        {
             $this->commandName = $name;
         }
 
-        public function getName(): string {
+        public function getName(): string
+        {
             return $this->commandName;
         }
 
-        public function execute(array $input, Output $output): int {
+        public function execute(array $input, Output $output): int
+        {
             return 0;
         }
     };

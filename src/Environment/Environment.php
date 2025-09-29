@@ -8,8 +8,6 @@ use RuntimeException;
 
 /**
  * Environment variable management with .env file support
- *
- * @package Yalla\Environment
  */
 class Environment
 {
@@ -31,7 +29,7 @@ class Environment
     /**
      * Create a new Environment instance
      *
-     * @param array $files Array of .env file paths to load
+     * @param  array  $files  Array of .env file paths to load
      */
     public function __construct(array $files = ['.env'])
     {
@@ -42,12 +40,11 @@ class Environment
     /**
      * Load environment variables from files and system
      *
-     * @param bool $overwrite Whether to overwrite existing variables
-     * @return void
+     * @param  bool  $overwrite  Whether to overwrite existing variables
      */
     public function load(bool $overwrite = false): void
     {
-        if ($this->loaded && !$overwrite) {
+        if ($this->loaded && ! $overwrite) {
             return;
         }
 
@@ -72,14 +69,13 @@ class Environment
     /**
      * Load variables from a specific .env file
      *
-     * @param string $path Path to .env file
-     * @param bool $overwrite Whether to overwrite existing variables
-     * @return void
+     * @param  string  $path  Path to .env file
+     * @param  bool  $overwrite  Whether to overwrite existing variables
      * @throws RuntimeException If file is not readable
      */
     protected function loadFile(string $path, bool $overwrite = false): void
     {
-        if (!is_readable($path)) {
+        if (! is_readable($path)) {
             throw new RuntimeException("Environment file not readable: {$path}");
         }
 
@@ -107,7 +103,7 @@ class Environment
                 $value = $this->expandVariables($value);
 
                 // Set only if not exists or overwrite is true
-                if ($overwrite || !isset($this->variables[$key])) {
+                if ($overwrite || ! isset($this->variables[$key])) {
                     $this->set($key, $value);
                 }
             }
@@ -117,7 +113,7 @@ class Environment
     /**
      * Parse value from .env file
      *
-     * @param string $value Raw value from file
+     * @param  string  $value  Raw value from file
      * @return string Parsed value
      */
     protected function parseValue(string $value): string
@@ -150,7 +146,7 @@ class Environment
     /**
      * Expand variables in value (${VAR} or $VAR format)
      *
-     * @param string $value Value potentially containing variables
+     * @param  string  $value  Value potentially containing variables
      * @return string Value with expanded variables
      */
     protected function expandVariables(string $value): string
@@ -171,8 +167,8 @@ class Environment
     /**
      * Get environment variable
      *
-     * @param string $key Variable name
-     * @param mixed $default Default value if not found
+     * @param  string  $key  Variable name
+     * @param  mixed  $default  Default value if not found
      * @return mixed Variable value or default
      */
     public function get(string $key, $default = null)
@@ -192,7 +188,7 @@ class Environment
     /**
      * Get required environment variable
      *
-     * @param string $key Variable name
+     * @param  string  $key  Variable name
      * @return mixed Variable value
      * @throws RuntimeException If variable is not set
      */
@@ -210,9 +206,8 @@ class Environment
     /**
      * Set environment variable
      *
-     * @param string $key Variable name
-     * @param mixed $value Variable value
-     * @return void
+     * @param  string  $key  Variable name
+     * @param  mixed  $value  Variable value
      */
     public function set(string $key, $value): void
     {
@@ -226,8 +221,7 @@ class Environment
     /**
      * Check if variable exists
      *
-     * @param string $key Variable name
-     * @return bool
+     * @param  string  $key  Variable name
      */
     public function has(string $key): bool
     {
@@ -247,8 +241,7 @@ class Environment
     /**
      * Check if current environment matches given name(s)
      *
-     * @param string ...$environments Environment names to check
-     * @return bool
+     * @param  string  ...$environments  Environment names to check
      */
     public function is(string ...$environments): bool
     {
@@ -265,8 +258,6 @@ class Environment
 
     /**
      * Check if production environment
-     *
-     * @return bool
      */
     public function isProduction(): bool
     {
@@ -275,8 +266,6 @@ class Environment
 
     /**
      * Check if development environment
-     *
-     * @return bool
      */
     public function isDevelopment(): bool
     {
@@ -285,8 +274,6 @@ class Environment
 
     /**
      * Check if testing environment
-     *
-     * @return bool
      */
     public function isTesting(): bool
     {
@@ -295,8 +282,6 @@ class Environment
 
     /**
      * Check if staging environment
-     *
-     * @return bool
      */
     public function isStaging(): bool
     {
@@ -305,8 +290,6 @@ class Environment
 
     /**
      * Check if debug mode is enabled
-     *
-     * @return bool
      */
     public function isDebug(): bool
     {
@@ -316,35 +299,34 @@ class Environment
     /**
      * Get value as integer
      *
-     * @param string $key Variable name
-     * @param int $default Default value
-     * @return int
+     * @param  string  $key  Variable name
+     * @param  int  $default  Default value
      */
     public function getInt(string $key, int $default = 0): int
     {
         $value = $this->get($key, $default);
+
         return (int) $value;
     }
 
     /**
      * Get value as float
      *
-     * @param string $key Variable name
-     * @param float $default Default value
-     * @return float
+     * @param  string  $key  Variable name
+     * @param  float  $default  Default value
      */
     public function getFloat(string $key, float $default = 0.0): float
     {
         $value = $this->get($key, $default);
+
         return (float) $value;
     }
 
     /**
      * Get value as boolean
      *
-     * @param string $key Variable name
-     * @param bool $default Default value
-     * @return bool
+     * @param  string  $key  Variable name
+     * @param  bool  $default  Default value
      */
     public function getBool(string $key, bool $default = false): bool
     {
@@ -356,6 +338,7 @@ class Environment
 
         if (is_string($value)) {
             $value = strtolower($value);
+
             return in_array($value, ['1', 'true', 'yes', 'on'], true);
         }
 
@@ -365,9 +348,8 @@ class Environment
     /**
      * Get value as array
      *
-     * @param string $key Variable name
-     * @param array $default Default value
-     * @return array
+     * @param  string  $key  Variable name
+     * @param  array  $default  Default value
      */
     public function getArray(string $key, array $default = []): array
     {
@@ -398,8 +380,6 @@ class Environment
 
     /**
      * Clear all loaded variables (useful for testing)
-     *
-     * @return void
      */
     public function clear(): void
     {
@@ -416,8 +396,7 @@ class Environment
     /**
      * Reload environment variables
      *
-     * @param bool $overwrite Whether to overwrite existing variables
-     * @return void
+     * @param  bool  $overwrite  Whether to overwrite existing variables
      */
     public function reload(bool $overwrite = true): void
     {
@@ -428,8 +407,7 @@ class Environment
     /**
      * Set the .env files to load
      *
-     * @param array $files Array of file paths
-     * @return void
+     * @param  array  $files  Array of file paths
      */
     public function setFiles(array $files): void
     {

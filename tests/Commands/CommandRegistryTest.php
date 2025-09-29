@@ -9,7 +9,8 @@ use Yalla\Output\Output;
 // Helper function to create dummy command
 function createDummyCommand(string $name = 'dummy')
 {
-    return new class($name) extends Command {
+    return new class($name) extends Command
+    {
         public function __construct(string $name = 'dummy')
         {
             $this->name = $name;

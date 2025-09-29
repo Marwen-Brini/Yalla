@@ -5,13 +5,13 @@ declare(strict_types=1);
 use Yalla\Process\LockManager;
 
 beforeEach(function () {
-    $this->tempDir = sys_get_temp_dir() . '/yalla_lock_comprehensive_' . uniqid();
+    $this->tempDir = sys_get_temp_dir().'/yalla_lock_comprehensive_'.uniqid();
 });
 
 afterEach(function () {
     // Clean up temp directory and any remaining lock files
     if (is_dir($this->tempDir)) {
-        $files = glob($this->tempDir . '/*.lock') ?: [];
+        $files = glob($this->tempDir.'/*.lock') ?: [];
         array_map('unlink', $files);
         @rmdir($this->tempDir);
     }
@@ -75,13 +75,13 @@ test('file_get_contents failure scenarios (line 273)', function () {
     // Create multiple scenarios that cause file_get_contents to fail
 
     // Scenario 1: Directory instead of file
-    $lockPath1 = $this->tempDir . '/dir-lock.lock';
+    $lockPath1 = $this->tempDir.'/dir-lock.lock';
     mkdir($lockPath1, 0755, true);
     $result1 = $manager->getLockInfo('dir-lock');
     expect($result1)->toBeNull();
 
     // Scenario 2: Unreadable file (permission denied)
-    $lockPath2 = $this->tempDir . '/unreadable.lock';
+    $lockPath2 = $this->tempDir.'/unreadable.lock';
     file_put_contents($lockPath2, 'test');
     chmod($lockPath2, 0000); // No read permissions
 
@@ -100,7 +100,7 @@ test('glob failure comprehensive scenarios (lines 317, 344)', function () {
     // Create a series of restricted directories to test glob failures
     $restrictedDirs = [];
     for ($i = 0; $i < 3; $i++) {
-        $restrictedDir = sys_get_temp_dir() . '/restricted_glob_' . $i . '_' . uniqid();
+        $restrictedDir = sys_get_temp_dir().'/restricted_glob_'.$i.'_'.uniqid();
         mkdir($restrictedDir, 0755, true);
         $restrictedDirs[] = $restrictedDir;
 
@@ -135,7 +135,7 @@ test('ownsLock with null getLockInfo (line 500)', function () {
     // Create multiple scenarios where getLockInfo returns null
 
     // Scenario 1: Directory instead of file
-    $lockPath1 = $this->tempDir . '/null-info-1.lock';
+    $lockPath1 = $this->tempDir.'/null-info-1.lock';
     mkdir($lockPath1, 0755, true);
     $result1 = $manager->ownsLock('null-info-1');
     expect($result1)->toBeFalse();
@@ -145,7 +145,7 @@ test('ownsLock with null getLockInfo (line 500)', function () {
     expect($result2)->toBeFalse();
 
     // Scenario 3: Corrupted lock file
-    $lockPath3 = $this->tempDir . '/corrupted.lock';
+    $lockPath3 = $this->tempDir.'/corrupted.lock';
     file_put_contents($lockPath3, 'invalid json data');
     $result3 = $manager->ownsLock('corrupted');
     expect($result3)->toBeFalse();
@@ -182,7 +182,7 @@ test('edge cases and boundary conditions', function () {
     expect($manager->ownsLock('test1'))->toBeFalse();
 
     // 2. Operations on empty/non-existent directory
-    $emptyDirManager = new LockManager($this->tempDir . '/empty');
+    $emptyDirManager = new LockManager($this->tempDir.'/empty');
     expect($emptyDirManager->listLocks())->toBeArray();
     expect($emptyDirManager->clearStale())->toBeInt();
 
@@ -224,7 +224,7 @@ test('comprehensive file system error conditions', function () {
     // Create various problematic file system conditions
 
     // 1. Symbolic links to non-existent files
-    $symlinkPath = $this->tempDir . '/symlink.lock';
+    $symlinkPath = $this->tempDir.'/symlink.lock';
     if (function_exists('symlink')) {
         @symlink('/non/existent/target', $symlinkPath);
         $result = $manager->getLockInfo('symlink');

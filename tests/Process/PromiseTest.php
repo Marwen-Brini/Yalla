@@ -8,7 +8,7 @@ test('promise resolve', function () {
     $promise = new Promise(null);
     $result = null;
 
-    $promise->then(function($value) use (&$result) {
+    $promise->then(function ($value) use (&$result) {
         $result = $value;
     });
 
@@ -22,7 +22,7 @@ test('promise reject', function () {
     $promise = new Promise(null);
     $error = null;
 
-    $promise->catch(function($e) use (&$error) {
+    $promise->catch(function ($e) use (&$error) {
         $error = $e;
     });
 
@@ -38,7 +38,7 @@ test('promise finally', function () {
     $promise = new Promise(null);
     $finallyCalled = false;
 
-    $promise->finally(function() use (&$finallyCalled) {
+    $promise->finally(function () use (&$finallyCalled) {
         $finallyCalled = true;
     });
 
@@ -50,7 +50,7 @@ test('promise progress', function () {
     $promise = new Promise(null);
     $progressValues = [];
 
-    $promise->onProgress(function($value) use (&$progressValues) {
+    $promise->onProgress(function ($value) use (&$progressValues) {
         $progressValues[] = $value;
     });
 
@@ -67,11 +67,12 @@ test('promise chaining', function () {
     $results = [];
 
     $promise
-        ->then(function($value) use (&$results) {
+        ->then(function ($value) use (&$results) {
             $results[] = "First: $value";
+
             return $value;
         })
-        ->then(function($value) use (&$results) {
+        ->then(function ($value) use (&$results) {
             $results[] = "Second: $value";
         });
 
@@ -82,11 +83,12 @@ test('promise chaining', function () {
 
 test('promise wait', function () {
     $callCount = 0;
-    $promise = new Promise(function() use (&$callCount) {
+    $promise = new Promise(function () use (&$callCount) {
         $callCount++;
         if ($callCount >= 3) {
             return 'completed';
         }
+
         return null;
     });
 
@@ -95,11 +97,11 @@ test('promise wait', function () {
 });
 
 test('promise wait timeout', function () {
-    $promise = new Promise(function() {
+    $promise = new Promise(function () {
         return null; // Never resolves
     }, 1); // 1 second timeout
 
-    expect(fn() => $promise->wait(10000))
+    expect(fn () => $promise->wait(10000))
         ->toThrow(\RuntimeException::class, 'Promise timed out');
 });
 
@@ -140,7 +142,7 @@ test('promise all reject', function () {
 
     $all = Promise::all([$promise1, $promise2, $promise3]);
 
-    expect(fn() => $all->wait())
+    expect(fn () => $all->wait())
         ->toThrow(\RuntimeException::class, 'error');
 });
 
@@ -173,7 +175,7 @@ test('promise double resolve', function () {
     $promise = new Promise(null);
     $results = [];
 
-    $promise->then(function($value) use (&$results) {
+    $promise->then(function ($value) use (&$results) {
         $results[] = $value;
     });
 
@@ -187,7 +189,7 @@ test('promise double reject', function () {
     $promise = new Promise(null);
     $errors = [];
 
-    $promise->catch(function($e) use (&$errors) {
+    $promise->catch(function ($e) use (&$errors) {
         $errors[] = $e->getMessage();
     });
 

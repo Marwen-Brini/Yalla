@@ -9,7 +9,8 @@ use Yalla\Output\Output;
 use Yalla\Process\Promise;
 
 test('executeAsync progress callback execution covers line 36', function () {
-    $command = new class extends Command implements AsyncCommandInterface {
+    $command = new class extends Command implements AsyncCommandInterface
+    {
         use SupportsAsync;
 
         protected string $name = 'test:async';
@@ -36,7 +37,8 @@ test('executeAsync progress callback execution covers line 36', function () {
 });
 
 test('executeAsync verbose output with multiple progress updates', function () {
-    $command = new class extends Command implements AsyncCommandInterface {
+    $command = new class extends Command implements AsyncCommandInterface
+    {
         use SupportsAsync;
 
         protected string $name = 'test:async';
@@ -65,7 +67,8 @@ test('executeAsync verbose output with multiple progress updates', function () {
 });
 
 test('executeAsync non-verbose output should not trigger progress callback', function () {
-    $command = new class extends Command implements AsyncCommandInterface {
+    $command = new class extends Command implements AsyncCommandInterface
+    {
         use SupportsAsync;
 
         protected string $name = 'test:async';

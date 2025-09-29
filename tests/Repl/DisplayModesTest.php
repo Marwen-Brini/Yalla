@@ -11,17 +11,24 @@ use Yalla\Repl\ReplContext;
 use Yalla\Repl\ReplSession;
 
 // Helper function to create test class for modes
-function createTestClassForModes() {
-    return new class {
+function createTestClassForModes()
+{
+    return new class
+    {
         public $publicProp = 'public';
+
         protected $protectedProp = 'protected';
+
         private $privateProp = 'private';
 
         public function publicMethod() {}
+
         protected function protectedMethod() {}
+
         private function privateMethod() {}
 
-        public function __toString() {
+        public function __toString()
+        {
             return 'TestClass instance';
         }
     };

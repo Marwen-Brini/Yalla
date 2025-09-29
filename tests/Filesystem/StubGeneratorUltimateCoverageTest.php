@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Yalla\Filesystem\StubGenerator;
 
 beforeEach(function () {
-    $this->tempDir = sys_get_temp_dir() . '/yalla_stubgen_ultimate_' . uniqid();
+    $this->tempDir = sys_get_temp_dir().'/yalla_stubgen_ultimate_'.uniqid();
     mkdir($this->tempDir, 0755, true);
 
     $this->generator = new StubGenerator($this->tempDir);
@@ -14,7 +14,7 @@ beforeEach(function () {
 afterEach(function () {
     // Clean up temp directory
     if (is_dir($this->tempDir)) {
-        $files = glob($this->tempDir . '/*');
+        $files = glob($this->tempDir.'/*');
         if ($files) {
             foreach ($files as $file) {
                 if (is_file($file)) {
@@ -30,7 +30,7 @@ afterEach(function () {
 
 test('registerStubDirectory handles glob returning false (line 65)', function () {
     // Create a directory that will cause glob to fail
-    $badDir = $this->tempDir . '/bad_perms';
+    $badDir = $this->tempDir.'/bad_perms';
     mkdir($badDir, 0755, true);
 
     // Change permissions to make glob fail
@@ -50,7 +50,7 @@ test('registerStubDirectory handles glob returning false (line 65)', function ()
 
 test('getStubContent file_get_contents failure (line 160)', function () {
     // Create a stub file that exists but can't be read
-    $stubFile = $this->tempDir . '/unreadable.stub';
+    $stubFile = $this->tempDir.'/unreadable.stub';
 
     // Create a regular file first
     file_put_contents($stubFile, 'test content');
@@ -63,7 +63,7 @@ test('getStubContent file_get_contents failure (line 160)', function () {
         $this->generator->registerStub('unreadable', $stubFile);
 
         // This should trigger the file_get_contents failure (line 160)
-        expect(function() {
+        expect(function () {
             $this->generator->render('unreadable', []);
         })->toThrow(RuntimeException::class, 'Failed to read stub');
     } finally {
@@ -174,7 +174,7 @@ test('utility methods (lines 458-479)', function () {
     expect($this->generator->hasStub('nonexistent'))->toBeFalse();
 
     // Register a stub and test hasStub
-    $stubFile = $this->tempDir . '/test.stub';
+    $stubFile = $this->tempDir.'/test.stub';
     file_put_contents($stubFile, 'Test content');
     $this->generator->registerStub('test', $stubFile);
 
@@ -218,7 +218,7 @@ No features available.
         'features' => [
             ['name' => 'Feature A', 'enabled' => true],
             ['name' => 'Feature B', 'enabled' => false],
-        ]
+        ],
     ];
 
     $result1 = $this->generator->renderString($template, $data);
@@ -259,12 +259,12 @@ test('edge cases in template processing', function () {
 
 test('glob failure in registerStubDirectory with permission restoration', function () {
     // More thorough test of the glob failure path
-    $restrictedDir = $this->tempDir . '/restricted';
+    $restrictedDir = $this->tempDir.'/restricted';
     mkdir($restrictedDir, 0755, true);
 
     // Create some stub files first
-    file_put_contents($restrictedDir . '/test1.stub', 'Content 1');
-    file_put_contents($restrictedDir . '/test2.stub', 'Content 2');
+    file_put_contents($restrictedDir.'/test1.stub', 'Content 1');
+    file_put_contents($restrictedDir.'/test2.stub', 'Content 2');
 
     // Now make directory inaccessible
     chmod($restrictedDir, 0000);

@@ -11,8 +11,6 @@ use RuntimeException;
  *
  * Provides cross-platform lock management with stale lock detection
  * and automatic cleanup
- *
- * @package Yalla\Process
  */
 class LockManager
 {
@@ -34,14 +32,14 @@ class LockManager
     /**
      * Create a new LockManager instance
      *
-     * @param string|null $lockDirectory Directory for lock files
+     * @param  string|null  $lockDirectory  Directory for lock files
      */
     public function __construct(?string $lockDirectory = null)
     {
-        $this->lockDirectory = $lockDirectory ?? sys_get_temp_dir() . '/yalla-locks';
+        $this->lockDirectory = $lockDirectory ?? sys_get_temp_dir().'/yalla-locks';
 
-        if (!is_dir($this->lockDirectory)) {
-            if (!mkdir($this->lockDirectory, 0755, true) && !is_dir($this->lockDirectory)) {
+        if (! is_dir($this->lockDirectory)) {
+            if (! mkdir($this->lockDirectory, 0755, true) && ! is_dir($this->lockDirectory)) {
                 throw new RuntimeException("Failed to create lock directory: {$this->lockDirectory}");
             }
         }
@@ -50,9 +48,9 @@ class LockManager
     /**
      * Acquire a lock with timeout
      *
-     * @param string $name Lock name
-     * @param int $timeout Timeout in seconds
-     * @param bool $blocking Whether to wait for lock
+     * @param  string  $name  Lock name
+     * @param  int  $timeout  Timeout in seconds
+     * @param  bool  $blocking  Whether to wait for lock
      * @return bool Success status
      */
     public function acquire(string $name, int $timeout = 300, bool $blocking = true): bool
@@ -62,7 +60,9 @@ class LockManager
 
         while (true) {
             // Try to create lock file atomically with proper error handling
-            $oldErrorHandler = set_error_handler(function() { return true; });
+            $oldErrorHandler = set_error_handler(function () {
+                return true;
+            });
             $handle = fopen($lockFile, 'x');
             restore_error_handler();
 
@@ -83,11 +83,12 @@ class LockManager
             // Check if existing lock is stale
             if ($this->isStale($name)) {
                 $this->forceRelease($name);
+
                 continue;
             }
 
             // Non-blocking mode returns immediately
-            if (!$blocking) {
+            if (! $blocking) {
                 return false;
             }
 
@@ -104,7 +105,7 @@ class LockManager
     /**
      * Try to acquire lock (non-blocking)
      *
-     * @param string $name Lock name
+     * @param  string  $name  Lock name
      * @return bool Success status
      */
     public function tryAcquire(string $name): bool
@@ -115,15 +116,16 @@ class LockManager
     /**
      * Release a lock
      *
-     * @param string $name Lock name
+     * @param  string  $name  Lock name
      * @return bool Success status
      */
     public function release(string $name): bool
     {
         $lockFile = $this->getLockPath($name);
 
-        if (!file_exists($lockFile)) {
+        if (! file_exists($lockFile)) {
             unset($this->locks[$name]);
+
             return true;
         }
 
@@ -135,8 +137,10 @@ class LockManager
         if ($data && isset($data['pid']) && $data['pid'] === $currentPid) {
             if (@unlink($lockFile)) {
                 unset($this->locks[$name]);
+
                 return true;
             }
+
             return false;
         }
 
@@ -147,7 +151,7 @@ class LockManager
     /**
      * Force release a lock (dangerous - use with caution!)
      *
-     * @param string $name Lock name
+     * @param  string  $name  Lock name
      * @return bool Success status
      */
     public function forceRelease(string $name): bool
@@ -157,8 +161,10 @@ class LockManager
         if (file_exists($lockFile)) {
             if (@unlink($lockFile)) {
                 unset($this->locks[$name]);
+
                 return true;
             }
+
             return false;
         }
 
@@ -168,20 +174,20 @@ class LockManager
     /**
      * Check if lock exists and is valid
      *
-     * @param string $name Lock name
-     * @return bool
+     * @param  string  $name  Lock name
      */
     public function isLocked(string $name): bool
     {
         $lockFile = $this->getLockPath($name);
 
-        if (!file_exists($lockFile)) {
+        if (! file_exists($lockFile)) {
             return false;
         }
 
         // Check if lock is stale
         if ($this->isStale($name)) {
             $this->forceRelease($name);
+
             return false;
         }
 
@@ -191,15 +197,14 @@ class LockManager
     /**
      * Check if lock is stale
      *
-     * @param string $name Lock name
-     * @param int|null $maxAge Maximum age in seconds
-     * @return bool
+     * @param  string  $name  Lock name
+     * @param  int|null  $maxAge  Maximum age in seconds
      */
     public function isStale(string $name, ?int $maxAge = null): bool
     {
         $data = $this->getLockInfo($name);
 
-        if (!$data) {
+        if (! $data) {
             return true;
         }
 
@@ -212,7 +217,7 @@ class LockManager
 
         // Check if process is still running
         if (isset($data['pid'])) {
-            return !$this->isProcessRunning($data['pid'], $data['host'] ?? null);
+            return ! $this->isProcessRunning($data['pid'], $data['host'] ?? null);
         }
 
         return false;
@@ -221,9 +226,8 @@ class LockManager
     /**
      * Check if process is running
      *
-     * @param int $pid Process ID
-     * @param string|null $host Hostname
-     * @return bool
+     * @param  int  $pid  Process ID
+     * @param  string|null  $host  Hostname
      */
     protected function isProcessRunning(int $pid, ?string $host = null): bool
     {
@@ -243,6 +247,7 @@ class LockManager
         if (PHP_OS_FAMILY === 'Windows') {
             $output = [];
             exec("tasklist /FI \"PID eq {$pid}\" 2>nul", $output);
+
             return count($output) > 1;
         }
 
@@ -259,14 +264,14 @@ class LockManager
     /**
      * Get lock information
      *
-     * @param string $name Lock name
+     * @param  string  $name  Lock name
      * @return array|null Lock data or null if not found
      */
     public function getLockInfo(string $name): ?array
     {
         $lockFile = $this->getLockPath($name);
 
-        if (!file_exists($lockFile)) {
+        if (! file_exists($lockFile)) {
             return null;
         }
 
@@ -276,7 +281,7 @@ class LockManager
         }
 
         $data = json_decode($content, true);
-        if (!is_array($data)) {
+        if (! is_array($data)) {
             return null;
         }
 
@@ -286,8 +291,8 @@ class LockManager
     /**
      * Wait for lock to be released
      *
-     * @param string $name Lock name
-     * @param int $timeout Timeout in seconds
+     * @param  string  $name  Lock name
+     * @param  int  $timeout  Timeout in seconds
      * @return bool True if lock was released, false if timeout
      */
     public function wait(string $name, int $timeout = 300): bool
@@ -313,7 +318,7 @@ class LockManager
     public function listLocks(): array
     {
         $locks = [];
-        $files = glob($this->lockDirectory . '/*.lock');
+        $files = glob($this->lockDirectory.'/*.lock');
 
         // @codeCoverageIgnoreStart
         if ($files === false) {
@@ -325,7 +330,7 @@ class LockManager
             $name = basename($file, '.lock');
             $info = $this->getLockInfo($name);
 
-            if ($info && !$this->isStale($name)) {
+            if ($info && ! $this->isStale($name)) {
                 $locks[$name] = $info;
             }
         }
@@ -336,13 +341,13 @@ class LockManager
     /**
      * Clear all stale locks
      *
-     * @param int|null $maxAge Maximum age in seconds
+     * @param  int|null  $maxAge  Maximum age in seconds
      * @return int Number of locks cleared
      */
     public function clearStale(?int $maxAge = null): int
     {
         $cleared = 0;
-        $files = glob($this->lockDirectory . '/*.lock');
+        $files = glob($this->lockDirectory.'/*.lock');
 
         // @codeCoverageIgnoreStart
         if ($files === false) {
@@ -366,14 +371,15 @@ class LockManager
     /**
      * Get lock file path
      *
-     * @param string $name Lock name
+     * @param  string  $name  Lock name
      * @return string Lock file path
      */
     protected function getLockPath(string $name): string
     {
         // Sanitize name for filesystem
         $safeName = preg_replace('/[^a-zA-Z0-9_-]/', '_', $name);
-        return $this->lockDirectory . '/' . $safeName . '.lock';
+
+        return $this->lockDirectory.'/'.$safeName.'.lock';
     }
 
     /**
@@ -410,8 +416,6 @@ class LockManager
 
     /**
      * Get the lock directory path
-     *
-     * @return string
      */
     public function getLockDirectory(): string
     {
@@ -421,8 +425,7 @@ class LockManager
     /**
      * Set default max age for stale locks
      *
-     * @param int $seconds Max age in seconds
-     * @return void
+     * @param  int  $seconds  Max age in seconds
      */
     public function setDefaultMaxAge(int $seconds): void
     {
@@ -432,7 +435,7 @@ class LockManager
     /**
      * Get human-readable lock status
      *
-     * @param string $name Lock name
+     * @param  string  $name  Lock name
      * @return string Status description
      */
     public function getLockStatus(string $name): string
@@ -440,18 +443,18 @@ class LockManager
         $lockFile = $this->getLockPath($name);
 
         // Check if lock file exists first (before isLocked which may clean stale files)
-        if (!file_exists($lockFile)) {
+        if (! file_exists($lockFile)) {
             return 'Not locked';
         }
 
         // Try to get lock info
         $info = $this->getLockInfo($name);
-        if (!$info) {
+        if (! $info) {
             return 'Locked (no info available)';
         }
 
         // If we have info but isLocked says it's not locked (stale), it's been cleaned up
-        if (!$this->isLocked($name)) {
+        if (! $this->isLocked($name)) {
             return 'Not locked';
         }
 
@@ -469,7 +472,7 @@ class LockManager
     /**
      * Format duration in human-readable format
      *
-     * @param int $seconds Duration in seconds
+     * @param  int  $seconds  Duration in seconds
      * @return string Formatted duration
      */
     protected function formatDuration(int $seconds): string
@@ -481,29 +484,30 @@ class LockManager
         if ($seconds < 3600) {
             $minutes = floor($seconds / 60);
             $seconds = $seconds % 60;
+
             return "{$minutes}m {$seconds}s";
         }
 
         $hours = floor($seconds / 3600);
         $minutes = floor(($seconds % 3600) / 60);
+
         return "{$hours}h {$minutes}m";
     }
 
     /**
      * Check if we own a lock
      *
-     * @param string $name Lock name
-     * @return bool
+     * @param  string  $name  Lock name
      */
     public function ownsLock(string $name): bool
     {
-        if (!$this->isLocked($name)) {
+        if (! $this->isLocked($name)) {
             return false;
         }
 
         $info = $this->getLockInfo($name);
         // @codeCoverageIgnoreStart
-        if (!$info) {
+        if (! $info) {
             return false;
         }
         // @codeCoverageIgnoreEnd
@@ -519,12 +523,12 @@ class LockManager
     /**
      * Refresh lock timestamp to prevent it from becoming stale
      *
-     * @param string $name Lock name
+     * @param  string  $name  Lock name
      * @return bool Success status
      */
     public function refresh(string $name): bool
     {
-        if (!$this->ownsLock($name)) {
+        if (! $this->ownsLock($name)) {
             return false;
         }
 

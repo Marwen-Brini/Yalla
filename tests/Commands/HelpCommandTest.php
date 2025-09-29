@@ -10,7 +10,8 @@ use Yalla\Output\Output;
 // Helper function to create sample command
 function createSampleCommand()
 {
-    return new class extends Command {
+    return new class extends Command
+    {
         public function __construct()
         {
             $this->name = 'sample';

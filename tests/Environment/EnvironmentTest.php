@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Yalla\Environment\Environment;
 
 beforeEach(function () {
-    $this->tempDir = sys_get_temp_dir() . '/yalla_env_test_' . uniqid();
+    $this->tempDir = sys_get_temp_dir().'/yalla_env_test_'.uniqid();
     mkdir($this->tempDir);
 
     // Save original environment
@@ -24,13 +24,13 @@ afterEach(function () {
 
 function deleteDirectoryRecursively(string $dir): void
 {
-    if (!is_dir($dir)) {
+    if (! is_dir($dir)) {
         return;
     }
 
     $files = array_merge(
-        glob($dir . '/*') ?: [],
-        glob($dir . '/.*') ?: []
+        glob($dir.'/*') ?: [],
+        glob($dir.'/.*') ?: []
     );
 
     foreach ($files as $file) {
@@ -51,13 +51,14 @@ function deleteDirectoryRecursively(string $dir): void
 
 function createEnvFile(string $content, string $filename = '.env'): string
 {
-    $path = test()->tempDir . '/' . $filename;
+    $path = test()->tempDir.'/'.$filename;
     file_put_contents($path, $content);
+
     return $path;
 }
 
 test('load basic env file', function () {
-    $content = <<<ENV
+    $content = <<<'ENV'
 APP_NAME=TestApp
 APP_ENV=testing
 APP_DEBUG=true
@@ -74,7 +75,7 @@ ENV;
 });
 
 test('skips comments', function () {
-    $content = <<<ENV
+    $content = <<<'ENV'
 # This is a comment
 APP_NAME=TestApp
 # Another comment
@@ -89,10 +90,10 @@ ENV;
 });
 
 test('handles quoted values', function () {
-    $content = <<<ENV
+    $content = <<<'ENV'
 SINGLE_QUOTED='single quoted value'
 DOUBLE_QUOTED="double quoted value"
-ESCAPED="Line with\\nnewline and\\ttab"
+ESCAPED="Line with\nnewline and\ttab"
 WITH_SPACES="  spaces preserved  "
 ENV;
 
@@ -106,12 +107,12 @@ ENV;
 });
 
 test('variable expansion', function () {
-    $content = <<<ENV
+    $content = <<<'ENV'
 BASE_URL=http://localhost
-API_URL=\${BASE_URL}/api
-FULL_URL=\$BASE_URL/full
+API_URL=${BASE_URL}/api
+FULL_URL=$BASE_URL/full
 DATABASE_HOST=localhost
-DATABASE_URL=mysql://\${DATABASE_HOST}/db
+DATABASE_URL=mysql://${DATABASE_HOST}/db
 ENV;
 
     $envFile = createEnvFile($content);
@@ -124,7 +125,7 @@ ENV;
 });
 
 test('special values', function () {
-    $content = <<<ENV
+    $content = <<<'ENV'
 TRUE_VALUE=true
 FALSE_VALUE=false
 NULL_VALUE=null
@@ -145,13 +146,13 @@ ENV;
 });
 
 test('get required', function () {
-    $content = "REQUIRED_VAR=value";
+    $content = 'REQUIRED_VAR=value';
     $envFile = createEnvFile($content);
     $env = new Environment([$envFile]);
 
     expect($env->getRequired('REQUIRED_VAR'))->toBe('value');
 
-    expect(fn() => $env->getRequired('MISSING_VAR'))
+    expect(fn () => $env->getRequired('MISSING_VAR'))
         ->toThrow(RuntimeException::class, 'Required environment variable not set: MISSING_VAR');
 });
 
@@ -159,7 +160,7 @@ test('set and has', function () {
     $env = new Environment([]);
 
     // Use a unique variable name to avoid system conflicts
-    $uniqueVar = 'YALLA_TEST_VAR_' . uniqid();
+    $uniqueVar = 'YALLA_TEST_VAR_'.uniqid();
 
     expect($env->has($uniqueVar))->toBeFalse();
 
@@ -223,7 +224,7 @@ test('is method', function () {
 });
 
 test('typed getters', function () {
-    $content = <<<ENV
+    $content = <<<'ENV'
 INT_VALUE=42
 FLOAT_VALUE=3.14
 BOOL_TRUE=true
@@ -341,7 +342,7 @@ test('get all', function () {
 });
 
 test('clear and reload', function () {
-    $content = "TEST_VAR=original";
+    $content = 'TEST_VAR=original';
     $envFile = createEnvFile($content);
     $env = new Environment([$envFile]);
 
@@ -355,7 +356,7 @@ test('clear and reload', function () {
 });
 
 test('empty lines', function () {
-    $content = <<<ENV
+    $content = <<<'ENV'
 VAR1=value1
 
 VAR2=value2
@@ -382,7 +383,7 @@ test('unreadable file throws exception', function () {
     $envFile = createEnvFile('TEST=value');
     chmod($envFile, 0000);
 
-    expect(fn() => new Environment([$envFile]))
+    expect(fn () => new Environment([$envFile]))
         ->toThrow(RuntimeException::class, 'Environment file not readable');
 });
 

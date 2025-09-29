@@ -7,8 +7,10 @@ use Yalla\Commands\ExitCodes;
 use Yalla\Output\Output;
 
 // Test command implementation that exposes protected methods for testing
-class TestableCommand extends Command {
+class TestableCommand extends Command
+{
     protected string $name = 'test:command';
+
     protected string $description = 'Test command for exit code testing';
 
     public function execute(array $input, Output $output): int
@@ -19,25 +21,29 @@ class TestableCommand extends Command {
     // Expose protected methods for testing
     public function testReturnWithCode(int $code = ExitCodes::EXIT_SUCCESS, ?string $message = null): int
     {
-        $this->output = new Output();
+        $this->output = new Output;
+
         return $this->returnWithCode($code, $message);
     }
 
     public function testReturnSuccess(?string $message = null): int
     {
-        $this->output = new Output();
+        $this->output = new Output;
+
         return $this->returnSuccess($message);
     }
 
     public function testReturnError(string $message, int $code = ExitCodes::EXIT_FAILURE): int
     {
-        $this->output = new Output();
+        $this->output = new Output;
+
         return $this->returnError($message, $code);
     }
 
     public function testHandleException(\Throwable $exception): int
     {
-        $this->output = new Output();
+        $this->output = new Output;
+
         return $this->handleException($exception);
     }
 
@@ -48,8 +54,8 @@ class TestableCommand extends Command {
 }
 
 beforeEach(function () {
-    $this->output = new Output();
-    $this->command = new TestableCommand();
+    $this->output = new Output;
+    $this->command = new TestableCommand;
 });
 
 // Test exit code constants
@@ -194,24 +200,26 @@ test('returnError returns error code', function () {
 test('mapExceptionToExitCode maps exceptions correctly', function () {
     $mappings = [
         // Standard PHP exceptions
-        ['exception' => new \InvalidArgumentException(), 'expected' => ExitCodes::EXIT_USAGE],
-        ['exception' => new \BadMethodCallException(), 'expected' => ExitCodes::EXIT_SOFTWARE],
-        ['exception' => new \DomainException(), 'expected' => ExitCodes::EXIT_CONFIG],
-        ['exception' => new \RangeException(), 'expected' => ExitCodes::EXIT_DATAERR],
-        ['exception' => new \UnexpectedValueException(), 'expected' => ExitCodes::EXIT_DATAERR],
-        ['exception' => new \LengthException(), 'expected' => ExitCodes::EXIT_DATAERR],
-        ['exception' => new \OutOfBoundsException(), 'expected' => ExitCodes::EXIT_DATAERR],
-        ['exception' => new \OverflowException(), 'expected' => ExitCodes::EXIT_TEMPFAIL],
-        ['exception' => new \UnderflowException(), 'expected' => ExitCodes::EXIT_TEMPFAIL],
-        ['exception' => new \RuntimeException(), 'expected' => ExitCodes::EXIT_SOFTWARE],
-        ['exception' => new \LogicException(), 'expected' => ExitCodes::EXIT_SOFTWARE],
-        ['exception' => new \Exception(), 'expected' => ExitCodes::EXIT_FAILURE],
+        ['exception' => new \InvalidArgumentException, 'expected' => ExitCodes::EXIT_USAGE],
+        ['exception' => new \BadMethodCallException, 'expected' => ExitCodes::EXIT_SOFTWARE],
+        ['exception' => new \DomainException, 'expected' => ExitCodes::EXIT_CONFIG],
+        ['exception' => new \RangeException, 'expected' => ExitCodes::EXIT_DATAERR],
+        ['exception' => new \UnexpectedValueException, 'expected' => ExitCodes::EXIT_DATAERR],
+        ['exception' => new \LengthException, 'expected' => ExitCodes::EXIT_DATAERR],
+        ['exception' => new \OutOfBoundsException, 'expected' => ExitCodes::EXIT_DATAERR],
+        ['exception' => new \OverflowException, 'expected' => ExitCodes::EXIT_TEMPFAIL],
+        ['exception' => new \UnderflowException, 'expected' => ExitCodes::EXIT_TEMPFAIL],
+        ['exception' => new \RuntimeException, 'expected' => ExitCodes::EXIT_SOFTWARE],
+        ['exception' => new \LogicException, 'expected' => ExitCodes::EXIT_SOFTWARE],
+        ['exception' => new \Exception, 'expected' => ExitCodes::EXIT_FAILURE],
     ];
 
     foreach ($mappings as $mapping) {
         $result = $this->command->testMapExceptionToExitCode($mapping['exception']);
-        expect($result)->toBe($mapping['expected'],
-            "Failed for " . get_class($mapping['exception']));
+        expect($result)->toBe(
+            $mapping['expected'],
+            'Failed for '.get_class($mapping['exception'])
+        );
     }
 });
 
@@ -228,8 +236,10 @@ test('handleException returns appropriate exit code', function () {
 
 test('handleException includes stack trace in debug mode', function () {
     // Create a test command with debug output
-    $command = new class extends Command {
+    $command = new class extends Command
+    {
         protected string $name = 'test:debug';
+
         protected string $description = 'Test debug command';
 
         public function execute(array $input, Output $output): int
@@ -240,11 +250,14 @@ test('handleException includes stack trace in debug mode', function () {
         public function testHandleExceptionDebug(\Throwable $exception): int
         {
             // Create an output mock that reports debug mode
-            $this->output = new class extends Output {
-                public function isDebug(): bool {
+            $this->output = new class extends Output
+            {
+                public function isDebug(): bool
+                {
                     return true;
                 }
             };
+
             return $this->handleException($exception);
         }
     };
@@ -262,8 +275,10 @@ test('handleException includes stack trace in debug mode', function () {
 
 test('setOutput method works correctly', function () {
     // Create a test command that exposes setOutput
-    $command = new class extends Command {
+    $command = new class extends Command
+    {
         protected string $name = 'test:output';
+
         protected string $description = 'Test output command';
 
         public function execute(array $input, Output $output): int
@@ -282,7 +297,7 @@ test('setOutput method works correctly', function () {
         }
     };
 
-    $output = new Output();
+    $output = new Output;
     $result = $command->testSetOutput($output);
 
     // Test that it returns self for chaining

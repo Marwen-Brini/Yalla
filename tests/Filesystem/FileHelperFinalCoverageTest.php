@@ -5,8 +5,8 @@ declare(strict_types=1);
 use Yalla\Filesystem\FileHelper;
 
 beforeEach(function () {
-    $this->helper = new FileHelper();
-    $this->tempDir = sys_get_temp_dir() . '/yalla_filehelper_final_' . uniqid();
+    $this->helper = new FileHelper;
+    $this->tempDir = sys_get_temp_dir().'/yalla_filehelper_final_'.uniqid();
     mkdir($this->tempDir, 0755, true);
 });
 
@@ -18,11 +18,12 @@ afterEach(function () {
 });
 
 // Helper method for cleanup (bound to test context)
-function cleanupDirectory($dir) {
+function cleanupDirectory($dir)
+{
     if (is_dir($dir)) {
         $files = array_diff(scandir($dir), ['.', '..']);
         foreach ($files as $file) {
-            $path = $dir . '/' . $file;
+            $path = $dir.'/'.$file;
             if (is_dir($path)) {
                 // Fix permissions if needed
                 chmod($path, 0755);
@@ -40,32 +41,32 @@ function cleanupDirectory($dir) {
 
 test('uniqueFilename handles existing files with extensions (lines 83-88)', function () {
     // Test the counter suffix logic for files with extensions
-    $existingFile = $this->tempDir . '/test.txt';
+    $existingFile = $this->tempDir.'/test.txt';
     file_put_contents($existingFile, 'content');
 
     // This should trigger the counter suffix logic (lines 83-88)
     $uniquePath = $this->helper->uniqueFilename($this->tempDir, 'test.txt');
 
-    expect($uniquePath)->toBe($this->tempDir . '/test_1.txt');
+    expect($uniquePath)->toBe($this->tempDir.'/test_1.txt');
     expect(file_exists($existingFile))->toBeTrue();
     expect(file_exists($uniquePath))->toBeFalse();
 });
 
 test('uniqueFilename handles existing files without extensions (lines 83-88)', function () {
     // Test files without extensions
-    $existingFile = $this->tempDir . '/testfile';
+    $existingFile = $this->tempDir.'/testfile';
     file_put_contents($existingFile, 'content');
 
     $uniquePath = $this->helper->uniqueFilename($this->tempDir, 'testfile');
 
-    expect($uniquePath)->toBe($this->tempDir . '/testfile_1');
+    expect($uniquePath)->toBe($this->tempDir.'/testfile_1');
     expect(file_exists($existingFile))->toBeTrue();
     expect(file_exists($uniquePath))->toBeFalse();
 });
 
 test('safeWrite backup copy failure (line 113)', function () {
     // Create existing file
-    $filePath = $this->tempDir . '/existing.txt';
+    $filePath = $this->tempDir.'/existing.txt';
     file_put_contents($filePath, 'original content');
 
     // Make the directory read-only to prevent backup creation
@@ -73,7 +74,7 @@ test('safeWrite backup copy failure (line 113)', function () {
 
     try {
         // This should fail when trying to create backup (line 113)
-        expect(function() use ($filePath) {
+        expect(function () use ($filePath) {
             $this->helper->safeWrite($filePath, 'new content', true);
         })->toThrow(RuntimeException::class, 'Failed to create backup');
     } finally {
@@ -87,15 +88,15 @@ test('safeWrite file_put_contents failure (lines 122-123)', function () {
     // One approach is to fill up disk space, but that's not reliable in tests
 
     // Instead, let's test the path by using a read-only directory for temp file creation
-    $readOnlyDir = $this->tempDir . '/readonly';
+    $readOnlyDir = $this->tempDir.'/readonly';
     mkdir($readOnlyDir, 0755);
     chmod($readOnlyDir, 0555); // Read-only
 
-    $filePath = $readOnlyDir . '/test.txt';
+    $filePath = $readOnlyDir.'/test.txt';
 
     try {
         // This should fail when trying to write temp file (lines 122-123)
-        expect(function() use ($filePath) {
+        expect(function () use ($filePath) {
             $this->helper->safeWrite($filePath, 'content', false);
         })->toThrow(RuntimeException::class, 'Failed to write temporary file');
     } finally {
@@ -106,14 +107,14 @@ test('safeWrite file_put_contents failure (lines 122-123)', function () {
 
 test('safeWrite rename failure (lines 128-129)', function () {
     // Create a directory structure where rename might fail
-    $filePath = $this->tempDir . '/test.txt';
+    $filePath = $this->tempDir.'/test.txt';
 
     // Create a directory with the target filename to block the rename
     mkdir($filePath, 0755); // Create directory with same name as target file
 
     try {
         // This should fail during rename operation (lines 128-129)
-        expect(function() use ($filePath) {
+        expect(function () use ($filePath) {
             $this->helper->safeWrite($filePath, 'content', false);
         })->toThrow(RuntimeException::class, 'Failed to move file to');
     } finally {
@@ -125,34 +126,34 @@ test('safeWrite rename failure (lines 128-129)', function () {
 });
 
 test('copyDirectory with overwrite false skips existing files (line 261)', function () {
-    $sourceDir = $this->tempDir . '/source';
-    $destDir = $this->tempDir . '/dest';
+    $sourceDir = $this->tempDir.'/source';
+    $destDir = $this->tempDir.'/dest';
 
     mkdir($sourceDir, 0755, true);
     mkdir($destDir, 0755, true);
 
     // Create source file
-    file_put_contents($sourceDir . '/file.txt', 'source content');
+    file_put_contents($sourceDir.'/file.txt', 'source content');
 
     // Create destination file with different content
-    file_put_contents($destDir . '/file.txt', 'existing content');
+    file_put_contents($destDir.'/file.txt', 'existing content');
 
     // Copy without overwrite - should skip the existing file (line 261)
     $result = $this->helper->copyDirectory($sourceDir, $destDir, false);
 
     expect($result)->toBeTrue();
     // File should still have original content
-    expect(file_get_contents($destDir . '/file.txt'))->toBe('existing content');
+    expect(file_get_contents($destDir.'/file.txt'))->toBe('existing content');
 });
 
 test('copyDirectory copy failure (line 265)', function () {
-    $sourceDir = $this->tempDir . '/source';
-    $destDir = $this->tempDir . '/dest';
+    $sourceDir = $this->tempDir.'/source';
+    $destDir = $this->tempDir.'/dest';
 
     mkdir($sourceDir, 0755, true);
 
     // Create source file
-    $sourceFile = $sourceDir . '/file.txt';
+    $sourceFile = $sourceDir.'/file.txt';
     file_put_contents($sourceFile, 'content');
 
     // Make destination directory read-only to cause copy failure
@@ -171,11 +172,11 @@ test('copyDirectory copy failure (line 265)', function () {
 
 test('deleteDirectory failure (line 293)', function () {
     // Create a directory structure
-    $dirToDelete = $this->tempDir . '/delete_test';
+    $dirToDelete = $this->tempDir.'/delete_test';
     mkdir($dirToDelete, 0755, true);
 
     // Create a file in the directory
-    $file = $dirToDelete . '/file.txt';
+    $file = $dirToDelete.'/file.txt';
     file_put_contents($file, 'content');
 
     // Make the file unremovable by changing its permissions
@@ -212,7 +213,7 @@ test('deleteDirectory failure (line 293)', function () {
 
 test('humanFilesize when filesize returns false (line 315)', function () {
     // Use a non-existent file to make filesize() return false for sure
-    $nonExistentFile = $this->tempDir . '/non_existent_file.txt';
+    $nonExistentFile = $this->tempDir.'/non_existent_file.txt';
 
     // Ensure the file doesn't exist
     expect(file_exists($nonExistentFile))->toBeFalse();
@@ -222,7 +223,7 @@ test('humanFilesize when filesize returns false (line 315)', function () {
     // Let's create the file and then test filesize failure on a special file
 
     // Actually, let's test with a different approach - create a file and make it unreadable
-    $testFile = $this->tempDir . '/test_filesize.txt';
+    $testFile = $this->tempDir.'/test_filesize.txt';
     touch($testFile);
 
     // Use reflection to test the filesize === false path directly
@@ -247,18 +248,18 @@ test('humanFilesize when filesize returns false (line 315)', function () {
 
 test('uniqueFilename with multiple existing files', function () {
     // Create multiple existing files to test counter increment
-    file_put_contents($this->tempDir . '/test.log', 'content');
-    file_put_contents($this->tempDir . '/test_1.log', 'content');
-    file_put_contents($this->tempDir . '/test_2.log', 'content');
+    file_put_contents($this->tempDir.'/test.log', 'content');
+    file_put_contents($this->tempDir.'/test_1.log', 'content');
+    file_put_contents($this->tempDir.'/test_2.log', 'content');
 
     $uniquePath = $this->helper->uniqueFilename($this->tempDir, 'test.log');
 
-    expect($uniquePath)->toBe($this->tempDir . '/test_3.log');
+    expect($uniquePath)->toBe($this->tempDir.'/test_3.log');
 });
 
 test('safeWrite with successful backup creation', function () {
     // Test successful backup creation path
-    $filePath = $this->tempDir . '/backup_test.txt';
+    $filePath = $this->tempDir.'/backup_test.txt';
     file_put_contents($filePath, 'original');
 
     $result = $this->helper->safeWrite($filePath, 'updated', true);
@@ -267,6 +268,6 @@ test('safeWrite with successful backup creation', function () {
     expect(file_get_contents($filePath))->toBe('updated');
 
     // Check that backup was created
-    $backupFiles = glob($this->tempDir . '/.backup_test.txt.backup.*');
+    $backupFiles = glob($this->tempDir.'/.backup_test.txt.backup.*');
     expect(count($backupFiles))->toBeGreaterThan(0);
 });

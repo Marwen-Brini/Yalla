@@ -11,39 +11,51 @@ use Yalla\Repl\ReplContext;
 use Yalla\Repl\ReplSession;
 
 // Helper functions to create test models
-function createTestModelWithProtected($id, $name) {
-    return new class($id, $name) {
+function createTestModelWithProtected($id, $name)
+{
+    return new class($id, $name)
+    {
         protected $id;
+
         protected $name;
 
-        public function __construct($id, $name) {
+        public function __construct($id, $name)
+        {
             $this->id = $id;
             $this->name = $name;
         }
     };
 }
 
-function createTestModelWithPublic($id, $title) {
-    return new class($id, $title) {
+function createTestModelWithPublic($id, $title)
+{
+    return new class($id, $title)
+    {
         public $id;
+
         public $title;
 
-        public function __construct($id, $title) {
+        public function __construct($id, $title)
+        {
             $this->id = $id;
             $this->title = $title;
         }
     };
 }
 
-function createTestModelWithToString($value) {
-    return new class($value) {
+function createTestModelWithToString($value)
+{
+    return new class($value)
+    {
         protected $value;
 
-        public function __construct($value) {
+        public function __construct($value)
+        {
             $this->value = $value;
         }
 
-        public function __toString() {
+        public function __toString()
+        {
             return "Model: {$this->value}";
         }
     };

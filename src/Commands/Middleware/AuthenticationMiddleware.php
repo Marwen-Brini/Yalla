@@ -10,7 +10,9 @@ use Yalla\Output\Output;
 class AuthenticationMiddleware implements MiddlewareInterface
 {
     private array $protectedCommands = [];
+
     private ?\Closure $authCallback;
+
     private int $priority;
 
     public function __construct(?\Closure $authCallback = null, int $priority = 200)
@@ -21,23 +23,18 @@ class AuthenticationMiddleware implements MiddlewareInterface
 
     /**
      * Handle the command execution with authentication
-     *
-     * @param Command $command
-     * @param array $input
-     * @param Output $output
-     * @param \Closure $next
-     * @return int
      */
     public function handle(Command $command, array $input, Output $output, \Closure $next): int
     {
         // Check if authentication is required
-        if (!$this->isProtected($command->getName())) {
+        if (! $this->isProtected($command->getName())) {
             return $next($command, $input, $output);
         }
 
         // Perform authentication
-        if (!$this->authenticate($input, $output)) {
+        if (! $this->authenticate($input, $output)) {
             $output->error('Authentication failed. Access denied.');
+
             return 77; // EXIT_NOPERM
         }
 
@@ -47,8 +44,6 @@ class AuthenticationMiddleware implements MiddlewareInterface
 
     /**
      * Get the priority of this middleware
-     *
-     * @return int
      */
     public function getPriority(): int
     {
@@ -57,10 +52,6 @@ class AuthenticationMiddleware implements MiddlewareInterface
 
     /**
      * Check if this middleware should be applied
-     *
-     * @param Command $command
-     * @param array $input
-     * @return bool
      */
     public function shouldApply(Command $command, array $input): bool
     {
@@ -70,33 +61,26 @@ class AuthenticationMiddleware implements MiddlewareInterface
 
     /**
      * Add a command to the protected list
-     *
-     * @param string $commandName
-     * @return self
      */
     public function protect(string $commandName): self
     {
         $this->protectedCommands[] = $commandName;
+
         return $this;
     }
 
     /**
      * Add multiple commands to the protected list
-     *
-     * @param array $commandNames
-     * @return self
      */
     public function protectMultiple(array $commandNames): self
     {
         $this->protectedCommands = array_merge($this->protectedCommands, $commandNames);
+
         return $this;
     }
 
     /**
      * Check if a command is protected
-     *
-     * @param string $commandName
-     * @return bool
      */
     public function isProtected(string $commandName): bool
     {
@@ -105,22 +89,16 @@ class AuthenticationMiddleware implements MiddlewareInterface
 
     /**
      * Set the authentication callback
-     *
-     * @param \Closure $callback
-     * @return self
      */
     public function setAuthCallback(\Closure $callback): self
     {
         $this->authCallback = $callback;
+
         return $this;
     }
 
     /**
      * Perform authentication
-     *
-     * @param array $input
-     * @param Output $output
-     * @return bool
      */
     private function authenticate(array $input, Output $output): bool
     {
@@ -138,6 +116,7 @@ class AuthenticationMiddleware implements MiddlewareInterface
         $authFile = $input['options']['auth-file'] ?? '.yalla-auth';
         if (file_exists($authFile)) {
             $token = trim(file_get_contents($authFile));
+
             return $this->validateToken($token);
         }
 
@@ -152,13 +131,10 @@ class AuthenticationMiddleware implements MiddlewareInterface
 
     /**
      * Validate an authentication token
-     *
-     * @param string $token
-     * @return bool
      */
     private function validateToken(string $token): bool
     {
         // Simple token validation - override in subclass for custom logic
-        return !empty($token) && strlen($token) >= 32;
+        return ! empty($token) && strlen($token) >= 32;
     }
 }

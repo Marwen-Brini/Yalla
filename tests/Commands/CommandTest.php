@@ -8,7 +8,8 @@ use Yalla\Output\Output;
 // Helper function to create test command
 function createTestCommandInstance()
 {
-    return new class extends Command {
+    return new class extends Command
+    {
         public function __construct()
         {
             $this->name = 'test';

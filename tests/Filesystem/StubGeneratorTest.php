@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Yalla\Filesystem\StubGenerator;
 
 beforeEach(function () {
-    $this->tempDir = sys_get_temp_dir() . '/yalla_stubgen_test_' . uniqid();
+    $this->tempDir = sys_get_temp_dir().'/yalla_stubgen_test_'.uniqid();
     mkdir($this->tempDir);
 
     $this->generator = new StubGenerator($this->tempDir);
@@ -26,7 +26,7 @@ afterEach(function () {
 });
 
 test('registerStub adds stub to registry', function () {
-    $stubPath = $this->tempDir . '/test.stub';
+    $stubPath = $this->tempDir.'/test.stub';
     file_put_contents($stubPath, 'Hello {{ name }}');
 
     $this->generator->registerStub('greeting', $stubPath);
@@ -47,9 +47,9 @@ test('registerStub allows non-existent file registration', function () {
 
 test('registerStubDirectory loads all stub files', function () {
     // Create stub files
-    file_put_contents($this->tempDir . '/model.stub', 'Model: {{ name }}');
-    file_put_contents($this->tempDir . '/controller.stub', 'Controller: {{ name }}');
-    file_put_contents($this->tempDir . '/not-a-stub.txt', 'Should be ignored');
+    file_put_contents($this->tempDir.'/model.stub', 'Model: {{ name }}');
+    file_put_contents($this->tempDir.'/controller.stub', 'Controller: {{ name }}');
+    file_put_contents($this->tempDir.'/not-a-stub.txt', 'Should be ignored');
 
     $this->generator->registerStubDirectory($this->tempDir);
 
@@ -74,14 +74,14 @@ test('render throws exception for unregistered stub', function () {
 
 test('render replaces basic variables', function () {
     $stubContent = 'Hello {{ name }}, welcome to {{ place }}!';
-    $stubPath = $this->tempDir . '/welcome.stub';
+    $stubPath = $this->tempDir.'/welcome.stub';
     file_put_contents($stubPath, $stubContent);
 
     $this->generator->registerStub('welcome', $stubPath);
 
     $result = $this->generator->render('welcome', [
         'name' => 'Alice',
-        'place' => 'Wonderland'
+        'place' => 'Wonderland',
     ]);
 
     $this->assertEquals('Hello Alice, welcome to Wonderland!', $result);
@@ -89,7 +89,7 @@ test('render replaces basic variables', function () {
 
 test('render handles variable formats', function () {
     $stubContent = '{{var1}} {{ var2 }} {{var3}} {{var4}}';
-    $stubPath = $this->tempDir . '/formats.stub';
+    $stubPath = $this->tempDir.'/formats.stub';
     file_put_contents($stubPath, $stubContent);
 
     $this->generator->registerStub('formats', $stubPath);
@@ -98,7 +98,7 @@ test('render handles variable formats', function () {
         'var1' => 'test1',
         'var2' => 'test2',
         'var3' => 'test3',
-        'var4' => 'test4'
+        'var4' => 'test4',
     ]);
 
     $this->assertEquals('test1 test2 test3 test4', $result);
@@ -109,7 +109,7 @@ test('renderString processes template directly', function () {
 
     $result = $this->generator->renderString($template, [
         'name' => 'John',
-        'age' => '30'
+        'age' => '30',
     ]);
 
     $this->assertEquals('Name: John, Age: 30', $result);
@@ -117,12 +117,12 @@ test('renderString processes template directly', function () {
 
 test('generate creates file from stub', function () {
     $stubContent = '<?php echo "{{ message }}";';
-    $stubPath = $this->tempDir . '/php.stub';
+    $stubPath = $this->tempDir.'/php.stub';
     file_put_contents($stubPath, $stubContent);
 
     $this->generator->registerStub('php', $stubPath);
 
-    $outputFile = $this->tempDir . '/output.php';
+    $outputFile = $this->tempDir.'/output.php';
     $result = $this->generator->generate('php', $outputFile, ['message' => 'Hello']);
 
     $this->assertTrue($result);
@@ -131,12 +131,12 @@ test('generate creates file from stub', function () {
 });
 
 test('generate creates directories if needed', function () {
-    $stubPath = $this->tempDir . '/simple.stub';
+    $stubPath = $this->tempDir.'/simple.stub';
     file_put_contents($stubPath, 'Content');
 
     $this->generator->registerStub('simple', $stubPath);
 
-    $outputFile = $this->tempDir . '/deep/nested/path/file.txt';
+    $outputFile = $this->tempDir.'/deep/nested/path/file.txt';
     $result = $this->generator->generate('simple', $outputFile, []);
 
     $this->assertTrue($result);
@@ -149,14 +149,14 @@ test('processConditionals handles if blocks', function () {
     // With condition true
     $result = $this->generator->renderString($template, [
         'hasName' => true,
-        'name' => 'World'
+        'name' => 'World',
     ]);
     $this->assertEquals('Hello World!', $result);
 
     // With condition false
     $result = $this->generator->renderString($template, [
         'hasName' => false,
-        'name' => 'World'
+        'name' => 'World',
     ]);
     $this->assertEquals('', $result);
 });
@@ -167,21 +167,21 @@ test('processConditionals handles nested if blocks', function () {
 
     $result = $this->generator->renderString($template, [
         'outer' => true,
-        'inner' => true
+        'inner' => true,
     ]);
     // Both conditions are true - should show everything
     $this->assertEquals('Outer Inner Text', $result);
 
     $result = $this->generator->renderString($template, [
         'outer' => true,
-        'inner' => false
+        'inner' => false,
     ]);
     // Outer is true, inner is false - should show outer content without inner
     $this->assertEquals('Outer  Text', $result);
 
     $result = $this->generator->renderString($template, [
         'outer' => false,
-        'inner' => true
+        'inner' => true,
     ]);
     // Outer is false - should show nothing
     $this->assertEquals('', $result);
@@ -191,7 +191,7 @@ test('processLoops handles each blocks', function () {
     $template = '{{#each items}}{{ this }}, {{/each}}';
 
     $result = $this->generator->renderString($template, [
-        'items' => ['apple', 'banana', 'orange']
+        'items' => ['apple', 'banana', 'orange'],
     ]);
 
     $this->assertEquals('apple, banana, orange, ', $result);
@@ -201,7 +201,7 @@ test('processLoops handles each with index', function () {
     $template = '{{#each items}}{{ @index }}: {{ this }}; {{/each}}';
 
     $result = $this->generator->renderString($template, [
-        'items' => ['first', 'second', 'third']
+        'items' => ['first', 'second', 'third'],
     ]);
 
     $this->assertEquals('0: first; 1: second; 2: third; ', $result);
@@ -213,8 +213,8 @@ test('processLoops handles each with objects', function () {
     $result = $this->generator->renderString($template, [
         'users' => [
             ['name' => 'Alice', 'age' => 25],
-            ['name' => 'Bob', 'age' => 30]
-        ]
+            ['name' => 'Bob', 'age' => 30],
+        ],
     ]);
 
     $this->assertEquals('Name: Alice, Age: 25; Name: Bob, Age: 30; ', $result);
@@ -225,7 +225,7 @@ test('processLoops handles unless blocks', function () {
     $template = '{{#each items}}{{ this }}{{#unless @last}}, {{/unless}}{{/each}}';
 
     $result = $this->generator->renderString($template, [
-        'items' => ['a', 'b', 'c']
+        'items' => ['a', 'b', 'c'],
     ]);
 
     // Unless blocks are not processed, they remain in the output
@@ -266,9 +266,9 @@ TEMPLATE;
         'className' => 'User',
         'properties' => [
             ['type' => 'string', 'name' => 'name'],
-            ['type' => 'int', 'name' => 'age']
+            ['type' => 'int', 'name' => 'age'],
         ],
-        'constructor' => true
+        'constructor' => true,
     ]);
 
     $this->assertStringContainsString('namespace App\\Models;', $result);
@@ -284,7 +284,7 @@ test('handles empty arrays in loops', function () {
     $template = 'Items: {{#each items}}{{ this }}{{/each}}Done';
 
     $result = $this->generator->renderString($template, [
-        'items' => []
+        'items' => [],
     ]);
 
     $this->assertEquals('Items: Done', $result);
@@ -304,7 +304,7 @@ test('preserves whitespace and indentation', function () {
     $template = "Line 1\n    {{ indented }}\n        More indent";
 
     $result = $this->generator->renderString($template, [
-        'indented' => 'Value'
+        'indented' => 'Value',
     ]);
 
     $this->assertEquals("Line 1\n    Value\n        More indent", $result);
@@ -314,7 +314,7 @@ test('handles special characters in replacements', function () {
     $template = 'Path: {{ path }}';
 
     $result = $this->generator->renderString($template, [
-        'path' => 'C:\\Users\\John\\Documents'
+        'path' => 'C:\\Users\\John\\Documents',
     ]);
 
     $this->assertEquals('Path: C:\\Users\\John\\Documents', $result);
@@ -325,7 +325,7 @@ test('variable case transformations', function () {
 
     // The generator replaces case-insensitively, so the first matching key wins
     $result = $this->generator->renderString($template, [
-        'name' => 'test'
+        'name' => 'test',
     ]);
 
     // All variations get replaced with the same value
@@ -337,7 +337,7 @@ test('each loop with first flag', function () {
     $template = '{{#each items}}{{#if @first}}First: {{/if}}{{ this }}; {{/each}}';
 
     $result = $this->generator->renderString($template, [
-        'items' => ['a', 'b', 'c']
+        'items' => ['a', 'b', 'c'],
     ]);
 
     // @first is not set, so if blocks remain unprocessed
@@ -345,16 +345,16 @@ test('each loop with first flag', function () {
 });
 
 test('generate returns false on write failure', function () {
-    $stubPath = $this->tempDir . '/test.stub';
+    $stubPath = $this->tempDir.'/test.stub';
     file_put_contents($stubPath, 'Test');
     $this->generator->registerStub('test', $stubPath);
 
     // Try to write to a read-only directory (if we can create one)
-    $readOnlyDir = $this->tempDir . '/readonly';
+    $readOnlyDir = $this->tempDir.'/readonly';
     mkdir($readOnlyDir, 0755);
     chmod($readOnlyDir, 0444); // Make read-only
 
-    $invalidPath = $readOnlyDir . '/file.txt';
+    $invalidPath = $readOnlyDir.'/file.txt';
     $result = @$this->generator->generate('test', $invalidPath, []);
 
     // Restore permissions for cleanup
@@ -367,7 +367,7 @@ test('generate returns false on write failure', function () {
 
 test('registerStubDirectory handles glob returning false', function () {
     // Create an empty directory to test glob returning empty array
-    $emptyDir = $this->tempDir . '/empty';
+    $emptyDir = $this->tempDir.'/empty';
     mkdir($emptyDir);
 
     $generator = new StubGenerator($this->tempDir);
@@ -381,10 +381,10 @@ test('registerStubDirectory handles glob returning false', function () {
 
 test('generate handles mkdir failure', function () {
     // Create a file where we want to create a directory
-    $blockingFile = $this->tempDir . '/blocking';
+    $blockingFile = $this->tempDir.'/blocking';
     file_put_contents($blockingFile, 'blocking content');
 
-    $stubPath = $this->tempDir . '/test.stub';
+    $stubPath = $this->tempDir.'/test.stub';
     file_put_contents($stubPath, 'content');
 
     $generator = new StubGenerator($this->tempDir);
@@ -393,7 +393,7 @@ test('generate handles mkdir failure', function () {
     // Try to create a file in a path that would require creating a directory
     // with the same name as an existing file
     try {
-        $generator->generate('test', $blockingFile . '/subdir/file.txt', []);
+        $generator->generate('test', $blockingFile.'/subdir/file.txt', []);
         // If no exception is thrown, the test should fail
         expect(false)->toBeTrue('Expected RuntimeException to be thrown');
     } catch (RuntimeException $e) {
@@ -403,10 +403,10 @@ test('generate handles mkdir failure', function () {
 
 test('render with direct file path', function () {
     // Create a stub file outside the stub directory
-    $directStub = $this->tempDir . '/external.stub';
+    $directStub = $this->tempDir.'/external.stub';
     file_put_contents($directStub, 'External stub content');
 
-    $generator = new StubGenerator($this->tempDir . '/stubs');
+    $generator = new StubGenerator($this->tempDir.'/stubs');
 
     // Render using direct file path (covers line 147)
     $content = $generator->render($directStub, []);
@@ -418,7 +418,7 @@ test('render handles stub not found', function () {
     // Test by trying to render a non-existent stub name
     $generator = new StubGenerator($this->tempDir);
 
-    expect(function() use ($generator) {
+    expect(function () use ($generator) {
         $generator->render('nonexistent-stub', []);
     })->toThrow(RuntimeException::class, 'Stub not found');
 });
@@ -543,13 +543,13 @@ Feature is off
 });
 
 test('generate creates directories recursively', function () {
-    $stubPath = $this->tempDir . '/test.stub';
+    $stubPath = $this->tempDir.'/test.stub';
     file_put_contents($stubPath, 'Deep file content');
 
     $generator = new StubGenerator($this->tempDir);
     $generator->registerStub('deep', $stubPath);
 
-    $deepPath = $this->tempDir . '/very/deep/nested/structure/file.txt';
+    $deepPath = $this->tempDir.'/very/deep/nested/structure/file.txt';
 
     $result = $generator->generate('deep', $deepPath, []);
 

@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Yalla\Environment\Environment;
 
 beforeEach(function () {
-    $this->tempDir = sys_get_temp_dir() . '/yalla_env_extra_test_' . uniqid();
+    $this->tempDir = sys_get_temp_dir().'/yalla_env_extra_test_'.uniqid();
     mkdir($this->tempDir);
 
     // Clear any system environment variables that might interfere
@@ -27,8 +27,8 @@ afterEach(function () {
     if (is_dir($this->tempDir)) {
         // More thorough cleanup - handle all files including hidden ones
         $files = array_merge(
-            glob($this->tempDir . '/*') ?: [],
-            glob($this->tempDir . '/.*') ?: []
+            glob($this->tempDir.'/*') ?: [],
+            glob($this->tempDir.'/.*') ?: []
         );
 
         foreach ($files as $file) {
@@ -44,7 +44,7 @@ afterEach(function () {
 });
 
 test('load returns early when already loaded and not overwriting', function () {
-    $envFile = $this->tempDir . '/.env';
+    $envFile = $this->tempDir.'/.env';
     file_put_contents($envFile, "FIRST=value1\n");
 
     $env = new Environment([$envFile]);
@@ -65,7 +65,7 @@ test('load returns early when already loaded and not overwriting', function () {
 test('constructor loads files automatically', function () {
     // The constructor loads files automatically, but doesn't throw if they don't exist
     // It only throws if a file exists but is not readable
-    $unreadableFile = $this->tempDir . '/unreadable.env';
+    $unreadableFile = $this->tempDir.'/unreadable.env';
     file_put_contents($unreadableFile, 'TEST=value');
     chmod($unreadableFile, 0000); // Make file unreadable
 
@@ -77,7 +77,7 @@ test('constructor loads files automatically', function () {
 });
 
 test('getArray handles invalid JSON with fallback', function () {
-    $envFile = $this->tempDir . '/.env';
+    $envFile = $this->tempDir.'/.env';
     file_put_contents($envFile, 'INVALID_JSON={"broken":');
 
     $env = new Environment([$envFile]);
@@ -87,13 +87,15 @@ test('getArray handles invalid JSON with fallback', function () {
 });
 
 test('expandVariables handles multiple variable formats', function () {
-    $envFile = $this->tempDir . '/.env';
-    file_put_contents($envFile, <<<ENV
+    $envFile = $this->tempDir.'/.env';
+    file_put_contents(
+        $envFile,
+        <<<'ENV'
 BASE=base
-VAR1=\${BASE}/path
-VAR2=\$BASE/path
-VAR3=\${BASE}_suffix
-VAR4=prefix_\$BASE
+VAR1=${BASE}/path
+VAR2=$BASE/path
+VAR3=${BASE}_suffix
+VAR4=prefix_$BASE
 ENV
     );
 
@@ -106,7 +108,7 @@ ENV
 });
 
 test('isStaging checks staging environment', function () {
-    $envFile = $this->tempDir . '/.env';
+    $envFile = $this->tempDir.'/.env';
     file_put_contents($envFile, '');
 
     $env = new Environment([$envFile]);
@@ -124,8 +126,10 @@ test('isStaging checks staging environment', function () {
 });
 
 test('clear method with multiple environments set', function () {
-    $envFile = $this->tempDir . '/.env';
-    file_put_contents($envFile, <<<ENV
+    $envFile = $this->tempDir.'/.env';
+    file_put_contents(
+        $envFile,
+        <<<'ENV'
 VAR1=value1
 VAR2=value2
 VAR3=value3
@@ -146,7 +150,7 @@ ENV
 });
 
 test('reload loads fresh environment variables', function () {
-    $envFile = $this->tempDir . '/.env';
+    $envFile = $this->tempDir.'/.env';
     file_put_contents($envFile, "INITIAL=first\n");
 
     $env = new Environment([$envFile]);
@@ -163,15 +167,17 @@ test('reload loads fresh environment variables', function () {
 });
 
 test('parseValue handles edge cases', function () {
-    $envFile = $this->tempDir . '/.env';
-    file_put_contents($envFile, <<<ENV
+    $envFile = $this->tempDir.'/.env';
+    file_put_contents(
+        $envFile,
+        <<<'ENV'
 EMPTY=
 SPACES=
 QUOTES=""
 SINGLE_QUOTES=''
 MIXED_QUOTES="hello'world"
-ESCAPED="line1\\nline2"
-TABS="\\ttabbed"
+ESCAPED="line1\nline2"
+TABS="\ttabbed"
 ENV
     );
 
@@ -187,8 +193,10 @@ ENV
 });
 
 test('load handles malformed env file lines', function () {
-    $envFile = $this->tempDir . '/.env';
-    file_put_contents($envFile, <<<ENV
+    $envFile = $this->tempDir.'/.env';
+    file_put_contents(
+        $envFile,
+        <<<'ENV'
 VALID=value
 NOEQUALS
 =NOKEY
@@ -209,16 +217,20 @@ ENV
 });
 
 test('multiple env files with overwrite behavior', function () {
-    $env1 = $this->tempDir . '/.env';
-    $env2 = $this->tempDir . '/.env.local';
+    $env1 = $this->tempDir.'/.env';
+    $env2 = $this->tempDir.'/.env.local';
 
-    file_put_contents($env1, <<<ENV
+    file_put_contents(
+        $env1,
+        <<<'ENV'
 SHARED=from_env
 ONLY_ENV=env_value
 ENV
     );
 
-    file_put_contents($env2, <<<ENV
+    file_put_contents(
+        $env2,
+        <<<'ENV'
 SHARED=from_local
 ONLY_LOCAL=local_value
 ENV
@@ -235,11 +247,13 @@ ENV
 });
 
 test('expandVariables with non-existent variable', function () {
-    $envFile = $this->tempDir . '/.env';
-    file_put_contents($envFile, <<<ENV
+    $envFile = $this->tempDir.'/.env';
+    file_put_contents(
+        $envFile,
+        <<<'ENV'
 BASE=value
-REF1=\${NONEXISTENT}/path
-REF2=\$NONEXISTENT/path
+REF1=${NONEXISTENT}/path
+REF2=$NONEXISTENT/path
 ENV
     );
 
@@ -250,8 +264,10 @@ ENV
 });
 
 test('special boolean value variations', function () {
-    $envFile = $this->tempDir . '/.env';
-    file_put_contents($envFile, <<<ENV
+    $envFile = $this->tempDir.'/.env';
+    file_put_contents(
+        $envFile,
+        <<<'ENV'
 BOOL_TRUE=TRUE
 BOOL_ON=ON
 BOOL_YES=YES
@@ -274,8 +290,10 @@ ENV
 });
 
 test('getFloat handles various formats', function () {
-    $envFile = $this->tempDir . '/.env';
-    file_put_contents($envFile, <<<ENV
+    $envFile = $this->tempDir.'/.env';
+    file_put_contents(
+        $envFile,
+        <<<'ENV'
 FLOAT1=3.14
 FLOAT2=0.5
 FLOAT3=-2.5
@@ -302,7 +320,7 @@ test('get falls back to getenv when value not in internal array', function () {
     // Set a value using putenv that's not in our loaded env
     putenv('SYSTEM_VAR=from_getenv');
 
-    $env = new Environment();
+    $env = new Environment;
 
     // This should hit line 186 - getting value from getenv
     expect($env->get('SYSTEM_VAR'))->toBe('from_getenv');
@@ -312,7 +330,7 @@ test('get falls back to getenv when value not in internal array', function () {
 });
 
 test('getBool handles non-string values', function () {
-    $env = new Environment();
+    $env = new Environment;
 
     // Use reflection to force a non-string value in the internal variables array
     $reflection = new ReflectionClass($env);
@@ -332,10 +350,10 @@ test('getBool handles non-string values', function () {
 });
 
 test('getArray returns single value as array', function () {
-    $envFile = $this->tempDir . '/.env';
-    file_put_contents($envFile, "
+    $envFile = $this->tempDir.'/.env';
+    file_put_contents($envFile, '
 SINGLE_VALUE=just_a_string_without_comma
-");
+');
 
     $env = new Environment([$envFile]);
 
@@ -344,7 +362,7 @@ SINGLE_VALUE=just_a_string_without_comma
 });
 
 test('getArray returns default when value is not string or array', function () {
-    $env = new Environment();
+    $env = new Environment;
 
     // Manually set the internal value to ensure it's not a string
     // We need to use reflection to directly set a non-string value
