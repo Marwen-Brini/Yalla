@@ -5,37 +5,40 @@ declare(strict_types=1);
 use Yalla\Commands\Command;
 use Yalla\Output\Output;
 
-class TestCommand extends Command
+// Helper function to create test command
+function createTestCommandInstance()
 {
-    public function __construct()
-    {
-        $this->name = 'test';
-        $this->description = 'Test command';
+    return new class extends Command {
+        public function __construct()
+        {
+            $this->name = 'test';
+            $this->description = 'Test command';
 
-        $this->addArgument('name', 'Name argument', true);
-        $this->addArgument('optional', 'Optional argument', false);
-        $this->addOption('force', 'f', 'Force option', false);
-        $this->addOption('output', 'o', 'Output format', 'json');
-    }
+            $this->addArgument('name', 'Name argument', true);
+            $this->addArgument('optional', 'Optional argument', false);
+            $this->addOption('force', 'f', 'Force option', false);
+            $this->addOption('output', 'o', 'Output format', 'json');
+        }
 
-    public function execute(array $input, Output $output): int
-    {
-        $name = $this->getArgument($input, 'name');
-        $optional = $this->getArgument($input, 'optional', 'default');
-        $force = $this->getOption($input, 'force', false);
-        $outputFormat = $this->getOption($input, 'output', 'json');
+        public function execute(array $input, Output $output): int
+        {
+            $name = $this->getArgument($input, 'name');
+            $optional = $this->getArgument($input, 'optional', 'default');
+            $force = $this->getOption($input, 'force', false);
+            $outputFormat = $this->getOption($input, 'output', 'json');
 
-        $output->writeln("Name: $name");
-        $output->writeln("Optional: $optional");
-        $output->writeln('Force: '.($force ? 'yes' : 'no'));
-        $output->writeln("Output: $outputFormat");
+            $output->writeln("Name: $name");
+            $output->writeln("Optional: $optional");
+            $output->writeln('Force: '.($force ? 'yes' : 'no'));
+            $output->writeln("Output: $outputFormat");
 
-        return 0;
-    }
+            return 0;
+        }
+    };
 }
 
 it('can create a command with arguments and options', function () {
-    $command = new TestCommand;
+    $command = createTestCommandInstance();
 
     expect($command->getName())->toBe('test');
     expect($command->getDescription())->toBe('Test command');
@@ -44,7 +47,7 @@ it('can create a command with arguments and options', function () {
 });
 
 it('can get arguments from input', function () {
-    $command = new TestCommand;
+    $command = createTestCommandInstance();
     $output = new Output;
 
     $input = [
@@ -63,7 +66,7 @@ it('can get arguments from input', function () {
 });
 
 it('can get options from input', function () {
-    $command = new TestCommand;
+    $command = createTestCommandInstance();
     $output = new Output;
 
     $input = [
@@ -82,7 +85,7 @@ it('can get options from input', function () {
 });
 
 it('uses default values for missing arguments and options', function () {
-    $command = new TestCommand;
+    $command = createTestCommandInstance();
     $output = new Output;
 
     $input = [

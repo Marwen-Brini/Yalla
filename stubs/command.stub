@@ -1,0 +1,59 @@
+<?php
+
+declare(strict_types=1);
+
+{{#if namespace}}
+namespace {{ namespace }};
+
+{{/if}}
+use Yalla\Commands\Command;
+use Yalla\Output\Output;
+{{#if useExitCodes}}
+use Yalla\Commands\ExitCodes;
+{{/if}}
+{{#if useDryRun}}
+use Yalla\Commands\Traits\DryRunnable;
+{{/if}}
+
+/**
+ * {{ description }}
+ */
+class {{ className }} extends Command
+{
+    {{#if useDryRun}}
+    use DryRunnable;
+
+    {{/if}}
+    protected string $name = '{{ commandName }}';
+
+    protected string $description = '{{ description }}';
+
+    public function __construct()
+    {
+        {{#each arguments}}
+        $this->addArgument('{{ name }}', '{{ description }}', {{ required }});
+        {{/each}}
+        {{#each options}}
+        $this->addOption('{{ name }}', {{ shortcut }}, '{{ description }}', {{ default }});
+        {{/each}}
+    }
+
+    public function execute(array $input, Output $output): int
+    {
+        {{#if useDryRun}}
+        if ($this->getOption($input, 'dry-run')) {
+            $this->setDryRun(true);
+            $this->setDryRunOutput($output);
+        }
+
+        {{/if}}
+        // TODO: Implement command logic
+        $output->success('Command executed successfully!');
+
+        {{#if useDryRun}}
+        $this->showDryRunSummary();
+
+        {{/if}}
+        return self::EXIT_SUCCESS;
+    }
+}

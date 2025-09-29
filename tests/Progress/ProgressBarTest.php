@@ -351,7 +351,7 @@ test('progress bar formats time correctly for hours', function () {
     $reflection = new ReflectionClass($progress);
     $startTimeProperty = $reflection->getProperty('startTime');
     $startTimeProperty->setAccessible(true);
-    $startTimeProperty->setValue($progress, microtime(true) - 7200); // 2 hours ago
+    $startTimeProperty->setValue($progress, microtime(true) - 7200.0); // 2 hours ago
 
     $progress->advance();
     $progress->finish(); // Explicitly finish to test completion

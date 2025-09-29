@@ -7,24 +7,27 @@ use Yalla\Commands\CommandRegistry;
 use Yalla\Commands\ListCommand;
 use Yalla\Output\Output;
 
-class ExampleCommand extends Command
+// Helper function to create example command
+function createExampleCommand(string $name)
 {
-    public function __construct(string $name)
-    {
-        $this->name = $name;
-        $this->description = "Description for $name";
-    }
+    return new class($name) extends Command {
+        public function __construct(string $name)
+        {
+            $this->name = $name;
+            $this->description = "Description for $name";
+        }
 
-    public function execute(array $input, Output $output): int
-    {
-        return 0;
-    }
+        public function execute(array $input, Output $output): int
+        {
+            return 0;
+        }
+    };
 }
 
 it('lists all registered commands', function () {
     $registry = new CommandRegistry;
-    $registry->register(new ExampleCommand('test1'));
-    $registry->register(new ExampleCommand('test2'));
+    $registry->register(createExampleCommand('test1'));
+    $registry->register(createExampleCommand('test2'));
 
     $listCommand = new ListCommand($registry);
     $output = new Output;

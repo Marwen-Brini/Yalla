@@ -6,34 +6,31 @@ use Yalla\Application;
 use Yalla\Commands\Command;
 use Yalla\Output\Output;
 
-class MockCommand extends Command
-{
-    public function __construct()
-    {
-        $this->name = 'mock';
-        $this->description = 'Mock command';
-    }
+function createMockCommand() {
+    return new class extends Command {
+        public function __construct() {
+            $this->name = 'mock';
+            $this->description = 'Mock command';
+        }
 
-    public function execute(array $input, Output $output): int
-    {
-        $output->writeln('Mock executed');
-
-        return 0;
-    }
+        public function execute(array $input, Output $output): int {
+            $output->writeln('Mock executed');
+            return 0;
+        }
+    };
 }
 
-class FailingCommand extends Command
-{
-    public function __construct()
-    {
-        $this->name = 'fail';
-        $this->description = 'Failing command';
-    }
+function createFailingCommand() {
+    return new class extends Command {
+        public function __construct() {
+            $this->name = 'fail';
+            $this->description = 'Failing command';
+        }
 
-    public function execute(array $input, Output $output): int
-    {
-        throw new Exception('Command failed');
-    }
+        public function execute(array $input, Output $output): int {
+            throw new Exception('Command failed');
+        }
+    };
 }
 
 it('can create an application instance', function () {
@@ -53,7 +50,7 @@ it('has default name and version', function () {
 
 it('can register custom commands', function () {
     $app = new Application;
-    $command = new MockCommand;
+    $command = createMockCommand();
 
     $result = $app->register($command);
 
@@ -74,7 +71,7 @@ it('runs default list command when no command provided', function () {
 
 it('runs specified command', function () {
     $app = new Application;
-    $app->register(new MockCommand);
+    $app->register(createMockCommand());
 
     $_SERVER['argv'] = ['yalla', 'mock'];
 
@@ -101,7 +98,7 @@ it('returns error for non-existent command', function () {
 
 it('handles command exceptions gracefully', function () {
     $app = new Application;
-    $app->register(new FailingCommand);
+    $app->register(createFailingCommand());
 
     $_SERVER['argv'] = ['yalla', 'fail'];
 

@@ -1,0 +1,86 @@
+<?php
+
+declare(strict_types=1);
+
+{{#if namespace}}
+namespace {{ namespace }};
+
+{{/if}}
+/**
+ * Model: {{ modelName }}
+ *
+ * @property int $id
+{{#each properties}}
+ * @property {{ type }} ${{ name }}{{ #if nullable}} (nullable){{/if}}
+{{/each}}
+{{#if timestamps}}
+ * @property \DateTime $created_at
+ * @property \DateTime $updated_at
+{{/if}}
+{{#if softDeletes}}
+ * @property \DateTime|null $deleted_at
+{{/if}}
+ */
+class {{ className }}
+{
+    {{#if tableName}}
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected string $table = '{{ tableName }}';
+
+    {{/if}}
+    {{#if fillable}}
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<string>
+     */
+    protected array $fillable = [
+        {{#each fillable}}
+        '{{ this }}',
+        {{/each}}
+    ];
+
+    {{/if}}
+    {{#if hidden}}
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array<string>
+     */
+    protected array $hidden = [
+        {{#each hidden}}
+        '{{ this }}',
+        {{/each}}
+    ];
+
+    {{/if}}
+    {{#if casts}}
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected array $casts = [
+        {{#each casts}}
+        '{{ name }}' => '{{ type }}',
+        {{/each}}
+    ];
+
+    {{/if}}
+    {{#each relationships}}
+    /**
+     * {{ description }}
+     *
+     * @return \{{ returnType }}
+     */
+    public function {{ name }}()
+    {
+        return $this->{{ type }}({{ relatedClass }}::class{{#if foreignKey}}, '{{ foreignKey }}'{{/if}});
+    }
+
+    {{/each}}
+}

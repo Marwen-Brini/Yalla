@@ -306,7 +306,7 @@ class ProgressBar
     {
         $memory = memory_get_usage(true);
         $units = ['B', 'KB', 'MB', 'GB'];
-        $power = floor(log($memory, 1024));
+        $power = (int) floor(log($memory, 1024));
 
         return sprintf('%.2f %s', $memory / pow(1024, $power), $units[$power]);
     }
@@ -317,20 +317,20 @@ class ProgressBar
     protected function formatTime(float $seconds): string
     {
         if ($seconds < 60) {
-            return sprintf('%02ds', $seconds);
+            return sprintf('%02ds', (int) round($seconds));
         }
 
-        $minutes = floor($seconds / 60);
-        $seconds = $seconds % 60;
+        $minutes = (int) floor($seconds / 60);
+        $remainingSeconds = (int) round(fmod($seconds, 60));
 
         if ($minutes < 60) {
-            return sprintf('%02d:%02d', $minutes, $seconds);
+            return sprintf('%02d:%02d', $minutes, $remainingSeconds);
         }
 
-        $hours = floor($minutes / 60);
-        $minutes = $minutes % 60;
+        $hours = (int) floor($minutes / 60);
+        $remainingMinutes = $minutes % 60;
 
-        return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+        return sprintf('%02d:%02d:%02d', $hours, $remainingMinutes, $remainingSeconds);
     }
 
     /**
