@@ -10,9 +10,13 @@ namespace Yalla\Output;
 class OutputSection
 {
     private Output $output;
+
     private string $title;
+
     private array $content = [];
+
     private int $linesWritten = 0;
+
     private bool $cleared = false;
 
     public function __construct(Output $output, string $title)

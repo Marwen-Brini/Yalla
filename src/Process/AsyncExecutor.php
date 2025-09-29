@@ -10,22 +10,19 @@ use Yalla\Output\Output;
 class AsyncExecutor
 {
     private array $runningCommands = [];
+
     private int $maxConcurrent = 10;
 
     /**
      * Execute a command asynchronously
-     *
-     * @param AsyncCommandInterface $command
-     * @param array $input
-     * @param Output $output
-     * @return Promise
      */
     public function execute(AsyncCommandInterface $command, array $input, Output $output): Promise
     {
         // Check if we should run async
-        if (!$command->shouldRunAsync($input)) {
+        if (! $command->shouldRunAsync($input)) {
             // Run synchronously and wrap in resolved promise
             $result = $command->execute($input, $output);
+
             return Promise::resolved(['exitCode' => $result]);
         }
 
@@ -42,16 +39,16 @@ class AsyncExecutor
         $this->runningCommands[$commandId] = $promise;
 
         // Remove from running when done
-        $promise->finally(function() use ($commandId) {
+        $promise->finally(function () use ($commandId) {
             unset($this->runningCommands[$commandId]);
         });
 
         // Handle completion and errors
         $promise
-            ->then(function($result) use ($command, $output) {
+            ->then(function ($result) use ($command, $output) {
                 return $command->handleAsyncCompletion($result, $output);
             })
-            ->catch(function($error) use ($command, $output) {
+            ->catch(function ($error) use ($command, $output) {
                 return $command->handleAsyncError($error, $output);
             });
 
@@ -61,16 +58,14 @@ class AsyncExecutor
     /**
      * Execute multiple commands in parallel
      *
-     * @param array $commands Array of [command, input] pairs
-     * @param Output $output
-     * @return Promise
+     * @param  array  $commands  Array of [command, input] pairs
      */
     public function executeParallel(array $commands, Output $output): Promise
     {
         $promises = [];
 
         foreach ($commands as $key => [$command, $input]) {
-            if (!$command instanceof AsyncCommandInterface) {
+            if (! $command instanceof AsyncCommandInterface) {
                 throw new \InvalidArgumentException('Command must implement AsyncCommandInterface');
             }
 
@@ -102,8 +97,6 @@ class AsyncExecutor
 
     /**
      * Cancel all running commands
-     *
-     * @return void
      */
     public function cancelAll(): void
     {
@@ -117,8 +110,6 @@ class AsyncExecutor
 
     /**
      * Get the number of running commands
-     *
-     * @return int
      */
     public function getRunningCount(): int
     {
@@ -127,20 +118,16 @@ class AsyncExecutor
 
     /**
      * Set the maximum number of concurrent commands
-     *
-     * @param int $max
-     * @return self
      */
     public function setMaxConcurrent(int $max): self
     {
         $this->maxConcurrent = $max;
+
         return $this;
     }
 
     /**
      * Get the maximum number of concurrent commands
-     *
-     * @return int
      */
     public function getMaxConcurrent(): int
     {

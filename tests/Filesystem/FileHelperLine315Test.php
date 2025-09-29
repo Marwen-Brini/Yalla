@@ -5,8 +5,8 @@ declare(strict_types=1);
 use Yalla\Filesystem\FileHelper;
 
 beforeEach(function () {
-    $this->helper = new FileHelper();
-    $this->tempDir = sys_get_temp_dir() . '/yalla_filehelper_line315_' . uniqid();
+    $this->helper = new FileHelper;
+    $this->tempDir = sys_get_temp_dir().'/yalla_filehelper_line315_'.uniqid();
     mkdir($this->tempDir, 0755, true);
 });
 
@@ -18,11 +18,12 @@ afterEach(function () {
 });
 
 // Helper function for cleanup
-function cleanupDirectoryLine315($dir) {
+function cleanupDirectoryLine315($dir)
+{
     if (is_dir($dir)) {
         $files = array_diff(scandir($dir), ['.', '..']);
         foreach ($files as $file) {
-            $path = $dir . '/' . $file;
+            $path = $dir.'/'.$file;
             if (is_dir($path)) {
                 // Fix permissions if needed
                 @chmod($path, 0755);
@@ -42,10 +43,10 @@ test('humanFilesize with filesize returning false (line 315)', function () {
     // Try to create a scenario where file_exists returns true but filesize returns false
 
     // Method 1: Create a symbolic link to a non-existent file
-    $symlinkPath = $this->tempDir . '/broken_symlink';
+    $symlinkPath = $this->tempDir.'/broken_symlink';
     if (function_exists('symlink')) {
         // Create a symlink to a non-existent target
-        $nonExistentTarget = $this->tempDir . '/non_existent_target';
+        $nonExistentTarget = $this->tempDir.'/non_existent_target';
         @symlink($nonExistentTarget, $symlinkPath);
 
         // The symlink exists but points to nothing, which might make filesize fail
@@ -59,7 +60,7 @@ test('humanFilesize with filesize returning false (line 315)', function () {
     }
 
     // Method 2: Create a directory and try to get its filesize
-    $dirPath = $this->tempDir . '/test_directory';
+    $dirPath = $this->tempDir.'/test_directory';
     mkdir($dirPath, 0755);
 
     // filesize() on a directory might return false on some systems
@@ -78,7 +79,7 @@ test('humanFilesize with filesize returning false (line 315)', function () {
     }
 
     // Method 4: Use a file with very restrictive permissions that might affect filesize
-    $restrictedFile = $this->tempDir . '/restricted_file.txt';
+    $restrictedFile = $this->tempDir.'/restricted_file.txt';
     file_put_contents($restrictedFile, 'test content');
 
     // Make the file's parent directory inaccessible
@@ -98,11 +99,12 @@ test('humanFilesize direct filesize false simulation', function () {
     // Since it's hard to create a real scenario where filesize returns false,
     // let's try to create a more direct test by overriding the FileHelper
 
-    $mockHelper = new class extends FileHelper {
+    $mockHelper = new class extends FileHelper
+    {
         public function humanFilesize(string $path, int $precision = 2): string
         {
             // Simulate the exact scenario we want to test
-            if (!file_exists($path)) {
+            if (! file_exists($path)) {
                 return '0 B';
             }
 
@@ -121,12 +123,12 @@ test('humanFilesize direct filesize false simulation', function () {
                 $i++;
             }
 
-            return round($size, $precision) . ' ' . $units[$i];
+            return round($size, $precision).' '.$units[$i];
         }
     };
 
     // Create a test file
-    $testFile = $this->tempDir . '/test.txt';
+    $testFile = $this->tempDir.'/test.txt';
     file_put_contents($testFile, 'test content');
 
     // Call the overridden method which simulates filesize failure
@@ -137,14 +139,14 @@ test('humanFilesize direct filesize false simulation', function () {
 
 test('humanFilesize with various edge case files', function () {
     // Test with an empty file
-    $emptyFile = $this->tempDir . '/empty.txt';
+    $emptyFile = $this->tempDir.'/empty.txt';
     touch($emptyFile);
 
     $result = $this->helper->humanFilesize($emptyFile);
     expect($result)->toBe('0 B');
 
     // Test with a FIFO (named pipe) if supported
-    $fifoPath = $this->tempDir . '/test_fifo';
+    $fifoPath = $this->tempDir.'/test_fifo';
     if (function_exists('posix_mkfifo')) {
         @posix_mkfifo($fifoPath, 0644);
 
@@ -157,7 +159,8 @@ test('humanFilesize with various edge case files', function () {
     }
 
     // Test with a very large file path that might cause issues
-    $longPath = $this->tempDir . '/' . str_repeat('a', 200) . '.txt';
+    $longPath = $this->tempDir.'/'.str_repeat('a', 200).'.txt';
+
     try {
         file_put_contents($longPath, 'content');
         $result = $this->helper->humanFilesize($longPath);

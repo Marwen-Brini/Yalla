@@ -7,13 +7,13 @@ namespace Yalla\Commands\Traits;
 trait HasSignature
 {
     protected string $signature = '';
+
     protected array $argumentMetadata = [];
+
     protected array $optionMetadata = [];
 
     /**
      * Parse command signature to extract arguments and options
-     *
-     * @return void
      */
     protected function parseSignature(): void
     {
@@ -22,10 +22,10 @@ trait HasSignature
         }
 
         // Initialize arrays if not already set
-        if (!isset($this->arguments)) {
+        if (! isset($this->arguments)) {
             $this->arguments = [];
         }
-        if (!isset($this->options)) {
+        if (! isset($this->options)) {
             $this->options = [];
         }
 
@@ -33,7 +33,7 @@ trait HasSignature
         $parts = explode(' ', trim($this->signature));
 
         // First part is the command name
-        if (!empty($parts[0]) && !isset($this->name)) {
+        if (! empty($parts[0]) && ! isset($this->name)) {
             $this->name = $parts[0];
         }
 
@@ -52,9 +52,6 @@ trait HasSignature
 
     /**
      * Check if a signature part is an argument
-     *
-     * @param string $part
-     * @return bool
      */
     private function isArgument(string $part): bool
     {
@@ -63,9 +60,6 @@ trait HasSignature
 
     /**
      * Check if a signature part is an option
-     *
-     * @param string $part
-     * @return bool
      */
     private function isOption(string $part): bool
     {
@@ -74,9 +68,6 @@ trait HasSignature
 
     /**
      * Parse an argument from the signature
-     *
-     * @param string $part
-     * @return void
      */
     private function parseArgument(string $part): void
     {
@@ -113,18 +104,18 @@ trait HasSignature
 
         // Use parent class method if available
         if (method_exists($this, 'addArgument')) {
-            $this->addArgument($name, $description, !$isOptional && $default === null);
+            $this->addArgument($name, $description, ! $isOptional && $default === null);
         } else {
             // Fallback: directly add to arguments array
             $this->arguments[] = [
                 'name' => $name,
                 'description' => $description,
-                'required' => !$isOptional && $default === null,
+                'required' => ! $isOptional && $default === null,
             ];
         }
 
         // Store additional metadata if needed
-        if (!isset($this->argumentMetadata)) {
+        if (! isset($this->argumentMetadata)) {
             $this->argumentMetadata = [];
         }
         $this->argumentMetadata[$name] = [
@@ -135,9 +126,6 @@ trait HasSignature
 
     /**
      * Parse an option from the signature
-     *
-     * @param string $part
-     * @return void
      */
     private function parseOption(string $part): void
     {
@@ -169,7 +157,7 @@ trait HasSignature
             [$content, $valueSpec] = explode('=', $content, 2);
             $isValueRequired = true;
 
-            if (!empty($valueSpec)) {
+            if (! empty($valueSpec)) {
                 // Has default value
                 $default = $this->parseDefaultValue($valueSpec);
             }
@@ -204,7 +192,7 @@ trait HasSignature
         }
 
         // Store additional metadata if needed
-        if (!isset($this->optionMetadata)) {
+        if (! isset($this->optionMetadata)) {
             $this->optionMetadata = [];
         }
         $this->optionMetadata[$name] = [
@@ -214,9 +202,6 @@ trait HasSignature
 
     /**
      * Parse a default value from the signature
-     *
-     * @param string $value
-     * @return mixed
      */
     private function parseDefaultValue(string $value): mixed
     {
@@ -244,6 +229,7 @@ trait HasSignature
             if (str_contains($value, '.')) {
                 return (float) $value;
             }
+
             return (int) $value;
         }
 
@@ -253,6 +239,7 @@ trait HasSignature
             if (empty($arrayContent)) {
                 return [];
             }
+
             // Simple array parsing (comma-separated)
             return array_map('trim', explode(',', $arrayContent));
         }
@@ -262,8 +249,6 @@ trait HasSignature
 
     /**
      * Configure the command using the signature
-     *
-     * @return void
      */
     protected function configureUsingSignature(): void
     {

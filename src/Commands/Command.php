@@ -79,8 +79,8 @@ abstract class Command implements ExitCodes
      * Return with specific code and optional message
      * This method outputs a message and returns the code for the command to exit with
      *
-     * @param int $code Exit code
-     * @param string|null $message Optional message to display
+     * @param  int  $code  Exit code
+     * @param  string|null  $message  Optional message to display
      * @return int The exit code
      */
     protected function returnWithCode(int $code = self::EXIT_SUCCESS, ?string $message = null): int
@@ -99,7 +99,7 @@ abstract class Command implements ExitCodes
     /**
      * Return with success code and optional message
      *
-     * @param string|null $message Optional success message
+     * @param  string|null  $message  Optional success message
      * @return int Success exit code (0)
      */
     protected function returnSuccess(?string $message = null): int
@@ -110,8 +110,8 @@ abstract class Command implements ExitCodes
     /**
      * Return with error code and message
      *
-     * @param string $message Error message
-     * @param int $code Exit code (defaults to EXIT_FAILURE)
+     * @param  string  $message  Error message
+     * @param  int  $code  Exit code (defaults to EXIT_FAILURE)
      * @return int Error exit code
      */
     protected function returnError(string $message, int $code = self::EXIT_FAILURE): int
@@ -122,7 +122,7 @@ abstract class Command implements ExitCodes
     /**
      * Get human-readable description of an exit code
      *
-     * @param int $code Exit code
+     * @param  int  $code  Exit code
      * @return string Description of the exit code
      */
     public static function getExitCodeDescription(int $code): string
@@ -165,7 +165,7 @@ abstract class Command implements ExitCodes
     /**
      * Handle exception and return appropriate exit code
      *
-     * @param \Throwable $exception The exception to handle
+     * @param  \Throwable  $exception  The exception to handle
      * @return int Exit code based on exception type
      */
     protected function handleException(\Throwable $exception): int
@@ -174,7 +174,7 @@ abstract class Command implements ExitCodes
         $message = $exception->getMessage();
 
         if ($this->output !== null && method_exists($this->output, 'isDebug') && $this->output->isDebug()) {
-            $message .= "\n\nStack trace:\n" . $exception->getTraceAsString();
+            $message .= "\n\nStack trace:\n".$exception->getTraceAsString();
         }
 
         return $this->returnError($message, $code);
@@ -183,7 +183,7 @@ abstract class Command implements ExitCodes
     /**
      * Map exception types to appropriate exit codes
      *
-     * @param \Throwable $exception The exception to map
+     * @param  \Throwable  $exception  The exception to map
      * @return int Appropriate exit code
      */
     protected function mapExceptionToExitCode(\Throwable $exception): int
@@ -215,12 +215,12 @@ abstract class Command implements ExitCodes
     /**
      * Set the output instance for this command
      *
-     * @param Output $output The output instance
-     * @return self
+     * @param  Output  $output  The output instance
      */
     protected function setOutput(Output $output): self
     {
         $this->output = $output;
+
         return $this;
     }
 

@@ -10,6 +10,7 @@ use Yalla\Output\Output;
 class LoggingMiddleware implements MiddlewareInterface
 {
     private string $logFile;
+
     private int $priority;
 
     public function __construct(string $logFile = 'commands.log', int $priority = 100)
@@ -20,12 +21,6 @@ class LoggingMiddleware implements MiddlewareInterface
 
     /**
      * Handle the command execution with logging
-     *
-     * @param Command $command
-     * @param array $input
-     * @param Output $output
-     * @param \Closure $next
-     * @return int
      */
     public function handle(Command $command, array $input, Output $output, \Closure $next): int
     {
@@ -35,7 +30,7 @@ class LoggingMiddleware implements MiddlewareInterface
 
         // Log command start
         $this->log("[{$timestamp}] Starting command: {$commandName}");
-        $this->log("Input: " . json_encode($input));
+        $this->log('Input: '.json_encode($input));
 
         try {
             // Execute the command
@@ -53,8 +48,8 @@ class LoggingMiddleware implements MiddlewareInterface
 
             // Log command failure
             $this->log("[{$timestamp}] Failed command: {$commandName} (Duration: {$duration}s)");
-            $this->log("Error: " . $e->getMessage());
-            $this->log("Stack trace: " . $e->getTraceAsString());
+            $this->log('Error: '.$e->getMessage());
+            $this->log('Stack trace: '.$e->getTraceAsString());
 
             throw $e;
         }
@@ -62,8 +57,6 @@ class LoggingMiddleware implements MiddlewareInterface
 
     /**
      * Get the priority of this middleware
-     *
-     * @return int
      */
     public function getPriority(): int
     {
@@ -72,10 +65,6 @@ class LoggingMiddleware implements MiddlewareInterface
 
     /**
      * Check if this middleware should be applied
-     *
-     * @param Command $command
-     * @param array $input
-     * @return bool
      */
     public function shouldApply(Command $command, array $input): bool
     {
@@ -86,17 +75,14 @@ class LoggingMiddleware implements MiddlewareInterface
 
     /**
      * Log a message to the log file
-     *
-     * @param string $message
-     * @return void
      */
     private function log(string $message): void
     {
         $logDir = dirname($this->logFile);
-        if (!is_dir($logDir)) {
+        if (! is_dir($logDir)) {
             mkdir($logDir, 0777, true);
         }
 
-        file_put_contents($this->logFile, $message . PHP_EOL, FILE_APPEND | LOCK_EX);
+        file_put_contents($this->logFile, $message.PHP_EOL, FILE_APPEND | LOCK_EX);
     }
 }

@@ -10,6 +10,7 @@ use Yalla\Output\Output;
 class TimingMiddleware implements MiddlewareInterface
 {
     private int $priority;
+
     private bool $showTiming;
 
     public function __construct(bool $showTiming = true, int $priority = 90)
@@ -20,12 +21,6 @@ class TimingMiddleware implements MiddlewareInterface
 
     /**
      * Handle the command execution with timing
-     *
-     * @param Command $command
-     * @param array $input
-     * @param Output $output
-     * @param \Closure $next
-     * @return int
      */
     public function handle(Command $command, array $input, Output $output, \Closure $next): int
     {
@@ -52,8 +47,6 @@ class TimingMiddleware implements MiddlewareInterface
 
     /**
      * Get the priority of this middleware
-     *
-     * @return int
      */
     public function getPriority(): int
     {
@@ -62,10 +55,6 @@ class TimingMiddleware implements MiddlewareInterface
 
     /**
      * Check if this middleware should be applied
-     *
-     * @param Command $command
-     * @param array $input
-     * @return bool
      */
     public function shouldApply(Command $command, array $input): bool
     {
@@ -75,9 +64,6 @@ class TimingMiddleware implements MiddlewareInterface
 
     /**
      * Format bytes to human readable format
-     *
-     * @param int $bytes
-     * @return string
      */
     private function formatBytes(int $bytes): string
     {
@@ -89,6 +75,6 @@ class TimingMiddleware implements MiddlewareInterface
             $i++;
         }
 
-        return round($bytes, 2) . ' ' . $units[$i];
+        return round($bytes, 2).' '.$units[$i];
     }
 }

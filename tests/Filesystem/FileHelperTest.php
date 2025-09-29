@@ -5,8 +5,8 @@ declare(strict_types=1);
 use Yalla\Filesystem\FileHelper;
 
 beforeEach(function () {
-    $this->helper = new FileHelper();
-    $this->tempDir = sys_get_temp_dir() . '/yalla_filehelper_test_' . uniqid();
+    $this->helper = new FileHelper;
+    $this->tempDir = sys_get_temp_dir().'/yalla_filehelper_test_'.uniqid();
     mkdir($this->tempDir);
 });
 
@@ -18,7 +18,7 @@ afterEach(function () {
 });
 
 test('ensureDirectoryExists creates directory', function () {
-    $dir = $this->tempDir . '/new/nested/directory';
+    $dir = $this->tempDir.'/new/nested/directory';
 
     $this->assertFalse(is_dir($dir));
 
@@ -28,7 +28,7 @@ test('ensureDirectoryExists creates directory', function () {
 });
 
 test('ensureDirectoryExists with custom permissions', function () {
-    $dir = $this->tempDir . '/custom_perms';
+    $dir = $this->tempDir.'/custom_perms';
 
     $this->helper->ensureDirectoryExists($dir, 0700);
 
@@ -41,13 +41,13 @@ test('uniqueFilename generates unique names', function () {
     $pattern = 'test_{counter}.txt';
 
     $file1 = $this->helper->uniqueFilename($this->tempDir, $pattern);
-    $this->assertEquals($this->tempDir . '/test_1.txt', $file1);
+    $this->assertEquals($this->tempDir.'/test_1.txt', $file1);
 
     // Create the file
     touch($file1);
 
     $file2 = $this->helper->uniqueFilename($this->tempDir, $pattern);
-    $this->assertEquals($this->tempDir . '/test_2.txt', $file2);
+    $this->assertEquals($this->tempDir.'/test_2.txt', $file2);
 });
 
 test('uniqueFilename with timestamp placeholder', function () {
@@ -80,11 +80,11 @@ test('uniqueFilename with custom replacements', function () {
 
     $file = $this->helper->uniqueFilename($this->tempDir, $pattern, $replacements);
 
-    $this->assertEquals($this->tempDir . '/user_123_john.json', $file);
+    $this->assertEquals($this->tempDir.'/user_123_john.json', $file);
 });
 
 test('safeWrite creates file atomically', function () {
-    $file = $this->tempDir . '/safe.txt';
+    $file = $this->tempDir.'/safe.txt';
     $content = 'Safe content';
 
     $result = $this->helper->safeWrite($file, $content);
@@ -95,7 +95,7 @@ test('safeWrite creates file atomically', function () {
 });
 
 test('safeWrite creates backup when file exists', function () {
-    $file = $this->tempDir . '/data.json';
+    $file = $this->tempDir.'/data.json';
     $original = '{"version": 1}';
     $new = '{"version": 2}';
 
@@ -107,44 +107,44 @@ test('safeWrite creates backup when file exists', function () {
     $this->assertEquals($new, file_get_contents($file));
 
     // Check backup was created
-    $backups = glob($this->tempDir . '/.data.json.backup.*');
+    $backups = glob($this->tempDir.'/.data.json.backup.*');
     $this->assertCount(1, $backups);
     $this->assertEquals($original, file_get_contents($backups[0]));
 });
 
 test('safeWrite without backup', function () {
-    $file = $this->tempDir . '/nobackup.txt';
+    $file = $this->tempDir.'/nobackup.txt';
     file_put_contents($file, 'original');
 
     $this->helper->safeWrite($file, 'new', false);
 
-    $backups = glob($this->tempDir . '/.nobackup.txt.backup.*');
+    $backups = glob($this->tempDir.'/.nobackup.txt.backup.*');
     $this->assertEmpty($backups);
 });
 
 test('findFiles with glob pattern', function () {
     // Create test files
-    touch($this->tempDir . '/test1.php');
-    touch($this->tempDir . '/test2.php');
-    touch($this->tempDir . '/other.txt');
-    mkdir($this->tempDir . '/sub');
-    touch($this->tempDir . '/sub/test3.php');
+    touch($this->tempDir.'/test1.php');
+    touch($this->tempDir.'/test2.php');
+    touch($this->tempDir.'/other.txt');
+    mkdir($this->tempDir.'/sub');
+    touch($this->tempDir.'/sub/test3.php');
 
     // findFiles uses glob patterns
     $files = $this->helper->findFiles($this->tempDir, '*.php', false);
 
     $this->assertCount(2, $files);
-    $this->assertContains($this->tempDir . '/test1.php', $files);
-    $this->assertContains($this->tempDir . '/test2.php', $files);
+    $this->assertContains($this->tempDir.'/test1.php', $files);
+    $this->assertContains($this->tempDir.'/test2.php', $files);
 });
 
 test('findFiles with recursive search', function () {
     // Create nested structure
-    touch($this->tempDir . '/root.txt');
-    mkdir($this->tempDir . '/level1');
-    touch($this->tempDir . '/level1/file1.txt');
-    mkdir($this->tempDir . '/level1/level2');
-    touch($this->tempDir . '/level1/level2/file2.txt');
+    touch($this->tempDir.'/root.txt');
+    mkdir($this->tempDir.'/level1');
+    touch($this->tempDir.'/level1/file1.txt');
+    mkdir($this->tempDir.'/level1/level2');
+    touch($this->tempDir.'/level1/level2/file2.txt');
 
     $files = $this->helper->findFiles($this->tempDir, '*.txt', true);
 
@@ -152,14 +152,14 @@ test('findFiles with recursive search', function () {
 });
 
 test('findFiles non-recursive', function () {
-    touch($this->tempDir . '/top.txt');
-    mkdir($this->tempDir . '/sub');
-    touch($this->tempDir . '/sub/nested.txt');
+    touch($this->tempDir.'/top.txt');
+    mkdir($this->tempDir.'/sub');
+    touch($this->tempDir.'/sub/nested.txt');
 
     $files = $this->helper->findFiles($this->tempDir, '*.txt', false);
 
     $this->assertCount(1, $files);
-    $this->assertContains($this->tempDir . '/top.txt', $files);
+    $this->assertContains($this->tempDir.'/top.txt', $files);
 });
 
 test('relativePath calculates correctly', function () {
@@ -179,29 +179,29 @@ test('relativePath calculates correctly', function () {
 
 test('copyDirectory copies recursively', function () {
     // Create source structure
-    $source = $this->tempDir . '/source';
-    $dest = $this->tempDir . '/dest';
+    $source = $this->tempDir.'/source';
+    $dest = $this->tempDir.'/dest';
 
     mkdir($source);
-    file_put_contents($source . '/file1.txt', 'content1');
-    mkdir($source . '/subdir');
-    file_put_contents($source . '/subdir/file2.txt', 'content2');
+    file_put_contents($source.'/file1.txt', 'content1');
+    mkdir($source.'/subdir');
+    file_put_contents($source.'/subdir/file2.txt', 'content2');
 
     $this->helper->copyDirectory($source, $dest);
 
-    $this->assertFileExists($dest . '/file1.txt');
-    $this->assertFileExists($dest . '/subdir/file2.txt');
-    $this->assertEquals('content1', file_get_contents($dest . '/file1.txt'));
-    $this->assertEquals('content2', file_get_contents($dest . '/subdir/file2.txt'));
+    $this->assertFileExists($dest.'/file1.txt');
+    $this->assertFileExists($dest.'/subdir/file2.txt');
+    $this->assertEquals('content1', file_get_contents($dest.'/file1.txt'));
+    $this->assertEquals('content2', file_get_contents($dest.'/subdir/file2.txt'));
 });
 
 test('deleteDirectory removes recursively', function () {
-    $dir = $this->tempDir . '/to_delete';
+    $dir = $this->tempDir.'/to_delete';
 
     mkdir($dir);
-    touch($dir . '/file.txt');
-    mkdir($dir . '/sub');
-    touch($dir . '/sub/nested.txt');
+    touch($dir.'/file.txt');
+    mkdir($dir.'/sub');
+    touch($dir.'/sub/nested.txt');
 
     $this->assertTrue(is_dir($dir));
 
@@ -211,7 +211,7 @@ test('deleteDirectory removes recursively', function () {
 });
 
 test('humanFilesize formats sizes correctly', function () {
-    $file = $this->tempDir . '/test.txt';
+    $file = $this->tempDir.'/test.txt';
 
     // Test different sizes
     file_put_contents($file, str_repeat('a', 512));
@@ -228,7 +228,7 @@ test('humanFilesize formats sizes correctly', function () {
 });
 
 test('humanFilesize with different precisions', function () {
-    $file = $this->tempDir . '/test.txt';
+    $file = $this->tempDir.'/test.txt';
     file_put_contents($file, str_repeat('a', 1536 * 1024)); // 1.5 MB
 
     $this->assertEquals('1.5 MB', $this->helper->humanFilesize($file, 2));
@@ -236,7 +236,7 @@ test('humanFilesize with different precisions', function () {
 });
 
 test('humanFilesize handles non-existent file', function () {
-    $result = $this->helper->humanFilesize($this->tempDir . '/nonexistent.txt');
+    $result = $this->helper->humanFilesize($this->tempDir.'/nonexistent.txt');
     $this->assertEquals('0 B', $result);
 });
 
@@ -250,26 +250,26 @@ test('ensureDirectoryExists handles existing directory', function () {
 
 test('copyDirectory handles non-existent source', function () {
     $result = @$this->helper->copyDirectory(
-        $this->tempDir . '/nonexistent',
-        $this->tempDir . '/dest'
+        $this->tempDir.'/nonexistent',
+        $this->tempDir.'/dest'
     );
 
-    $this->assertFalse(is_dir($this->tempDir . '/dest'));
+    $this->assertFalse(is_dir($this->tempDir.'/dest'));
 });
 
 test('deleteDirectory handles non-existent directory', function () {
     // Should not throw exception
-    $this->helper->deleteDirectory($this->tempDir . '/nonexistent');
+    $this->helper->deleteDirectory($this->tempDir.'/nonexistent');
     $this->assertTrue(true); // Just verify no exception
 });
 
 test('findFiles handles non-existent directory', function () {
-    $files = $this->helper->findFiles($this->tempDir . '/nonexistent', '*');
+    $files = $this->helper->findFiles($this->tempDir.'/nonexistent', '*');
     $this->assertEmpty($files);
 });
 
 test('safeWrite handles directory creation', function () {
-    $file = $this->tempDir . '/new/deep/path/file.txt';
+    $file = $this->tempDir.'/new/deep/path/file.txt';
 
     $result = $this->helper->safeWrite($file, 'content');
 
@@ -280,10 +280,10 @@ test('safeWrite handles directory creation', function () {
 test('uniqueFilename handles edge cases', function () {
     // No placeholders
     $file = $this->helper->uniqueFilename($this->tempDir, 'static.txt');
-    $this->assertEquals($this->tempDir . '/static.txt', $file);
+    $this->assertEquals($this->tempDir.'/static.txt', $file);
 
     // Multiple same placeholders
     $pattern = '{counter}_{counter}.txt';
     $file = $this->helper->uniqueFilename($this->tempDir, $pattern);
-    $this->assertEquals($this->tempDir . '/1_1.txt', $file);
+    $this->assertEquals($this->tempDir.'/1_1.txt', $file);
 });

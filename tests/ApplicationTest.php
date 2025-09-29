@@ -6,28 +6,37 @@ use Yalla\Application;
 use Yalla\Commands\Command;
 use Yalla\Output\Output;
 
-function createMockCommand() {
-    return new class extends Command {
-        public function __construct() {
+function createMockCommand()
+{
+    return new class extends Command
+    {
+        public function __construct()
+        {
             $this->name = 'mock';
             $this->description = 'Mock command';
         }
 
-        public function execute(array $input, Output $output): int {
+        public function execute(array $input, Output $output): int
+        {
             $output->writeln('Mock executed');
+
             return 0;
         }
     };
 }
 
-function createFailingCommand() {
-    return new class extends Command {
-        public function __construct() {
+function createFailingCommand()
+{
+    return new class extends Command
+    {
+        public function __construct()
+        {
             $this->name = 'fail';
             $this->description = 'Failing command';
         }
 
-        public function execute(array $input, Output $output): int {
+        public function execute(array $input, Output $output): int
+        {
             throw new Exception('Command failed');
         }
     };

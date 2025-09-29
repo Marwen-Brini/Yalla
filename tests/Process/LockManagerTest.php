@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Yalla\Process\LockManager;
 
 beforeEach(function () {
-    $this->tempDir = sys_get_temp_dir() . '/yalla_lock_test_' . uniqid();
+    $this->tempDir = sys_get_temp_dir().'/yalla_lock_test_'.uniqid();
     $this->manager = new LockManager($this->tempDir);
 });
 
@@ -26,7 +26,7 @@ afterEach(function () {
 
     // Clean up temp directory and any remaining lock files
     if (is_dir($this->tempDir)) {
-        $files = glob($this->tempDir . '/*.lock');
+        $files = glob($this->tempDir.'/*.lock');
         if ($files) {
             array_map('unlink', $files);
         }
@@ -35,7 +35,7 @@ afterEach(function () {
 });
 
 test('creates lock directory if not exists', function () {
-    $customDir = sys_get_temp_dir() . '/yalla_custom_locks_' . uniqid();
+    $customDir = sys_get_temp_dir().'/yalla_custom_locks_'.uniqid();
     $this->assertFalse(is_dir($customDir));
 
     new LockManager($customDir);
@@ -47,7 +47,7 @@ test('creates lock directory if not exists', function () {
 });
 
 test('uses default lock directory when null provided', function () {
-    $manager = new LockManager();
+    $manager = new LockManager;
     $dir = $manager->getLockDirectory();
 
     $this->assertStringContainsString('yalla-locks', $dir);
@@ -186,8 +186,9 @@ test('getLockInfo returns null for non-existent lock', function () {
 });
 
 test('wait waits for lock release', function () {
-    if (!function_exists('pcntl_fork')) {
+    if (! function_exists('pcntl_fork')) {
         $this->markTestSkipped('PCNTL extension not available');
+
         return;
     }
 
@@ -259,11 +260,11 @@ test('listLocks excludes stale locks', function () {
     $this->manager->acquire('fresh');
 
     // Create stale lock manually
-    $staleLock = $this->tempDir . '/stale.lock';
+    $staleLock = $this->tempDir.'/stale.lock';
     file_put_contents($staleLock, json_encode([
         'pid' => 99999,
         'time' => time() - 3600,
-        'host' => 'old-host'
+        'host' => 'old-host',
     ]));
 
     $locks = $this->manager->listLocks();
@@ -278,11 +279,11 @@ test('clearStale removes old locks', function () {
     $this->manager->acquire('fresh');
 
     // Create old lock manually
-    $oldLock = $this->tempDir . '/old.lock';
+    $oldLock = $this->tempDir.'/old.lock';
     file_put_contents($oldLock, json_encode([
         'pid' => 99999,
         'time' => time() - 3600,
-        'host' => 'old-host'
+        'host' => 'old-host',
     ]));
 
     $cleared = $this->manager->clearStale(1); // Clear locks older than 1 second
@@ -312,7 +313,7 @@ test('getLockStatus for non-existent lock', function () {
 
 test('getLockStatus for lock without info', function () {
     // Create invalid lock file
-    $lockFile = $this->tempDir . '/invalid.lock';
+    $lockFile = $this->tempDir.'/invalid.lock';
     file_put_contents($lockFile, 'not json');
 
     $status = $this->manager->getLockStatus('invalid');
@@ -325,10 +326,10 @@ test('ownsLock identifies ownership', function () {
     $this->assertTrue($this->manager->ownsLock('mine'));
 
     // Create lock with different PID
-    $otherLock = $this->tempDir . '/other.lock';
+    $otherLock = $this->tempDir.'/other.lock';
     file_put_contents($otherLock, json_encode([
         'pid' => 99999999, // Use high number that's unlikely to be a real PID
-        'host' => function_exists('gethostname') ? gethostname() : 'localhost'
+        'host' => function_exists('gethostname') ? gethostname() : 'localhost',
     ]));
 
     $this->assertFalse($this->manager->ownsLock('other'));
@@ -354,10 +355,10 @@ test('refresh updates lock timestamp', function () {
 
 test('refresh fails for non-owned lock', function () {
     // Create lock with different PID
-    $lockFile = $this->tempDir . '/notmine.lock';
+    $lockFile = $this->tempDir.'/notmine.lock';
     file_put_contents($lockFile, json_encode([
         'pid' => 99999999, // Use high number that's unlikely to be a real PID
-        'host' => function_exists('gethostname') ? gethostname() : 'localhost'
+        'host' => function_exists('gethostname') ? gethostname() : 'localhost',
     ]));
 
     $result = $this->manager->refresh('notmine');
@@ -431,11 +432,11 @@ test('isProcessRunning checks process status', function () {
 
 test('acquire removes stale lock and retries', function () {
     // Create stale lock
-    $lockFile = $this->tempDir . '/stale-retry.lock';
+    $lockFile = $this->tempDir.'/stale-retry.lock';
     file_put_contents($lockFile, json_encode([
         'pid' => 999999, // Non-existent process
         'time' => time() - 7200, // 2 hours old
-        'host' => function_exists('gethostname') ? gethostname() : 'localhost'
+        'host' => function_exists('gethostname') ? gethostname() : 'localhost',
     ]));
 
     $this->manager->setDefaultMaxAge(3600);

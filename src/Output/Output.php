@@ -56,9 +56,13 @@ class Output
 
     // Verbosity levels
     const VERBOSITY_QUIET = 0;
+
     const VERBOSITY_NORMAL = 1;
+
     const VERBOSITY_VERBOSE = 2;
+
     const VERBOSITY_DEBUG = 3;
+
     const VERBOSITY_TRACE = 4;
 
     private bool $supportsColors;
@@ -119,7 +123,7 @@ class Output
 
     public function writeln(string $message): void
     {
-        if ($this->showTimestamps && !empty($message)) {
+        if ($this->showTimestamps && ! empty($message)) {
             $timestamp = date($this->timestampFormat);
             $message = "[{$timestamp}] {$message}";
         }
@@ -128,49 +132,49 @@ class Output
 
     public function success(string $message): void
     {
-        $this->writeln($this->color('✅ ' . $message, self::GREEN));
+        $this->writeln($this->color('✅ '.$message, self::GREEN));
     }
 
     public function error(string $message): void
     {
-        $this->writeln($this->color('❌ ' . $message, self::RED));
+        $this->writeln($this->color('❌ '.$message, self::RED));
     }
 
     public function warning(string $message): void
     {
-        $this->writeln($this->color('⚠️  ' . $message, self::YELLOW));
+        $this->writeln($this->color('⚠️  '.$message, self::YELLOW));
     }
 
     public function info(string $message): void
     {
-        $this->writeln($this->color('ℹ️  ' . $message, self::CYAN));
+        $this->writeln($this->color('ℹ️  '.$message, self::CYAN));
     }
 
     public function debug(string $message): void
     {
         if ($this->verbosity >= self::VERBOSITY_DEBUG) {
-            $this->writeln($this->color('🔍 ' . $message, self::GRAY));
+            $this->writeln($this->color('🔍 '.$message, self::GRAY));
         }
     }
 
     public function comment(string $message): void
     {
-        $this->writeln($this->color('💡 ' . $message, self::CYAN));
+        $this->writeln($this->color('💡 '.$message, self::CYAN));
     }
 
     public function question(string $message): void
     {
-        $this->writeln($this->color('❓ ' . $message, self::MAGENTA));
+        $this->writeln($this->color('❓ '.$message, self::MAGENTA));
     }
 
     public function note(string $message): void
     {
-        $this->writeln($this->color('📝 ' . $message, self::WHITE));
+        $this->writeln($this->color('📝 '.$message, self::WHITE));
     }
 
     public function caution(string $message): void
     {
-        $this->writeln($this->color('⚡ ' . $message, self::BRIGHT_YELLOW));
+        $this->writeln($this->color('⚡ '.$message, self::BRIGHT_YELLOW));
     }
 
     public function color(string $text, string $color): string
@@ -469,6 +473,7 @@ class Output
     public function setVerbosity(int $level): self
     {
         $this->verbosity = $level;
+
         return $this;
     }
 
@@ -528,7 +533,7 @@ class Output
     public function trace(string $message): void
     {
         if ($this->isTrace()) {
-            $this->writeln($this->color('[TRACE] ' . $message, self::DARK_GRAY));
+            $this->writeln($this->color('[TRACE] '.$message, self::DARK_GRAY));
         }
     }
 
@@ -539,7 +544,7 @@ class Output
     {
         if ($this->isDebug()) {
             $interpolated = $this->interpolateQuery($query, $bindings);
-            $this->debug('SQL: ' . $interpolated);
+            $this->debug('SQL: '.$interpolated);
         }
     }
 
@@ -552,6 +557,7 @@ class Output
             $value = is_string($binding) ? "'{$binding}'" : (string) $binding;
             $query = preg_replace('/\?/', $value, $query, 1);
         }
+
         return $query;
     }
 
@@ -563,6 +569,7 @@ class Output
     public function withTimestamps(bool $enabled = true): self
     {
         $this->showTimestamps = $enabled;
+
         return $this;
     }
 
@@ -572,6 +579,7 @@ class Output
     public function setTimestampFormat(string $format): self
     {
         $this->timestampFormat = $format;
+
         return $this;
     }
 

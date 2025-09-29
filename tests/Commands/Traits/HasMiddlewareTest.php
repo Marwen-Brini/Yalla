@@ -8,7 +8,8 @@ use Yalla\Commands\Traits\HasMiddleware;
 use Yalla\Output\Output;
 
 test('add single middleware', function () {
-    $command = new class extends Command {
+    $command = new class extends Command
+    {
         use HasMiddleware;
 
         protected string $name = 'test:command';
@@ -27,7 +28,8 @@ test('add single middleware', function () {
 });
 
 test('add multiple middleware', function () {
-    $command = new class extends Command {
+    $command = new class extends Command
+    {
         use HasMiddleware;
 
         protected string $name = 'test:command';
@@ -49,7 +51,8 @@ test('add multiple middleware', function () {
 });
 
 test('clear middleware', function () {
-    $command = new class extends Command {
+    $command = new class extends Command
+    {
         use HasMiddleware;
 
         protected string $name = 'test:command';
@@ -72,7 +75,8 @@ test('clear middleware', function () {
 });
 
 test('clear middleware with initialized pipeline', function () {
-    $command = new class extends Command {
+    $command = new class extends Command
+    {
         use HasMiddleware;
 
         protected string $name = 'test:command';
@@ -82,7 +86,8 @@ test('clear middleware with initialized pipeline', function () {
             return 0;
         }
 
-        public function initPipelineForTest(): void {
+        public function initPipelineForTest(): void
+        {
             // Force pipeline to be initialized
             $this->getMiddlewarePipeline();
         }
@@ -106,10 +111,12 @@ test('clear middleware with initialized pipeline', function () {
 test('execute with middleware', function () {
     $executionOrder = [];
 
-    $command = new class($executionOrder) extends Command {
+    $command = new class($executionOrder) extends Command
+    {
         use HasMiddleware;
 
         protected string $name = 'test:command';
+
         private array $order;
 
         public function __construct(array &$order)
@@ -119,8 +126,9 @@ test('execute with middleware', function () {
 
         public function execute(array $input, Output $output): int
         {
-            $commandExecution = function($cmd, $in, $out) {
+            $commandExecution = function ($cmd, $in, $out) {
                 $this->order[] = 'command';
+
                 return 0;
             };
 
@@ -128,7 +136,8 @@ test('execute with middleware', function () {
         }
     };
 
-    $middleware = new class($executionOrder) implements MiddlewareInterface {
+    $middleware = new class($executionOrder) implements MiddlewareInterface
+    {
         private array $order;
 
         public function __construct(array &$order)
@@ -141,11 +150,19 @@ test('execute with middleware', function () {
             $this->order[] = 'before';
             $result = $next($command, $input, $output);
             $this->order[] = 'after';
+
             return $result;
         }
 
-        public function getPriority(): int { return 100; }
-        public function shouldApply(Command $command, array $input): bool { return true; }
+        public function getPriority(): int
+        {
+            return 100;
+        }
+
+        public function shouldApply(Command $command, array $input): bool
+        {
+            return true;
+        }
     };
 
     $command->middleware($middleware);
@@ -160,10 +177,12 @@ test('execute with middleware', function () {
 test('execute without middleware', function () {
     $executionOrder = [];
 
-    $command = new class($executionOrder) extends Command {
+    $command = new class($executionOrder) extends Command
+    {
         use HasMiddleware;
 
         protected string $name = 'test:command';
+
         private array $order;
 
         public function __construct(array &$order)
@@ -173,8 +192,9 @@ test('execute without middleware', function () {
 
         public function execute(array $input, Output $output): int
         {
-            $commandExecution = function($cmd, $in, $out) {
+            $commandExecution = function ($cmd, $in, $out) {
                 $this->order[] = 'command';
+
                 return 42;
             };
 
@@ -190,7 +210,8 @@ test('execute without middleware', function () {
 });
 
 test('chain middleware', function () {
-    $command = new class extends Command {
+    $command = new class extends Command
+    {
         use HasMiddleware;
 
         protected string $name = 'test:command';
@@ -213,7 +234,8 @@ test('chain middleware', function () {
 });
 
 test('get middleware pipeline', function () {
-    $command = new class extends Command {
+    $command = new class extends Command
+    {
         use HasMiddleware;
 
         protected string $name = 'test:command';

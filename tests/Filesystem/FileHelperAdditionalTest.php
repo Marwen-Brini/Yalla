@@ -5,8 +5,8 @@ declare(strict_types=1);
 use Yalla\Filesystem\FileHelper;
 
 beforeEach(function () {
-    $this->helper = new FileHelper();
-    $this->tempDir = sys_get_temp_dir() . '/yalla_filehelper_additional_' . uniqid();
+    $this->helper = new FileHelper;
+    $this->tempDir = sys_get_temp_dir().'/yalla_filehelper_additional_'.uniqid();
     mkdir($this->tempDir);
 });
 
@@ -15,7 +15,7 @@ afterEach(function () {
     if (is_dir($this->tempDir)) {
         $files = array_diff(scandir($this->tempDir), ['.', '..']);
         foreach ($files as $file) {
-            $path = $this->tempDir . '/' . $file;
+            $path = $this->tempDir.'/'.$file;
             if (is_dir($path)) {
                 rmdir($path);
             } else {
@@ -28,11 +28,11 @@ afterEach(function () {
 
 test('ensureDirectoryExists throws exception when mkdir fails', function () {
     // Create a file where we want to create a directory
-    $filePath = $this->tempDir . '/testfile';
+    $filePath = $this->tempDir.'/testfile';
     touch($filePath);
 
     // Try to create a directory with the same name as the file
-    expect(fn() => $this->helper->ensureDirectoryExists($filePath))
+    expect(fn () => $this->helper->ensureDirectoryExists($filePath))
         ->toThrow(RuntimeException::class, 'Failed to create directory');
 });
 
@@ -51,7 +51,7 @@ test('isAbsolutePath detects Windows absolute paths', function () {
 
 test('makeAbsolute converts relative to absolute path', function () {
     $path = $this->helper->makeAbsolute('file.txt', '/home/user');
-    expect($path)->toBe('/home/user' . DIRECTORY_SEPARATOR . 'file.txt');
+    expect($path)->toBe('/home/user'.DIRECTORY_SEPARATOR.'file.txt');
 
     $absPath = $this->helper->makeAbsolute('/already/absolute', '/home/user');
     expect($absPath)->toBe('/already/absolute');
@@ -59,7 +59,7 @@ test('makeAbsolute converts relative to absolute path', function () {
 
 test('makeAbsolute uses current directory when base is null', function () {
     $path = $this->helper->makeAbsolute('file.txt');
-    expect($path)->toBe(getcwd() . DIRECTORY_SEPARATOR . 'file.txt');
+    expect($path)->toBe(getcwd().DIRECTORY_SEPARATOR.'file.txt');
 });
 
 test('getExtension returns file extension', function () {
@@ -77,7 +77,7 @@ test('getFilenameWithoutExtension returns filename without extension', function 
 });
 
 test('readLines reads file lines', function () {
-    $file = $this->tempDir . '/lines.txt';
+    $file = $this->tempDir.'/lines.txt';
     file_put_contents($file, "line1\nline2\n\nline3\n");
 
     $lines = $this->helper->readLines($file);
@@ -88,12 +88,12 @@ test('readLines reads file lines', function () {
 });
 
 test('readLines returns empty array for non-existent file', function () {
-    $lines = $this->helper->readLines($this->tempDir . '/nonexistent.txt');
+    $lines = $this->helper->readLines($this->tempDir.'/nonexistent.txt');
     expect($lines)->toBe([]);
 });
 
 test('writeLines writes lines to file', function () {
-    $file = $this->tempDir . '/output.txt';
+    $file = $this->tempDir.'/output.txt';
     $lines = ['line1', 'line2', 'line3'];
 
     $result = $this->helper->writeLines($file, $lines);
@@ -104,7 +104,7 @@ test('writeLines writes lines to file', function () {
 });
 
 test('writeLines appends to file when append is true', function () {
-    $file = $this->tempDir . '/append.txt';
+    $file = $this->tempDir.'/append.txt';
     file_put_contents($file, "existing\n");
 
     $lines = ['new1', 'new2'];
@@ -116,7 +116,7 @@ test('writeLines appends to file when append is true', function () {
 });
 
 test('writeLines handles empty array', function () {
-    $file = $this->tempDir . '/empty.txt';
+    $file = $this->tempDir.'/empty.txt';
 
     $result = $this->helper->writeLines($file, []);
     expect($result)->toBeTrue();
@@ -126,7 +126,7 @@ test('writeLines handles empty array', function () {
 });
 
 test('safeWrite with atomic option', function () {
-    $file = $this->tempDir . '/atomic.txt';
+    $file = $this->tempDir.'/atomic.txt';
 
     // Test atomic write
     $result = $this->helper->safeWrite($file, 'test content', true, true);
@@ -136,28 +136,28 @@ test('safeWrite with atomic option', function () {
 
 test('relativePath with different separators', function () {
     // Test with mixed separators
-    $from = $this->tempDir . '/a/b';
-    $to = $this->tempDir . '/c/d/file.txt';
+    $from = $this->tempDir.'/a/b';
+    $to = $this->tempDir.'/c/d/file.txt';
 
     $relative = $this->helper->relativePath($from, $to);
     expect($relative)->toBe('../../c/d/file.txt');
 });
 
 test('copyDirectory with subdirectories', function () {
-    $source = $this->tempDir . '/source';
-    $dest = $this->tempDir . '/dest';
+    $source = $this->tempDir.'/source';
+    $dest = $this->tempDir.'/dest';
 
     mkdir($source);
-    mkdir($source . '/subdir');
-    touch($source . '/file.txt');
-    touch($source . '/subdir/nested.txt');
+    mkdir($source.'/subdir');
+    touch($source.'/file.txt');
+    touch($source.'/subdir/nested.txt');
 
     $this->helper->copyDirectory($source, $dest);
 
     expect(is_dir($dest))->toBeTrue();
-    expect(file_exists($dest . '/file.txt'))->toBeTrue();
-    expect(is_dir($dest . '/subdir'))->toBeTrue();
-    expect(file_exists($dest . '/subdir/nested.txt'))->toBeTrue();
+    expect(file_exists($dest.'/file.txt'))->toBeTrue();
+    expect(is_dir($dest.'/subdir'))->toBeTrue();
+    expect(file_exists($dest.'/subdir/nested.txt'))->toBeTrue();
 });
 
 test('findFiles handles empty result', function () {
@@ -167,8 +167,8 @@ test('findFiles handles empty result', function () {
 
 test('uniqueFilename with counter placeholder', function () {
     // Create some existing files
-    touch($this->tempDir . '/file_001.txt');
-    touch($this->tempDir . '/file_002.txt');
+    touch($this->tempDir.'/file_001.txt');
+    touch($this->tempDir.'/file_002.txt');
 
     $filename = $this->helper->uniqueFilename($this->tempDir, 'file_{counter}.txt');
 

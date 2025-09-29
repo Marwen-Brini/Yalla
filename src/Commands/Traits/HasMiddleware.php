@@ -10,46 +10,41 @@ use Yalla\Commands\Middleware\MiddlewarePipeline;
 trait HasMiddleware
 {
     protected ?MiddlewarePipeline $middlewarePipeline = null;
+
     protected array $commandMiddleware = [];
 
     /**
      * Add middleware to the command
-     *
-     * @param MiddlewareInterface $middleware
-     * @return self
      */
     public function middleware(MiddlewareInterface $middleware): self
     {
         $this->commandMiddleware[] = $middleware;
+
         return $this;
     }
 
     /**
      * Add multiple middleware to the command
-     *
-     * @param array $middleware
-     * @return self
      */
     public function middlewares(array $middleware): self
     {
         foreach ($middleware as $m) {
             $this->middleware($m);
         }
+
         return $this;
     }
 
     /**
      * Get the middleware pipeline for this command
-     *
-     * @return MiddlewarePipeline
      */
     protected function getMiddlewarePipeline(): MiddlewarePipeline
     {
         if ($this->middlewarePipeline === null) {
-            $this->middlewarePipeline = new MiddlewarePipeline();
+            $this->middlewarePipeline = new MiddlewarePipeline;
 
             // Add command-specific middleware
-            if (!empty($this->commandMiddleware)) {
+            if (! empty($this->commandMiddleware)) {
                 $this->middlewarePipeline->addMultiple($this->commandMiddleware);
             }
         }
@@ -60,16 +55,13 @@ trait HasMiddleware
     /**
      * Execute command through middleware pipeline
      *
-     * @param array $input
-     * @param mixed $output
-     * @param \Closure $commandExecution
-     * @return int
+     * @param  mixed  $output
      */
     protected function executeWithMiddleware(array $input, $output, \Closure $commandExecution): int
     {
         $pipeline = $this->getMiddlewarePipeline();
 
-        if (!$pipeline->hasMiddleware()) {
+        if (! $pipeline->hasMiddleware()) {
             // No middleware, execute directly
             return $commandExecution($this, $input, $output);
         }
@@ -80,19 +72,15 @@ trait HasMiddleware
 
     /**
      * Check if the command has any middleware
-     *
-     * @return bool
      */
     public function hasMiddleware(): bool
     {
-        return !empty($this->commandMiddleware) ||
+        return ! empty($this->commandMiddleware) ||
                ($this->middlewarePipeline !== null && $this->middlewarePipeline->hasMiddleware());
     }
 
     /**
      * Remove all middleware from the command
-     *
-     * @return self
      */
     public function clearMiddleware(): self
     {
@@ -100,13 +88,12 @@ trait HasMiddleware
         if ($this->middlewarePipeline !== null) {
             $this->middlewarePipeline->clear();
         }
+
         return $this;
     }
 
     /**
      * Get all middleware for this command
-     *
-     * @return array
      */
     public function getMiddleware(): array
     {

@@ -5,13 +5,13 @@ declare(strict_types=1);
 use Yalla\Process\LockManager;
 
 beforeEach(function () {
-    $this->tempDir = sys_get_temp_dir() . '/yalla_lock_final_test_' . uniqid();
+    $this->tempDir = sys_get_temp_dir().'/yalla_lock_final_test_'.uniqid();
 });
 
 afterEach(function () {
     // Clean up temp directory and any remaining lock files
     if (is_dir($this->tempDir)) {
-        $files = glob($this->tempDir . '/*.lock');
+        $files = glob($this->tempDir.'/*.lock');
         if ($files) {
             array_map('unlink', $files);
         }
@@ -82,7 +82,7 @@ test('getLockInfo handles file_get_contents false (line 273)', function () {
 
     // Create a lock file that exists but can't be read properly
     // One way is to create a directory instead of a file
-    $lockPath = $this->tempDir . '/unreadable.lock';
+    $lockPath = $this->tempDir.'/unreadable.lock';
     mkdir($lockPath, 0755, true);
 
     // This should make file_get_contents return false, hitting line 273
@@ -93,7 +93,7 @@ test('getLockInfo handles file_get_contents false (line 273)', function () {
 
 test('listLocks handles glob false return (line 317)', function () {
     // Create a directory that will cause glob to fail
-    $restrictedDir = sys_get_temp_dir() . '/restricted_' . uniqid();
+    $restrictedDir = sys_get_temp_dir().'/restricted_'.uniqid();
     mkdir($restrictedDir, 0755, true);
 
     $manager = new LockManager($restrictedDir);
@@ -124,7 +124,7 @@ test('listLocks handles glob false return (line 317)', function () {
 
 test('clearStale handles glob false return (line 344)', function () {
     // Create a directory that will cause glob to fail
-    $restrictedDir = sys_get_temp_dir() . '/restricted_clear_' . uniqid();
+    $restrictedDir = sys_get_temp_dir().'/restricted_clear_'.uniqid();
     mkdir($restrictedDir, 0755, true);
 
     $manager = new LockManager($restrictedDir);
@@ -157,7 +157,7 @@ test('ownsLock returns false when no lock info (line 500)', function () {
     $manager = new LockManager($this->tempDir);
 
     // Create a lock file but make it invalid/unreadable so getLockInfo returns null
-    $lockPath = $this->tempDir . '/no-info.lock';
+    $lockPath = $this->tempDir.'/no-info.lock';
     mkdir($lockPath, 0755, true); // Create directory instead of file
 
     // ownsLock should return false when getLockInfo returns null (line 500)

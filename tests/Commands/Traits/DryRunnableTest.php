@@ -11,11 +11,13 @@ class DryRunnableCommand extends Command
     use DryRunnable;
 
     protected string $name = 'test:dry-run';
+
     protected string $description = 'Test command with dry run support';
 
     public function execute(array $input, Output $output): int
     {
         $this->setDryRunOutput($output);
+
         return 0;
     }
 
@@ -59,8 +61,8 @@ class TestDryRunnableCommand extends DryRunnableCommand
 }
 
 beforeEach(function () {
-    $this->command = new DryRunnableCommand();
-    $this->output = new Output();
+    $this->command = new DryRunnableCommand;
+    $this->output = new Output;
 });
 
 test('setDryRun and isDryRun work correctly', function () {
@@ -96,6 +98,7 @@ test('executeOrSimulate runs operation in normal mode', function () {
     $executed = false;
     $result = $this->command->testExecuteOrSimulate('Test operation', function () use (&$executed) {
         $executed = true;
+
         return 'success';
     });
 
@@ -111,6 +114,7 @@ test('executeOrSimulate simulates in dry run mode', function () {
     $executed = false;
     $result = $this->command->testExecuteOrSimulate('Test operation', function () use (&$executed) {
         $executed = true;
+
         return 'would execute';
     }, ['key' => 'value']);
     ob_get_clean();
@@ -124,11 +128,11 @@ test('simulateOperation logs dry run operation', function () {
     $this->command->setDryRun(true);
     $this->command->setDryRunOutput($this->output);
 
-    $this->command->testSimulateOperation('Database migration', function() {
+    $this->command->testSimulateOperation('Database migration', function () {
         return 'would create table';
     }, [
         'table' => 'users',
-        'action' => 'create'
+        'action' => 'create',
     ]);
     ob_get_clean();
 
@@ -143,6 +147,7 @@ test('executeOperation tracks execution time', function () {
 
     $result = $this->command->testExecuteOperation('Quick task', function () {
         usleep(10000); // 10ms
+
         return 'done';
     });
 
@@ -250,11 +255,11 @@ test('dry run mode with verbose context', function () {
         'operations' => [
             'create' => 3,
             'update' => 10,
-            'delete' => 2
-        ]
+            'delete' => 2,
+        ],
     ];
 
-    $this->command->testSimulateOperation('Complex migration', function() {
+    $this->command->testSimulateOperation('Complex migration', function () {
         return 'migration result';
     }, $complexContext);
     ob_get_clean();
@@ -264,22 +269,24 @@ test('dry run mode with verbose context', function () {
 });
 
 test('formatContextValue handles all value types', function () {
-    $trait = new TestDryRunnableCommand();
+    $trait = new TestDryRunnableCommand;
 
     // Test array
     $arrayResult = $trait->testFormatContextValue(['key' => 'value']);
     expect($arrayResult)->toBe(json_encode(['key' => 'value']));
 
     // Test object with __toString
-    $objWithToString = new class {
-        public function __toString() {
+    $objWithToString = new class
+    {
+        public function __toString()
+        {
             return 'string representation';
         }
     };
     expect($trait->testFormatContextValue($objWithToString))->toBe('string representation');
 
     // Test object without __toString
-    $objWithoutToString = new stdClass();
+    $objWithoutToString = new stdClass;
     expect($trait->testFormatContextValue($objWithoutToString))->toBe('stdClass');
 
     // Test boolean true
@@ -300,23 +307,31 @@ test('formatContextValue handles all value types', function () {
 
 test('simulateOperation shows context in verbose mode', function () {
     // Create a test command with verbose output
-    $trait = new class extends TestDryRunnableCommand {
-        public function testWithVerboseOutput() {
-            $this->output = new class extends Output {
-                public function isVerbose(): bool {
+    $trait = new class extends TestDryRunnableCommand
+    {
+        public function testWithVerboseOutput()
+        {
+            $this->output = new class extends Output
+            {
+                public function isVerbose(): bool
+                {
                     return true;
                 }
-                public function verbose(string $message): void {
-                    echo $message . PHP_EOL;
+
+                public function verbose(string $message): void
+                {
+                    echo $message.PHP_EOL;
                 }
             };
             $this->setDryRun(true);
 
-            $operation = function () { return 'result'; };
+            $operation = function () {
+                return 'result';
+            };
             $context = [
                 'file' => '/path/to/file',
                 'mode' => 'write',
-                'size' => 1024
+                'size' => 1024,
             ];
 
             return $this->executeOrSimulate('Test with context', $operation, $context);
@@ -334,18 +349,27 @@ test('simulateOperation shows context in verbose mode', function () {
 });
 
 test('executeOperation logs in verbose mode', function () {
-    $trait = new class extends TestDryRunnableCommand {
-        public function testVerboseExecute() {
-            $this->output = new class extends Output {
-                public function isVerbose(): bool {
+    $trait = new class extends TestDryRunnableCommand
+    {
+        public function testVerboseExecute()
+        {
+            $this->output = new class extends Output
+            {
+                public function isVerbose(): bool
+                {
                     return true;
                 }
-                public function verbose(string $message): void {
-                    echo $message . PHP_EOL;
+
+                public function verbose(string $message): void
+                {
+                    echo $message.PHP_EOL;
                 }
             };
 
-            $operation = function () { return 'result'; };
+            $operation = function () {
+                return 'result';
+            };
+
             return $this->executeOrSimulate('Verbose operation', $operation);
         }
     };
@@ -359,21 +383,29 @@ test('executeOperation logs in verbose mode', function () {
 });
 
 test('executeOperation logs debug info on success', function () {
-    $trait = new class extends TestDryRunnableCommand {
-        public function testDebugExecute() {
-            $this->output = new class extends Output {
-                public function isDebug(): bool {
+    $trait = new class extends TestDryRunnableCommand
+    {
+        public function testDebugExecute()
+        {
+            $this->output = new class extends Output
+            {
+                public function isDebug(): bool
+                {
                     return true;
                 }
-                public function debug(string $message): void {
-                    echo $message . PHP_EOL;
+
+                public function debug(string $message): void
+                {
+                    echo $message.PHP_EOL;
                 }
             };
 
             $operation = function () {
                 usleep(1000); // Small delay to ensure duration > 0
+
                 return 'success';
             };
+
             return $this->executeOrSimulate('Debug operation', $operation);
         }
     };
@@ -387,17 +419,25 @@ test('executeOperation logs debug info on success', function () {
 });
 
 test('executeOperation handles exception with debug output', function () {
-    $trait = new class extends TestDryRunnableCommand {
-        public function testDebugException() {
-            $this->output = new class extends Output {
-                public function isDebug(): bool {
+    $trait = new class extends TestDryRunnableCommand
+    {
+        public function testDebugException()
+        {
+            $this->output = new class extends Output
+            {
+                public function isDebug(): bool
+                {
                     return true;
                 }
-                public function debug(string $message): void {
-                    echo $message . PHP_EOL;
+
+                public function debug(string $message): void
+                {
+                    echo $message.PHP_EOL;
                 }
-                public function error(string $message): void {
-                    echo 'ERROR: ' . $message . PHP_EOL;
+
+                public function error(string $message): void
+                {
+                    echo 'ERROR: '.$message.PHP_EOL;
                 }
             };
 
@@ -424,30 +464,42 @@ test('executeOperation handles exception with debug output', function () {
 });
 
 test('showDryRunSummary displays verbose context', function () {
-    $trait = new class extends TestDryRunnableCommand {
-        public function testVerboseSummary() {
-            $this->output = new class extends Output {
-                public function isVerbose(): bool {
+    $trait = new class extends TestDryRunnableCommand
+    {
+        public function testVerboseSummary()
+        {
+            $this->output = new class extends Output
+            {
+                public function isVerbose(): bool
+                {
                     return true;
                 }
-                public function writeln(string $message = ''): void {
-                    echo $message . PHP_EOL;
+
+                public function writeln(string $message = ''): void
+                {
+                    echo $message.PHP_EOL;
                 }
-                public function section(string $title): void {
-                    echo "=== $title ===" . PHP_EOL;
+
+                public function section(string $title): void
+                {
+                    echo "=== $title ===".PHP_EOL;
                 }
-                public function info(string $message): void {
-                    echo $message . PHP_EOL;
+
+                public function info(string $message): void
+                {
+                    echo $message.PHP_EOL;
                 }
-                public function comment(string $message): void {
-                    echo $message . PHP_EOL;
+
+                public function comment(string $message): void
+                {
+                    echo $message.PHP_EOL;
                 }
             };
             $this->setDryRun(true);
 
             // Add operations with context
-            $this->executeOrSimulate('First op', fn() => null, ['key1' => 'value1']);
-            $this->executeOrSimulate('Second op', fn() => null, ['key2' => 'value2']);
+            $this->executeOrSimulate('First op', fn () => null, ['key1' => 'value1']);
+            $this->executeOrSimulate('Second op', fn () => null, ['key2' => 'value2']);
 
             $this->showDryRunSummary();
         }

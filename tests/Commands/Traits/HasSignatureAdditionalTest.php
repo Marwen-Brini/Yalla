@@ -7,7 +7,8 @@ use Yalla\Commands\Traits\HasSignature;
 use Yalla\Output\Output;
 
 test('parseSignature returns early when signature is empty', function () {
-    $command = new class extends Command {
+    $command = new class extends Command
+    {
         use HasSignature;
 
         protected string $name = 'default:name'; // Initialize to avoid error
@@ -29,7 +30,8 @@ test('parseSignature returns early when signature is empty', function () {
 });
 
 test('parseSignature initializes arrays when not set', function () {
-    $command = new class extends Command {
+    $command = new class extends Command
+    {
         use HasSignature;
 
         // Don't initialize these arrays to test the initialization logic
@@ -53,12 +55,14 @@ test('parseSignature initializes arrays when not set', function () {
 });
 
 test('parseArgument without addArgument method', function () {
-    $command = new class extends Command {
+    $command = new class extends Command
+    {
         use HasSignature {
             parseArgument as protected;
         }
 
         protected array $arguments = [];
+
         protected array $argumentMetadata = [];
 
         public function __construct()
@@ -93,7 +97,8 @@ test('parseArgument without addArgument method', function () {
 });
 
 test('parseArgument initializes argumentMetadata when not set', function () {
-    $command = new class extends Command {
+    $command = new class extends Command
+    {
         use HasSignature;
 
         public function __construct()
@@ -122,12 +127,14 @@ test('parseArgument initializes argumentMetadata when not set', function () {
 });
 
 test('parseOption without addOption method', function () {
-    $command = new class extends Command {
+    $command = new class extends Command
+    {
         use HasSignature {
             parseOption as protected;
         }
 
         protected array $options = [];
+
         protected array $optionMetadata = [];
 
         public function __construct()
@@ -162,7 +169,8 @@ test('parseOption without addOption method', function () {
 });
 
 test('parseOption initializes optionMetadata when not set', function () {
-    $command = new class extends Command {
+    $command = new class extends Command
+    {
         use HasSignature;
 
         public function __construct()
@@ -190,7 +198,8 @@ test('parseOption initializes optionMetadata when not set', function () {
 });
 
 test('parseDefaultValue handles quoted strings', function () {
-    $command = new class extends Command {
+    $command = new class extends Command
+    {
         use HasSignature {
             parseDefaultValue as public;
         }
@@ -209,7 +218,8 @@ test('parseDefaultValue handles quoted strings', function () {
 });
 
 test('parseDefaultValue handles boolean true', function () {
-    $command = new class extends Command {
+    $command = new class extends Command
+    {
         use HasSignature {
             parseDefaultValue as public;
         }
@@ -224,7 +234,8 @@ test('parseDefaultValue handles boolean true', function () {
 });
 
 test('parseDefaultValue handles empty array', function () {
-    $command = new class extends Command {
+    $command = new class extends Command
+    {
         use HasSignature {
             parseDefaultValue as public;
         }
@@ -239,10 +250,12 @@ test('parseDefaultValue handles empty array', function () {
 });
 
 test('parse complex signature with all features', function () {
-    $command = new class extends Command {
+    $command = new class extends Command
+    {
         use HasSignature;
 
         protected array $argumentMetadata = [];
+
         protected array $optionMetadata = [];
 
         public function __construct()

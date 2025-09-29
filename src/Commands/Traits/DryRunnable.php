@@ -11,8 +11,6 @@ use Yalla\Output\Output;
  *
  * Allows commands to simulate operations without making actual changes,
  * useful for testing and previewing operations in production environments
- *
- * @package Yalla\Commands\Traits
  */
 trait DryRunnable
 {
@@ -34,8 +32,7 @@ trait DryRunnable
     /**
      * Enable or disable dry run mode
      *
-     * @param bool $enabled Whether to enable dry run mode
-     * @return self
+     * @param  bool  $enabled  Whether to enable dry run mode
      */
     public function setDryRun(bool $enabled = true): self
     {
@@ -52,8 +49,6 @@ trait DryRunnable
 
     /**
      * Check if dry run mode is enabled
-     *
-     * @return bool
      */
     public function isDryRun(): bool
     {
@@ -63,9 +58,9 @@ trait DryRunnable
     /**
      * Execute an operation or simulate it in dry run mode
      *
-     * @param string $description Description of the operation
-     * @param callable $operation The actual operation to perform
-     * @param array $context Additional context for logging
+     * @param  string  $description  Description of the operation
+     * @param  callable  $operation  The actual operation to perform
+     * @param  array  $context  Additional context for logging
      * @return mixed Result of the operation or null in dry run mode
      */
     protected function executeOrSimulate(string $description, callable $operation, array $context = [])
@@ -80,9 +75,9 @@ trait DryRunnable
     /**
      * Simulate an operation without executing it
      *
-     * @param string $description Description of the operation
-     * @param callable $operation The operation (not executed in simulation)
-     * @param array $context Additional context for logging
+     * @param  string  $description  Description of the operation
+     * @param  callable  $operation  The operation (not executed in simulation)
+     * @param  array  $context  Additional context for logging
      * @return mixed Simulated result or null
      */
     protected function simulateOperation(string $description, callable $operation, array $context = [])
@@ -99,7 +94,7 @@ trait DryRunnable
         ];
 
         // Show context if verbose and output is available
-        if ($this->output !== null && method_exists($this->output, 'isVerbose') && $this->output->isVerbose() && !empty($context)) {
+        if ($this->output !== null && method_exists($this->output, 'isVerbose') && $this->output->isVerbose() && ! empty($context)) {
             foreach ($context as $key => $value) {
                 $displayValue = $this->formatContextValue($value);
                 $this->output->verbose("  → {$key}: {$displayValue}");
@@ -119,7 +114,7 @@ trait DryRunnable
     /**
      * Format context value for display
      *
-     * @param mixed $value The value to format
+     * @param  mixed  $value  The value to format
      * @return string Formatted string
      */
     protected function formatContextValue($value): string
@@ -132,6 +127,7 @@ trait DryRunnable
             if (method_exists($value, '__toString')) {
                 return (string) $value;
             }
+
             return get_class($value);
         }
 
@@ -149,8 +145,7 @@ trait DryRunnable
     /**
      * Check if operation can be simulated with transaction
      *
-     * @param callable $operation The operation to check
-     * @return bool
+     * @param  callable  $operation  The operation to check
      * @codeCoverageIgnore Database-specific functionality
      */
     protected function canSimulateWithTransaction(callable $operation): bool
@@ -163,7 +158,7 @@ trait DryRunnable
     /**
      * Simulate operation using transaction rollback
      *
-     * @param callable $operation The operation to simulate
+     * @param  callable  $operation  The operation to simulate
      * @return mixed Result of the operation before rollback
      * @codeCoverageIgnore Database-specific functionality
      */
@@ -173,10 +168,11 @@ trait DryRunnable
             $this->beginTransaction();
             $result = $operation();
             $this->rollback();
+
             return $result;
         } catch (\Exception $e) {
             if ($this->output !== null && method_exists($this->output, 'isDebug') && $this->output->isDebug()) {
-                $this->output->debug("  → Simulation error: " . $e->getMessage());
+                $this->output->debug('  → Simulation error: '.$e->getMessage());
             }
 
             // Try to rollback if possible
@@ -195,9 +191,9 @@ trait DryRunnable
     /**
      * Execute an operation with logging
      *
-     * @param string $description Description of the operation
-     * @param callable $operation The operation to perform
-     * @param array $context Additional context
+     * @param  string  $description  Description of the operation
+     * @param  callable  $operation  The operation to perform
+     * @param  array  $context  Additional context
      * @return mixed Result of the operation
      * @throws \Exception If operation fails
      */
@@ -214,7 +210,7 @@ trait DryRunnable
             $duration = microtime(true) - $startTime;
 
             if ($this->output !== null && method_exists($this->output, 'isDebug') && $this->output->isDebug()) {
-                $this->output->debug(sprintf("  → Completed in %.3fs", $duration));
+                $this->output->debug(sprintf('  → Completed in %.3fs', $duration));
             }
 
             return $result;
@@ -224,11 +220,11 @@ trait DryRunnable
 
             if ($this->output !== null) {
                 $this->output->error("Failed: {$description}");
-                $this->output->error("  → Error: " . $e->getMessage());
+                $this->output->error('  → Error: '.$e->getMessage());
 
                 if (method_exists($this->output, 'isDebug') && $this->output->isDebug()) {
-                    $this->output->debug(sprintf("  → Failed after %.3fs", $duration));
-                    $this->output->debug("  → Stack trace:");
+                    $this->output->debug(sprintf('  → Failed after %.3fs', $duration));
+                    $this->output->debug('  → Stack trace:');
                     $this->output->debug($e->getTraceAsString());
                 }
             }
@@ -263,12 +259,10 @@ trait DryRunnable
 
     /**
      * Display dry run summary
-     *
-     * @return void
      */
     protected function showDryRunSummary(): void
     {
-        if (!$this->isDryRun() || empty($this->dryRunLog) || $this->output === null) {
+        if (! $this->isDryRun() || empty($this->dryRunLog) || $this->output === null) {
             return;
         }
 
@@ -287,7 +281,7 @@ trait DryRunnable
             ));
 
             // Show context if verbose
-            if (method_exists($this->output, 'isVerbose') && $this->output->isVerbose() && !empty($entry['context'])) {
+            if (method_exists($this->output, 'isVerbose') && $this->output->isVerbose() && ! empty($entry['context'])) {
                 foreach ($entry['context'] as $key => $value) {
                     $displayValue = $this->formatContextValue($value);
                     $this->output->writeln(sprintf('     - %s: %s', $key, $displayValue));
@@ -301,8 +295,6 @@ trait DryRunnable
 
     /**
      * Clear the dry run log
-     *
-     * @return void
      */
     public function clearDryRunLog(): void
     {
@@ -312,12 +304,12 @@ trait DryRunnable
     /**
      * Set the output instance
      *
-     * @param Output $output The output instance
-     * @return self
+     * @param  Output  $output  The output instance
      */
     public function setDryRunOutput(Output $output): self
     {
         $this->output = $output;
+
         return $this;
     }
 }

@@ -5,13 +5,13 @@ declare(strict_types=1);
 use Yalla\Process\LockManager;
 
 beforeEach(function () {
-    $this->tempDir = sys_get_temp_dir() . '/yalla_lock_ultimate_' . uniqid();
+    $this->tempDir = sys_get_temp_dir().'/yalla_lock_ultimate_'.uniqid();
 });
 
 afterEach(function () {
     // Clean up temp directory and any remaining lock files
     if (is_dir($this->tempDir)) {
-        $files = glob($this->tempDir . '/*.lock');
+        $files = glob($this->tempDir.'/*.lock');
         if ($files) {
             array_map('unlink', $files);
         }
@@ -79,7 +79,7 @@ test('isProcessRunning proc filesystem and fallback (lines 248-254)', function (
             // Test the fallback "assume running" logic (lines 253-254)
             // Use a very high PID that likely doesn't exist in /proc
             $highPid = 9999999999; // Very high number
-            if (!file_exists("/proc/{$highPid}")) {
+            if (! file_exists("/proc/{$highPid}")) {
                 $result = $method->invoke($manager, $highPid);
                 // Should hit lines 253-254: return true (assume running fallback)
                 expect($result)->toBeTrue();
@@ -92,7 +92,7 @@ test('getLockInfo file_get_contents returns false (line 273)', function () {
     $manager = new LockManager($this->tempDir);
 
     // Create a special file that exists but can't be read
-    $lockFile = $this->tempDir . '/unreadable.lock';
+    $lockFile = $this->tempDir.'/unreadable.lock';
 
     // Create directory instead of file to make file_get_contents return false
     mkdir($lockFile, 0755, true);
@@ -157,7 +157,7 @@ test('ownsLock getLockInfo returns null (line 500)', function () {
     $manager = new LockManager($this->tempDir);
 
     // Create a lock file that will make getLockInfo return null
-    $lockFile = $this->tempDir . '/invalid.lock';
+    $lockFile = $this->tempDir.'/invalid.lock';
 
     // Create directory instead of file to make file_get_contents fail
     mkdir($lockFile, 0755, true);
@@ -244,14 +244,14 @@ test('file system permission edge cases for lock operations', function () {
     expect(is_dir($this->tempDir))->toBeTrue();
 
     // Create a lock file manually with specific content to test edge cases
-    $lockFile = $this->tempDir . '/permission-test.lock';
+    $lockFile = $this->tempDir.'/permission-test.lock';
 
     // Test with valid JSON but potential permission issues
     $lockData = json_encode([
         'pid' => 999999,
         'time' => time(),
         'host' => 'test-host',
-        'user' => 'test-user'
+        'user' => 'test-user',
     ]);
 
     file_put_contents($lockFile, $lockData);

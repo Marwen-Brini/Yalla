@@ -7,7 +7,8 @@ use Yalla\Commands\Traits\HasSignature;
 use Yalla\Output\Output;
 
 test('parse simple command', function () {
-    $command = new class extends Command {
+    $command = new class extends Command
+    {
         use HasSignature;
 
         public function __construct()
@@ -26,7 +27,8 @@ test('parse simple command', function () {
 });
 
 test('parse command with argument', function () {
-    $command = new class extends Command {
+    $command = new class extends Command
+    {
         use HasSignature;
 
         public function __construct()
@@ -49,7 +51,8 @@ test('parse command with argument', function () {
 });
 
 test('parse command with optional argument', function () {
-    $command = new class extends Command {
+    $command = new class extends Command
+    {
         use HasSignature;
 
         public function __construct()
@@ -71,7 +74,8 @@ test('parse command with optional argument', function () {
 });
 
 test('parse command with argument default', function () {
-    $command = new class extends Command {
+    $command = new class extends Command
+    {
         use HasSignature;
 
         protected array $argumentMetadata = [];
@@ -95,7 +99,8 @@ test('parse command with argument default', function () {
 });
 
 test('parse command with array argument', function () {
-    $command = new class extends Command {
+    $command = new class extends Command
+    {
         use HasSignature;
 
         protected array $argumentMetadata = [];
@@ -119,7 +124,8 @@ test('parse command with array argument', function () {
 });
 
 test('parse command with option', function () {
-    $command = new class extends Command {
+    $command = new class extends Command
+    {
         use HasSignature;
 
         public function __construct()
@@ -141,7 +147,8 @@ test('parse command with option', function () {
 });
 
 test('parse command with option shortcut', function () {
-    $command = new class extends Command {
+    $command = new class extends Command
+    {
         use HasSignature;
 
         public function __construct()
@@ -163,7 +170,8 @@ test('parse command with option shortcut', function () {
 });
 
 test('parse command with option value', function () {
-    $command = new class extends Command {
+    $command = new class extends Command
+    {
         use HasSignature;
 
         protected array $optionMetadata = [];
@@ -187,7 +195,8 @@ test('parse command with option value', function () {
 });
 
 test('parse command with option default value', function () {
-    $command = new class extends Command {
+    $command = new class extends Command
+    {
         use HasSignature;
 
         protected array $optionMetadata = [];
@@ -211,10 +220,12 @@ test('parse command with option default value', function () {
 });
 
 test('parse complex signature', function () {
-    $command = new class extends Command {
+    $command = new class extends Command
+    {
         use HasSignature;
 
         protected array $argumentMetadata = [];
+
         protected array $optionMetadata = [];
 
         public function __construct()
@@ -247,10 +258,12 @@ test('parse complex signature', function () {
 });
 
 test('parse default values', function () {
-    $command = new class extends Command {
+    $command = new class extends Command
+    {
         use HasSignature;
 
         protected array $argumentMetadata = [];
+
         protected array $optionMetadata = [];
 
         public function __construct()

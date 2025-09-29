@@ -7,13 +7,21 @@ namespace Yalla\Process;
 class Promise
 {
     private $process;
+
     private $onFulfilled = [];
+
     private $onRejected = [];
+
     private $onProgress = [];
+
     private $state = 'pending'; // pending, fulfilled, rejected
+
     private $result;
+
     private $error;
+
     private int $timeout;
+
     private float $startTime;
 
     public function __construct($process, int $timeout = 0)
@@ -25,9 +33,6 @@ class Promise
 
     /**
      * Add a fulfillment handler
-     *
-     * @param callable $callback
-     * @return self
      */
     public function then(callable $callback): self
     {
@@ -36,14 +41,12 @@ class Promise
         } else {
             $this->onFulfilled[] = $callback;
         }
+
         return $this;
     }
 
     /**
      * Add a rejection handler
-     *
-     * @param callable $callback
-     * @return self
      */
     public function catch(callable $callback): self
     {
@@ -52,46 +55,45 @@ class Promise
         } else {
             $this->onRejected[] = $callback;
         }
+
         return $this;
     }
 
     /**
      * Add both fulfillment and rejection handlers
      *
-     * @param callable|null $onFulfilled
-     * @param callable|null $onRejected
-     * @return self
+     * @param  callable|null  $onFulfilled
+     * @param  callable|null  $onRejected
      */
     public function finally(callable $callback): self
     {
-        $wrapper = function($value) use ($callback) {
+        $wrapper = function ($value) use ($callback) {
             $callback();
+
             return $value;
         };
 
-        return $this->then($wrapper)->catch(function($error) use ($callback) {
+        return $this->then($wrapper)->catch(function ($error) use ($callback) {
             $callback();
+
             throw $error;
         });
     }
 
     /**
      * Add a progress handler
-     *
-     * @param callable $callback
-     * @return self
      */
     public function onProgress(callable $callback): self
     {
         $this->onProgress[] = $callback;
+
         return $this;
     }
 
     /**
      * Resolve the promise with a value
      *
-     * @param mixed $value
-     * @return void
+     * @param  mixed  $value
      */
     public function resolve($value): void
     {
@@ -109,9 +111,6 @@ class Promise
 
     /**
      * Reject the promise with an error
-     *
-     * @param \Throwable $error
-     * @return void
      */
     public function reject(\Throwable $error): void
     {
@@ -130,8 +129,7 @@ class Promise
     /**
      * Report progress
      *
-     * @param mixed $progress
-     * @return void
+     * @param  mixed  $progress
      */
     public function progress($progress): void
     {
@@ -142,8 +140,6 @@ class Promise
 
     /**
      * Check if the promise is pending
-     *
-     * @return bool
      */
     public function isPending(): bool
     {
@@ -152,8 +148,6 @@ class Promise
 
     /**
      * Check if the promise is fulfilled
-     *
-     * @return bool
      */
     public function isFulfilled(): bool
     {
@@ -162,8 +156,6 @@ class Promise
 
     /**
      * Check if the promise is rejected
-     *
-     * @return bool
      */
     public function isRejected(): bool
     {
@@ -172,8 +164,6 @@ class Promise
 
     /**
      * Get the state of the promise
-     *
-     * @return string
      */
     public function getState(): string
     {
@@ -192,8 +182,6 @@ class Promise
 
     /**
      * Get the error if rejected
-     *
-     * @return \Throwable|null
      */
     public function getError(): ?\Throwable
     {
@@ -203,7 +191,7 @@ class Promise
     /**
      * Wait for the promise to settle
      *
-     * @param int $pollInterval Microseconds between polls
+     * @param  int  $pollInterval  Microseconds between polls
      * @return mixed
      * @throws \Throwable
      */
@@ -216,12 +204,14 @@ class Promise
             // Check timeout
             if ($this->timeout > 0 && (microtime(true) - $this->startTime) > $this->timeout) {
                 $this->reject(new \RuntimeException('Promise timed out'));
+
                 break;
             }
 
             // Safety check: prevent infinite wait
             if ((microtime(true) - $waitStart) > $maxWaitTime) {
                 $this->reject(new \RuntimeException('Promise wait exceeded maximum time'));
+
                 break;
             }
 
@@ -250,34 +240,29 @@ class Promise
     /**
      * Create a promise that resolves with the given value
      *
-     * @param mixed $value
-     * @return self
+     * @param  mixed  $value
      */
     public static function resolved($value): self
     {
         $promise = new self(null);
         $promise->resolve($value);
+
         return $promise;
     }
 
     /**
      * Create a promise that rejects with the given error
-     *
-     * @param \Throwable $error
-     * @return self
      */
     public static function rejected(\Throwable $error): self
     {
         $promise = new self(null);
         $promise->reject($error);
+
         return $promise;
     }
 
     /**
      * Create a promise that resolves when all promises resolve
-     *
-     * @param array $promises
-     * @return self
      */
     public static function all(array $promises): self
     {
@@ -287,18 +272,19 @@ class Promise
 
         if ($remaining === 0) {
             $promise->resolve([]);
+
             return $promise;
         }
 
         foreach ($promises as $key => $p) {
-            $p->then(function($value) use ($key, &$results, &$remaining, $promise) {
+            $p->then(function ($value) use ($key, &$results, &$remaining, $promise) {
                 $results[$key] = $value;
                 $remaining--;
 
                 if ($remaining === 0) {
                     $promise->resolve($results);
                 }
-            })->catch(function($error) use ($promise) {
+            })->catch(function ($error) use ($promise) {
                 $promise->reject($error);
             });
         }
@@ -308,18 +294,15 @@ class Promise
 
     /**
      * Create a promise that resolves with the first settled promise
-     *
-     * @param array $promises
-     * @return self
      */
     public static function race(array $promises): self
     {
         $promise = new self(null);
 
         foreach ($promises as $p) {
-            $p->then(function($value) use ($promise) {
+            $p->then(function ($value) use ($promise) {
                 $promise->resolve($value);
-            })->catch(function($error) use ($promise) {
+            })->catch(function ($error) use ($promise) {
                 $promise->reject($error);
             });
         }
