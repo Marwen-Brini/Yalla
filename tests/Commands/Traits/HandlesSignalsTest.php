@@ -244,7 +244,8 @@ test('method chaining works for signal methods', function () {
 
 test('onSignal returns self when pcntl not available', function () {
     // Create a mock command that simulates pcntl not being available
-    $command = new class extends TestSignalCommand {
+    $command = new class extends TestSignalCommand
+    {
         protected function isSignalHandlingAvailable(): bool
         {
             return false;
@@ -266,6 +267,7 @@ test('wrapped handler with result false does not exit', function () {
     $handlerCalled = false;
     $this->command->onSignal(SIGTERM, function ($sig) use (&$handlerCalled) {
         $handlerCalled = true;
+
         return false; // Should not trigger cleanup/exit
     });
 
@@ -356,6 +358,7 @@ test('signal handler with false return', function () {
     // Register handler that returns false
     $this->command->onInterrupt(function ($sig) use (&$executed) {
         $executed = true;
+
         return false; // Don't cleanup/exit
     });
 

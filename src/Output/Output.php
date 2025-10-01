@@ -570,7 +570,6 @@ class Output
         return $this->verbosity >= self::VERBOSITY_TRACE;
     }
 
-
     // ========== Timestamp Management ==========
 
     /**
