@@ -12,7 +12,7 @@ export default defineConfig({
       { text: 'API', link: '/api/application' },
       { text: 'Examples', link: '/examples/basic-usage' },
       {
-        text: 'v1.5.0',
+        text: 'v2.0.0',
         items: [
           { text: 'Changelog', link: '/changelog' },
           { text: 'Contributing', link: '/contributing' },
@@ -49,6 +49,18 @@ export default defineConfig({
             { text: 'Command Scaffolding', link: '/guide/scaffolding' },
             { text: 'Testing', link: '/guide/testing' },
             { text: 'Extensions', link: '/guide/extensions' }
+          ]
+        },
+        {
+          text: 'New in v2.0',
+          items: [
+            { text: 'Async Commands', link: '/guide/async-commands' },
+            { text: 'Signal Handling', link: '/guide/signal-handling' },
+            { text: 'Middleware', link: '/guide/middleware' },
+            { text: 'Dry Run Mode', link: '/guide/dry-run' },
+            { text: 'Environment Management', link: '/guide/environment' },
+            { text: 'Process Locking', link: '/guide/process-locking' },
+            { text: 'Exit Codes', link: '/guide/exit-codes' }
           ]
         }
       ],

@@ -2,6 +2,217 @@
 
 All notable changes to `yalla` will be documented in this file.
 
+## v2.0.0 - 2025-10-01
+
+### 🎉 Major Release - Production Ready
+
+Version 2.0 represents a massive evolution of Yalla CLI, transforming it from a basic CLI framework into a production-ready, enterprise-grade command-line framework. This release introduces 10+ major features and architectural improvements.
+
+### Added
+
+#### Async Command Execution
+- **SupportsAsync Trait**: Enable asynchronous command execution with promises
+  - `executeAsync()` method for async command execution
+  - `runParallel()` method for parallel operation execution
+  - Configurable timeouts with `$asyncTimeout` property
+  - Progress callbacks for long-running async tasks
+  - Automatic --async option registration
+  - Promise-based architecture with `Promise` class
+  - Error handling with exception propagation
+  - `AsyncCommandInterface` for async command contracts
+
+#### Signal Handling (Unix/Linux)
+- **HandlesSignals Trait**: Graceful shutdown and cleanup on interrupt signals
+  - `onSignal()` method for custom signal handlers
+  - `onInterrupt()` shortcut for SIGINT (Ctrl+C)
+  - `onTerminate()` shortcut for SIGTERM
+  - `onCommonSignals()` to register multiple handlers at once
+  - `dispatchSignals()` for manual signal dispatch
+  - `registerDefaultInterruptHandler()` for standard interrupt behavior
+  - `registerGracefulShutdown()` for clean termination
+  - `removeSignalHandler()` and `removeAllSignalHandlers()` for cleanup
+  - Automatic cleanup on command completion
+  - Platform detection (pcntl extension required)
+
+#### Command Middleware System
+- **HasMiddleware Trait**: Authentication, logging, timing, and custom middleware
+  - `middleware()` method to add middleware to commands
+  - `clearMiddleware()` to remove all middleware
+  - `getMiddlewarePipeline()` to access the pipeline
+- **MiddlewarePipeline Class**: Manages middleware execution order
+  - Priority-based middleware execution
+  - `add()`, `addMultiple()`, `remove()`, `clear()` methods
+  - `execute()` method for running the middleware chain
+  - Conditional middleware with `condition` parameter
+  - Automatic sorting by priority (higher runs first)
+- **Built-in Middleware**:
+  - `TimingMiddleware`: Tracks command execution time
+  - `LoggingMiddleware`: Logs command execution details
+  - `AuthenticationMiddleware`: Token-based authentication example
+- **MiddlewareInterface**: Contract for custom middleware
+  - `handle()` method for middleware logic
+  - `getPriority()` method for execution order
+
+#### Dry Run Mode
+- **DryRunnable Trait**: Preview operations without executing them
+  - `setDryRun()` and `isDryRun()` for mode control
+  - `executeOrSimulate()` to run or simulate operations
+  - `simulateOperation()` for operation preview
+  - `executeOperation()` for actual execution with timing
+  - `getDryRunLog()` returns log of simulated operations
+  - `getDryRunSummary()` returns formatted summary
+  - `showDryRunSummary()` displays summary to user
+  - `clearDryRunLog()` to reset the log
+  - Context support for verbose dry run information
+  - Execution time tracking for operations
+  - Automatic --dry-run option support
+
+#### Environment Management
+- **Environment Class**: .env file support with variable expansion
+  - Load multiple .env files (e.g., `.env`, `.env.local`)
+  - Variable expansion: `${VAR_NAME}` syntax
+  - Type-safe getters: `get()`, `getInt()`, `getFloat()`, `getBool()`, `getArray()`
+  - Environment detection: `isProduction()`, `isDevelopment()`, `isStaging()`, `isDebug()`
+  - `set()`, `has()`, `getAll()`, `clear()`, `reload()` methods
+  - Support for quoted values and comments
+  - Special value parsing: `true`, `false`, `null`, `empty`
+  - Default values for missing variables
+  - System environment variable integration
+  - Required variable validation with `getRequired()`
+
+#### File System Helpers
+- **FileHelper Class**: Safe file operations and utilities
+  - `safeWrite()`: Atomic writes with optional backup
+  - `uniqueFilename()`: Generate unique filenames with patterns
+    - Supports `{timestamp}`, `{date}`, `{unique}`, `{counter}` placeholders
+    - Custom replacement support
+  - `ensureDirectoryExists()`: Create directories with permissions
+  - `copyDirectory()`: Recursive directory copying
+  - `deleteDirectory()`: Recursive directory deletion
+  - `findFiles()`: Pattern-based file search with recursion
+  - `relativePath()`: Calculate relative paths between directories
+  - `humanFilesize()`: Human-readable file sizes (B, KB, MB, GB, etc.)
+  - `isAbsolutePath()`: Path type detection
+  - `makeAbsolute()`: Convert relative to absolute paths
+  - `getExtension()`, `getFilenameWithoutExtension()`: Path utilities
+  - `readLines()`, `writeLines()`: Line-based file operations
+
+#### Stub Generator
+- **StubGenerator Class**: Template-based code generation
+  - `registerStub()`: Register individual templates
+  - `registerStubDirectory()`: Load all templates from directory
+  - `render()`: Process templates with variables
+  - `renderString()`: Process template strings directly
+  - `generate()`: Create files from templates
+  - **Template Features**:
+    - Variable replacement: `{{ variable }}`
+    - Conditionals: `@if(condition)...@endif`, `@unless(condition)...@endunless`
+    - Loops: `@each(array as item)...@endeach`
+    - Nested conditionals support
+    - `@first` flag for first item in loops
+    - `@index` for loop iteration number
+    - Case transformations: `{{ variable|upper }}`, `{{ variable|lower }}`
+  - Built-in stubs for commands, migrations, and models
+
+#### Process Locking
+- **LockManager Class**: Prevent concurrent command execution
+  - `acquire()`: Acquire lock with timeout support
+  - `tryAcquire()`: Non-blocking lock acquisition
+  - `release()`: Release owned locks
+  - `forceRelease()`: Force release any lock (admin)
+  - `isLocked()`: Check if lock exists
+  - `isStale()`: Detect abandoned locks
+  - `getLockInfo()`: Get lock metadata (pid, host, timestamp)
+  - `wait()`: Wait for lock to be released
+  - `listLocks()`: Get all active locks
+  - `clearStale()`: Remove old locks
+  - `getLockStatus()`: Human-readable lock status
+  - `ownsLock()`: Check lock ownership
+  - `refresh()`: Update lock timestamp
+  - Cross-platform process detection (Windows/Unix)
+  - Automatic cleanup on destruction
+
+#### Command Aliases
+- **Command Aliasing**: Create shortcuts for commands
+  - `setAliases()` method on Command class
+  - `addAlias()` method to add individual aliases
+  - `getAliases()`, `hasAlias()` methods
+  - `Application::alias()` method for fluent API
+  - CommandRegistry automatic alias resolution
+  - Multiple aliases per command support
+
+#### Exit Codes
+- **ExitCodes Interface**: Standard exit codes with descriptions
+  - Standard codes: SUCCESS (0), ERROR (1), INVALID_ARGUMENT (2)
+  - Extended codes: UNAVAILABLE (69), PERMISSION_DENIED (77), CONFIG_ERROR (78)
+  - `getExitCodeDescription()`: Get human-readable descriptions
+  - `returnWithCode()`: Return with message and code
+  - `returnSuccess()`, `returnError()`: Convenience methods
+  - `mapExceptionToExitCode()`: Map exceptions to codes
+  - `handleException()`: Exception handling with proper exit codes
+  - Debug mode support for stack traces
+
+#### Command Signatures
+- **HasSignature Trait**: Laravel-style signature parsing
+  - `$signature` property for defining command syntax
+  - Automatic argument and option parsing
+  - `argument()` and `option()` helper methods
+  - Support for required/optional arguments
+  - Support for argument default values
+  - Support for array arguments: `{files*}`
+  - Support for optional options: `{--force}`
+  - Support for options with values: `{--tag=latest}`
+  - Support for option shortcuts: `{--force|-f}`
+
+#### Enhanced Output
+- **Output Sections**: Dynamic output updates
+  - `section()`: Create named output sections
+  - `OutputSection::writeln()`: Write to section
+  - `OutputSection::overwrite()`: Replace section content
+  - `OutputSection::clear()`: Clear section
+- **Semantic Output Methods**:
+  - `success()`, `error()`, `warning()`, `info()` with icons
+  - `verbose()`, `debug()` with verbosity level control
+- **Enhanced Features**:
+  - `withTimestamps()`: Add timestamps to output
+  - `logQuery()`: SQL query logging with timing
+  - `startGroup()`, `endGroup()`: Grouped output
+  - Verbosity level support (quiet, normal, verbose, very verbose, debug)
+  - `when()`: Conditional output
+  - SQL interpolation for readable query logs
+
+#### Additional Enhancements
+- **Command Class Improvements**:
+  - Support for multiple traits (SupportsAsync, HandlesSignals, HasMiddleware, DryRunnable, HasSignature)
+  - Better error handling and exception mapping
+  - Chainable method calls for fluent API
+  - Enhanced argument and option handling
+- **Application Class**:
+  - Command alias support
+  - Better command resolution
+  - Enhanced error handling
+- **Testing Infrastructure**:
+  - 100% code coverage maintained
+  - 685+ passing tests
+  - Platform-specific test coverage
+  - Comprehensive integration tests
+  - Mock classes for testing platform-specific features
+
+### Fixed
+- `humanFilesize()` method now properly formats file sizes without trailing zeros
+  - "1.0 KB" is now displayed as "1 KB"
+  - "1.5 MB" correctly shows decimal when needed
+  - Uses `rtrim()` to clean up number formatting
+
+### Changed
+- Version bumped to 2.0.0 for major release
+- Updated all documentation with v2.0 features
+- Enhanced examples with new functionality
+- Improved test coverage across all new features
+
+### Breaking Changes
+None - v2.0 is fully backward compatible with v1.x. All new features are opt-in via traits and classes.
+
 ## v1.5.0 - 2025-01-27
 
 ### Added

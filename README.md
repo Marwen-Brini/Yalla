@@ -3,7 +3,7 @@
 [![Tests](https://github.com/marwen-brini/yalla/actions/workflows/run-tests.yml/badge.svg)](https://github.com/marwen-brini/yalla/actions/workflows/run-tests.yml)
 [![Code Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen)](https://github.com/marwen-brini/yalla)
 [![PHP Version](https://img.shields.io/badge/PHP-8.1%20to%208.4-blue)](https://www.php.net)
-[![Latest Version](https://img.shields.io/badge/version-1.5.0-orange)](https://github.com/marwen-brini/yalla/releases)
+[![Latest Version](https://img.shields.io/badge/version-2.0.0-orange)](https://github.com/marwen-brini/yalla/releases)
 [![Documentation](https://img.shields.io/badge/docs-vitepress-blue)](https://marwen-brini.github.io/Yalla/)
 
 A standalone PHP CLI framework built from scratch without dependencies.
@@ -18,7 +18,19 @@ A standalone PHP CLI framework built from scratch without dependencies.
 - **Colored Output**: ANSI color support for beautiful terminal output (cross-platform)
 - **Advanced Table Rendering**: Professional table formatter with multiple border styles, emoji support, and alignment options
 - **Migration Tables**: Specialized table formatter for database migration systems
-- **Progress Indicators** *(v1.5.0)*: Progress bars, spinners, and step indicators for long-running tasks
+- **Progress Indicators**: Progress bars, spinners, and step indicators for long-running tasks
+- **Async Command Execution** *(v2.0)*: Run commands asynchronously with promises and parallel execution
+- **Signal Handling** *(v2.0)*: Graceful shutdown and cleanup on interrupt signals (Unix/Linux)
+- **Command Middleware** *(v2.0)*: Authentication, logging, timing, and custom middleware pipeline
+- **Dry Run Mode** *(v2.0)*: Preview command operations without executing them
+- **Environment Management** *(v2.0)*: .env file support with variable expansion
+- **File System Helpers** *(v2.0)*: Safe file operations, backup, unique filenames, and directory utilities
+- **Stub Generator** *(v2.0)*: Template-based code generation with conditionals and loops
+- **Process Locking** *(v2.0)*: Prevent concurrent command execution with file-based locks
+- **Command Aliases** *(v2.0)*: Create shortcuts for frequently used commands
+- **Exit Codes** *(v2.0)*: Standard exit codes with descriptions and exception mapping
+- **Command Signatures** *(v2.0)*: Laravel-style signature parsing for arguments and options
+- **Enhanced Output** *(v2.0)*: Output sections, semantic methods, verbosity levels, and timestamped logs
 - **Input Parsing**: Handles commands, arguments, and options (long and short formats)
 - **Command Scaffolding**: Built-in `create:command` to generate new command boilerplate
 - **History & Autocomplete**: REPL with command history and intelligent autocompletion
@@ -51,7 +63,7 @@ require 'vendor/autoload.php';
 
 use Yalla\Application;
 
-$app = new Application('Yalla CLI', '1.5.0');
+$app = new Application('Yalla CLI', '2.0.0');
 $app->run();
 ```
 
@@ -95,7 +107,7 @@ class GreetCommand extends Command
 }
 
 // Register in your application
-$app = new Application('Yalla CLI', '1.5.0');
+$app = new Application('Yalla CLI', '2.0.0');
 $app->register(new GreetCommand());
 $app->run();
 ```
@@ -543,6 +555,419 @@ $steps->fail(3, 'Cache clear failed');
 
 $steps->finish();
 ```
+
+## New in v2.0: Advanced Features
+
+### Async Command Execution
+
+Run commands asynchronously with promises and parallel execution:
+
+```php
+use Yalla\Commands\Traits\SupportsAsync;
+
+class ProcessCommand extends Command
+{
+    use SupportsAsync;
+
+    protected bool $runAsync = true; // Enable async by default
+
+    public function execute(array $input, Output $output): int
+    {
+        // Long running task...
+        $output->info('Processing data...');
+        sleep(5);
+        return 0;
+    }
+}
+
+// Run multiple commands in parallel
+$command->runParallel([
+    fn() => $this->processFile('file1.txt'),
+    fn() => $this->processFile('file2.txt'),
+    fn() => $this->processFile('file3.txt'),
+], $output);
+```
+
+### Signal Handling
+
+Gracefully handle interrupt signals (Unix/Linux):
+
+```php
+use Yalla\Commands\Traits\HandlesSignals;
+
+class LongRunningCommand extends Command
+{
+    use HandlesSignals;
+
+    public function execute(array $input, Output $output): int
+    {
+        // Register signal handlers
+        $this->onInterrupt(function() use ($output) {
+            $output->warning('Received interrupt signal, cleaning up...');
+            $this->cleanup();
+            exit(130);
+        });
+
+        $this->onTerminate(function() use ($output) {
+            $output->warning('Received terminate signal...');
+            $this->cleanup();
+            exit(143);
+        });
+
+        // Process work...
+        while ($this->hasWork()) {
+            $this->dispatchSignals();
+            $this->processNextItem();
+        }
+
+        return 0;
+    }
+}
+```
+
+### Command Middleware
+
+Add authentication, logging, timing, and custom middleware:
+
+```php
+use Yalla\Commands\Traits\HasMiddleware;
+use Yalla\Commands\Middleware\TimingMiddleware;
+use Yalla\Commands\Middleware\LoggingMiddleware;
+
+class DeployCommand extends Command
+{
+    use HasMiddleware;
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->middleware(new TimingMiddleware())
+             ->middleware(new LoggingMiddleware())
+             ->middleware(new AuthenticationMiddleware());
+    }
+}
+
+// Create custom middleware
+class AuthenticationMiddleware implements MiddlewareInterface
+{
+    public function handle(Command $command, array $input, Output $output, callable $next): int
+    {
+        if (!$this->isAuthenticated()) {
+            $output->error('Authentication required');
+            return 1;
+        }
+
+        return $next($command, $input, $output);
+    }
+
+    public function getPriority(): int
+    {
+        return 100; // Higher priority runs first
+    }
+}
+```
+
+### Dry Run Mode
+
+Preview operations without executing them:
+
+```php
+use Yalla\Commands\Traits\DryRunnable;
+
+class MigrationCommand extends Command
+{
+    use DryRunnable;
+
+    public function execute(array $input, Output $output): int
+    {
+        $this->setDryRun($this->getOption($input, 'dry-run', false));
+        $this->setDryRunOutput($output);
+
+        $this->executeOrSimulate(
+            'Create users table',
+            fn() => $this->createUsersTable(),
+            ['table' => 'users', 'columns' => 5]
+        );
+
+        $this->executeOrSimulate(
+            'Add indexes',
+            fn() => $this->addIndexes()
+        );
+
+        if ($this->isDryRun()) {
+            $this->showDryRunSummary();
+        }
+
+        return 0;
+    }
+}
+
+// Run with --dry-run flag
+// ./bin/yalla migrate --dry-run
+```
+
+### Environment Management
+
+Load and manage environment variables with .env support:
+
+```php
+use Yalla\Environment\Environment;
+
+$env = new Environment(['.env', '.env.local']);
+
+// Get values with type casting
+$dbHost = $env->get('DB_HOST', 'localhost');
+$dbPort = $env->getInt('DB_PORT', 3306);
+$debug = $env->getBool('APP_DEBUG', false);
+$allowedHosts = $env->getArray('ALLOWED_HOSTS'); // Comma-separated
+
+// Environment detection
+if ($env->isProduction()) {
+    // Production logic
+}
+
+if ($env->isDebug()) {
+    $output->info('Debug mode enabled');
+}
+
+// Variable expansion
+// APP_URL=https://example.com
+// API_URL=${APP_URL}/api
+$apiUrl = $env->get('API_URL'); // https://example.com/api
+```
+
+### File System Helpers
+
+Safe file operations with backup and atomic writes:
+
+```php
+use Yalla\Filesystem\FileHelper;
+
+$helper = new FileHelper();
+
+// Safe write with automatic backup
+$helper->safeWrite('/path/to/config.php', $content, backup: true);
+
+// Generate unique filenames
+$logFile = $helper->uniqueFilename('/logs', 'app-{date}-{counter}.log');
+// Result: /logs/app-2025-10-01-1.log
+
+// Copy directories recursively
+$helper->copyDirectory('/source', '/destination', overwrite: false);
+
+// Find files with pattern
+$phpFiles = $helper->findFiles('/src', '*.php', recursive: true);
+
+// Human-readable file sizes
+echo $helper->humanFilesize('/large/file.zip'); // "1.5 GB"
+
+// Relative paths
+$rel = $helper->relativePath('/var/www/app', '/var/www/app/public');
+// Result: "public"
+```
+
+### Stub Generator
+
+Template-based code generation with conditionals and loops:
+
+```php
+use Yalla\Filesystem\StubGenerator;
+
+$generator = new StubGenerator();
+$generator->registerStubDirectory(__DIR__ . '/stubs');
+
+// Generate from template
+$generator->generate('model', '/app/Models/User.php', [
+    'namespace' => 'App\\Models',
+    'class' => 'User',
+    'table' => 'users',
+    'fillable' => ['name', 'email', 'password'],
+    'timestamps' => true,
+    'softDeletes' => false,
+]);
+
+// Template: model.stub
+// namespace {{ namespace }};
+//
+// class {{ class }}
+// {
+//     @if(timestamps)
+//     protected $timestamps = true;
+//     @endif
+//
+//     protected $fillable = [
+//         @each(fillable as item)
+//         '{{ item }}',
+//         @endeach
+//     ];
+// }
+```
+
+### Process Locking
+
+Prevent concurrent command execution:
+
+```php
+use Yalla\Process\LockManager;
+
+class CronCommand extends Command
+{
+    public function execute(array $input, Output $output): int
+    {
+        $lockManager = new LockManager();
+
+        if (!$lockManager->acquire('cron-job', timeout: 60)) {
+            $output->error('Another instance is running');
+            return 1;
+        }
+
+        try {
+            // Do work...
+            $this->processCronJobs();
+
+            // Keep lock alive during long operations
+            $lockManager->refresh('cron-job');
+
+        } finally {
+            $lockManager->release('cron-job');
+        }
+
+        return 0;
+    }
+}
+
+// Check lock status
+$status = $lockManager->getLockStatus('cron-job');
+// Check if stale
+if ($lockManager->isStale('cron-job', maxAge: 3600)) {
+    $lockManager->forceRelease('cron-job');
+}
+```
+
+### Command Aliases
+
+Create shortcuts for frequently used commands:
+
+```php
+$app = new Application('Yalla CLI', '2.0.0');
+
+// Register command with aliases
+$migrateCommand = new MigrateCommand();
+$migrateCommand->setAliases(['m', 'db:migrate']);
+
+$app->register($migrateCommand);
+
+// Or use fluent API
+$app->alias('deploy', 'd');
+$app->alias('deploy', 'dep');
+
+// All these work the same:
+// ./bin/yalla migrate
+// ./bin/yalla m
+// ./bin/yalla db:migrate
+```
+
+### Exit Codes
+
+Standard exit codes with descriptions and exception mapping:
+
+```php
+use Yalla\Commands\ExitCodes;
+
+class BackupCommand extends Command implements ExitCodes
+{
+    public function execute(array $input, Output $output): int
+    {
+        if (!$this->canConnect()) {
+            return $this->returnWithCode(
+                self::EXIT_UNAVAILABLE,
+                'Database unavailable',
+                $output
+            );
+        }
+
+        try {
+            $this->createBackup();
+            return $this->returnSuccess($output);
+        } catch (\Exception $e) {
+            return $this->handleException($e, $output, debug: true);
+        }
+    }
+}
+
+// Available exit codes:
+// EXIT_SUCCESS = 0
+// EXIT_ERROR = 1
+// EXIT_INVALID_ARGUMENT = 2
+// EXIT_UNAVAILABLE = 69
+// EXIT_PERMISSION_DENIED = 77
+// EXIT_CONFIG_ERROR = 78
+```
+
+### Command Signatures
+
+Laravel-style signature parsing:
+
+```php
+use Yalla\Commands\Traits\HasSignature;
+
+class DeployCommand extends Command
+{
+    use HasSignature;
+
+    protected string $signature = 'deploy {environment} {--force} {--tag=latest}';
+
+    public function execute(array $input, Output $output): int
+    {
+        $environment = $this->argument('environment');
+        $force = $this->option('force');
+        $tag = $this->option('tag');
+
+        $output->info("Deploying to $environment with tag $tag");
+
+        return 0;
+    }
+}
+```
+
+### Enhanced Output
+
+Output sections, semantic methods, and verbosity levels:
+
+```php
+// Output sections for dynamic updates
+$section1 = $output->section('Downloads');
+$section2 = $output->section('Processing');
+
+$section1->writeln('Downloading file 1...');
+$section2->writeln('Processing data...');
+
+// Update sections dynamically
+$section1->overwrite('Download complete!');
+
+// Semantic output methods
+$output->success('✓ Operation completed');
+$output->error('✗ Operation failed');
+$output->warning('⚠ Warning message');
+$output->info('ℹ Information');
+
+// Verbosity levels
+$output->verbose('Detailed information', 'v');
+$output->debug('Debug information', 'vvv');
+
+// Timestamped output
+$output->withTimestamps(true);
+$output->info('This has a timestamp');
+
+// SQL query logging
+$output->logQuery('SELECT * FROM users WHERE id = ?', [1], 0.023);
+
+// Grouped output
+$output->startGroup('Database Operations');
+$output->info('Creating tables...');
+$output->info('Adding indexes...');
+$output->endGroup();
 
 ## Architecture
 

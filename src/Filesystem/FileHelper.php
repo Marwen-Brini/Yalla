@@ -309,6 +309,9 @@ class FileHelper
             return '0 B';
         }
 
+        // Clear stat cache to get fresh file size
+        clearstatcache(true, $path);
+
         $size = filesize($path);
         // @codeCoverageIgnoreStart
         if ($size === false) {

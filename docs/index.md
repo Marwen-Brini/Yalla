@@ -20,12 +20,30 @@ features:
   - icon: 🎨
     title: Beautiful Output
     details: ANSI colors, tables, progress bars, spinners, step indicators and more
+  - icon: ⚡
+    title: Async Execution (v2.0)
+    details: Run commands asynchronously with promises and parallel execution support
   - icon: 🔧
     title: Interactive REPL
     details: Full-featured Read-Eval-Print-Loop for interactive PHP development with history and autocomplete
+  - icon: 🛡️
+    title: Signal Handling (v2.0)
+    details: Graceful shutdown and cleanup on interrupt signals (Unix/Linux)
+  - icon: 🔌
+    title: Middleware System (v2.0)
+    details: Authentication, logging, timing, and custom middleware pipeline
+  - icon: 🌱
+    title: Environment Management (v2.0)
+    details: .env file support with variable expansion and type-safe getters
   - icon: 📦
     title: Command Scaffolding
     details: Built-in command generator to quickly create new commands with proper structure
+  - icon: 📝
+    title: Stub Generator (v2.0)
+    details: Template-based code generation with conditionals and loops
+  - icon: 🔒
+    title: Process Locking (v2.0)
+    details: Prevent concurrent command execution with file-based locks
   - icon: 🧪
     title: 100% Test Coverage
     details: Fully tested with Pest PHP, ensuring reliability and maintainability

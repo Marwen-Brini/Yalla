@@ -16,6 +16,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - TBD
 
+## [2.0.0] - 2025-10-01
+
+### 🎉 Major Release - Production Ready
+
+Version 2.0 represents a massive evolution of Yalla CLI, transforming it from a basic CLI framework into a production-ready, enterprise-grade command-line framework. This release introduces 10+ major features and architectural improvements.
+
+### What's New
+
+#### 🚀 Major Features
+
+- **[Async Command Execution](/guide/async-commands)** - Run commands asynchronously with promises and parallel execution
+- **[Signal Handling](/guide/signal-handling)** - Graceful shutdown and cleanup on interrupt signals (Unix/Linux)
+- **[Command Middleware](/guide/middleware)** - Authentication, logging, timing, and custom middleware pipeline
+- **[Dry Run Mode](/guide/dry-run)** - Preview command operations without executing them
+- **[Environment Management](/guide/environment)** - .env file support with variable expansion
+- **[File System Helpers](/api/file-helper)** - Safe file operations, backup, unique filenames
+- **[Stub Generator](/api/stub-generator)** - Template-based code generation with conditionals and loops
+- **[Process Locking](/guide/process-locking)** - Prevent concurrent command execution with file-based locks
+- **[Command Aliases](/guide/commands#aliases)** - Create shortcuts for frequently used commands
+- **[Exit Codes](/guide/exit-codes)** - Standard exit codes with descriptions and exception mapping
+- **[Command Signatures](/guide/commands#signatures)** - Laravel-style signature parsing
+- **[Enhanced Output](/guide/output#sections)** - Output sections, semantic methods, verbosity levels
+
+#### 🔧 Improvements
+
+- Maintained 100% test coverage with 685+ passing tests
+- Enhanced error handling and exception mapping
+- Better cross-platform support
+- Comprehensive documentation for all features
+- Multiple working examples for each feature
+
+#### 🐛 Bug Fixes
+
+- Fixed `humanFilesize()` formatting to remove trailing zeros (1 KB instead of 1.0 KB)
+
+### Breaking Changes
+
+**None** - v2.0 is fully backward compatible with v1.x. All new features are opt-in via traits and classes.
+
 ## [1.4.0] - 2025-01-26
 
 ### Added
