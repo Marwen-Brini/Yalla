@@ -177,6 +177,61 @@ class Output
         $this->writeln($this->color('⚡ '.$message, self::BRIGHT_YELLOW));
     }
 
+    public function verbose(string $message): void
+    {
+        if ($this->verbosity >= self::VERBOSITY_VERBOSE) {
+            $this->writeln($message);
+        }
+    }
+
+    public function trace(string $message): void
+    {
+        if ($this->verbosity >= self::VERBOSITY_TRACE) {
+            $this->writeln($this->color('[TRACE] '.$message, self::DARK_GRAY));
+        }
+    }
+
+    public function sql(string $query, array $bindings = []): void
+    {
+        if ($this->verbosity >= self::VERBOSITY_DEBUG) {
+            $interpolated = $this->interpolateQuery($query, $bindings);
+            $this->debug('SQL: '.$interpolated);
+        }
+    }
+
+    public function withTimestamps(bool $show = true): self
+    {
+        $this->showTimestamps = $show;
+
+        return $this;
+    }
+
+    public function setTimestampFormat(string $format): self
+    {
+        $this->timestampFormat = $format;
+
+        return $this;
+    }
+
+    protected function formatMessage(string $message): string
+    {
+        if (! $this->showTimestamps) {
+            return $message;
+        }
+
+        return '['.(date($this->timestampFormat)).'] '.$message;
+    }
+
+    protected function interpolateQuery(string $query, array $bindings): string
+    {
+        foreach ($bindings as $binding) {
+            $value = is_string($binding) ? "'{$binding}'" : (string) $binding;
+            $query = (string) preg_replace('/\?/', $value, $query, 1);
+        }
+
+        return $query;
+    }
+
     public function color(string $text, string $color): string
     {
         if (! $this->supportsColors) {
@@ -318,11 +373,9 @@ class Output
         $this->writeln($this->color($message, self::UNDERLINE));
     }
 
-    public function section(string $title): void
+    public function section(string $title): OutputSection
     {
-        $this->writeln('');
-        $this->writeln($this->color('━━━ '.$title.' ━━━', self::CYAN));
-        $this->writeln('');
+        return new OutputSection($this, $title);
     }
 
     public function tree(array $items, int $level = 0): void
@@ -517,71 +570,8 @@ class Output
         return $this->verbosity >= self::VERBOSITY_TRACE;
     }
 
-    /**
-     * Output message only in verbose mode
-     */
-    public function verbose(string $message): void
-    {
-        if ($this->isVerbose()) {
-            $this->writeln($message);
-        }
-    }
-
-    /**
-     * Output message only in trace mode
-     */
-    public function trace(string $message): void
-    {
-        if ($this->isTrace()) {
-            $this->writeln($this->color('[TRACE] '.$message, self::DARK_GRAY));
-        }
-    }
-
-    /**
-     * Output SQL query with bindings (debug mode only)
-     */
-    public function sql(string $query, array $bindings = []): void
-    {
-        if ($this->isDebug()) {
-            $interpolated = $this->interpolateQuery($query, $bindings);
-            $this->debug('SQL: '.$interpolated);
-        }
-    }
-
-    /**
-     * Interpolate query bindings
-     */
-    protected function interpolateQuery(string $query, array $bindings): string
-    {
-        foreach ($bindings as $binding) {
-            $value = is_string($binding) ? "'{$binding}'" : (string) $binding;
-            $query = preg_replace('/\?/', $value, $query, 1);
-        }
-
-        return $query;
-    }
 
     // ========== Timestamp Management ==========
-
-    /**
-     * Enable/disable timestamps
-     */
-    public function withTimestamps(bool $enabled = true): self
-    {
-        $this->showTimestamps = $enabled;
-
-        return $this;
-    }
-
-    /**
-     * Set timestamp format
-     */
-    public function setTimestampFormat(string $format): self
-    {
-        $this->timestampFormat = $format;
-
-        return $this;
-    }
 
     /**
      * Check if timestamps are enabled
@@ -598,7 +588,9 @@ class Output
      */
     public function group(string $title, callable $callback): void
     {
-        $this->section($title);
+        $this->writeln('');
+        $this->writeln($this->color('━━━ '.$title.' ━━━', self::CYAN));
+        $this->writeln('');
         $callback($this);
         $this->writeln('');
     }

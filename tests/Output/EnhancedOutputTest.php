@@ -267,3 +267,32 @@ test('interpolate query', function () {
         expect($buffer[0])->toContain($test['expected']);
     }
 });
+
+test('formatMessage without timestamps', function () {
+    // Test lines 218-219 - when timestamps are disabled
+    $reflection = new ReflectionClass($this->output);
+    $method = $reflection->getMethod('formatMessage');
+    $method->setAccessible(true);
+
+    // Disable timestamps
+    $this->output->withTimestamps(false);
+
+    $result = $method->invoke($this->output, 'Test message');
+    expect($result)->toBe('Test message');
+});
+
+test('formatMessage with timestamps', function () {
+    // Test lines 222 - when timestamps are enabled
+    $reflection = new ReflectionClass($this->output);
+    $method = $reflection->getMethod('formatMessage');
+    $method->setAccessible(true);
+
+    // Enable timestamps with custom format
+    $this->output->withTimestamps(true);
+    $this->output->setTimestampFormat('Y-m-d H:i:s');
+
+    $result = $method->invoke($this->output, 'Test message');
+
+    // Should have timestamp prefix
+    expect($result)->toMatch('/\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\] Test message/');
+});

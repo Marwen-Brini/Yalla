@@ -371,7 +371,9 @@ class ReplContext
 
         // If no argument provided, show current mode and available modes
         if (empty($args)) {
-            $output->section('Display Mode');
+            $output->writeln('');
+            $output->writeln($output->color('━━━ Display Mode ━━━', Output::CYAN));
+            $output->writeln('');
             $output->writeln('Current mode: '.$output->color($currentMode, Output::CYAN));
             $output->writeln('');
             $output->writeln('Available modes:');

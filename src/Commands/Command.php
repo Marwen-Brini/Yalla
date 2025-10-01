@@ -16,6 +16,8 @@ abstract class Command implements ExitCodes
 
     protected array $options = [];
 
+    protected array $aliases = [];
+
     protected ?Output $output = null;
 
     abstract public function execute(array $input, Output $output): int;
@@ -38,6 +40,32 @@ abstract class Command implements ExitCodes
     public function getOptions(): array
     {
         return $this->options;
+    }
+
+    public function getAliases(): array
+    {
+        return $this->aliases;
+    }
+
+    public function setAliases(array $aliases): self
+    {
+        $this->aliases = $aliases;
+
+        return $this;
+    }
+
+    public function addAlias(string $alias): self
+    {
+        if (! in_array($alias, $this->aliases)) {
+            $this->aliases[] = $alias;
+        }
+
+        return $this;
+    }
+
+    public function hasAlias(string $alias): bool
+    {
+        return in_array($alias, $this->aliases);
     }
 
     protected function addArgument(string $name, string $description, bool $required = false): self

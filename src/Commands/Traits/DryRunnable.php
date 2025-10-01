@@ -267,7 +267,8 @@ trait DryRunnable
         }
 
         $this->output->writeln('');
-        $this->output->section('Dry Run Summary');
+        $this->output->writeln($this->output->color('━━━ Dry Run Summary ━━━', Output::CYAN));
+        $this->output->writeln('');
         $this->output->info(sprintf(
             'Would have executed %d operation(s):',
             count($this->dryRunLog)

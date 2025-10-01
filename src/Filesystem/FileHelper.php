@@ -324,7 +324,11 @@ class FileHelper
             $i++;
         }
 
-        return round($size, $precision).' '.$units[$i];
+        $rounded = round($size, $precision);
+        // Remove unnecessary trailing zeros and decimal point
+        $formatted = rtrim(rtrim(number_format($rounded, $precision, '.', ''), '0'), '.');
+
+        return $formatted.' '.$units[$i];
     }
 
     /**

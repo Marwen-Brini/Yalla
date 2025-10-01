@@ -612,3 +612,16 @@ test('processNestedConditionals handles nested structure', function () {
     $result2 = $method->invoke($generator, $content, ['outer' => false]);
     expect($result2)->toBe('Start  End');
 });
+
+test('malformed if block without closing condition end', function () {
+    // Test line 326 - break when conditionEnd is false
+    $stubPath = $this->tempDir.'/malformed.stub';
+    file_put_contents($stubPath, '{{#if condition without closing braces');
+
+    $this->generator->registerStub('malformed', $stubPath);
+
+    // Should handle gracefully and return content as-is
+    $result = $this->generator->render('malformed', ['condition' => true]);
+
+    expect($result)->toContain('{{#if condition without closing braces');
+});

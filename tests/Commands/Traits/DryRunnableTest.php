@@ -480,9 +480,11 @@ test('showDryRunSummary displays verbose context', function () {
                     echo $message.PHP_EOL;
                 }
 
-                public function section(string $title): void
+                public function section(string $title): \Yalla\Output\OutputSection
                 {
                     echo "=== $title ===".PHP_EOL;
+
+                    return new \Yalla\Output\OutputSection($this, $title);
                 }
 
                 public function info(string $message): void
