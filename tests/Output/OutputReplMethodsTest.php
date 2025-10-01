@@ -175,18 +175,12 @@ test('underline method outputs underlined text', function () {
     expect($output)->toContain(Output::UNDERLINE.'Underlined text'.Output::RESET);
 });
 
-test('section method creates a section header', function () {
+test('section method returns OutputSection instance', function () {
     $this->output->clearBuffer();
-    $this->output->section('Test Section');
+    $section = $this->output->section('Test Section');
 
-    $output = $this->output->getOutput();
-
-    expect($output)->toContain('━━━ Test Section ━━━');
-    expect($output)->toContain(Output::CYAN);
-
-    // Check structure has newlines
-    $lines = explode(PHP_EOL, $output);
-    expect(count($lines))->toBeGreaterThan(2); // Should have at least 3 lines
+    expect($section)->toBeInstanceOf(\Yalla\Output\OutputSection::class);
+    expect($section->getTitle())->toBe('Test Section');
 });
 
 test('tree method displays flat array', function () {

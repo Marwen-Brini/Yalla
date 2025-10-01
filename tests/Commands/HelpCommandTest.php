@@ -7,28 +7,32 @@ use Yalla\Commands\CommandRegistry;
 use Yalla\Commands\HelpCommand;
 use Yalla\Output\Output;
 
-class SampleCommand extends Command
+// Helper function to create sample command
+function createSampleCommand()
 {
-    public function __construct()
+    return new class extends Command
     {
-        $this->name = 'sample';
-        $this->description = 'A sample command';
+        public function __construct()
+        {
+            $this->name = 'sample';
+            $this->description = 'A sample command';
 
-        $this->addArgument('file', 'Input file', true);
-        $this->addArgument('output', 'Output file', false);
-        $this->addOption('verbose', 'v', 'Verbose output', false);
-        $this->addOption('format', 'f', 'Output format', 'json');
-    }
+            $this->addArgument('file', 'Input file', true);
+            $this->addArgument('output', 'Output file', false);
+            $this->addOption('verbose', 'v', 'Verbose output', false);
+            $this->addOption('format', 'f', 'Output format', 'json');
+        }
 
-    public function execute(array $input, Output $output): int
-    {
-        return 0;
-    }
+        public function execute(array $input, Output $output): int
+        {
+            return 0;
+        }
+    };
 }
 
 it('shows general help when no command specified', function () {
     $registry = new CommandRegistry;
-    $registry->register(new SampleCommand);
+    $registry->register(createSampleCommand());
 
     $helpCommand = new HelpCommand($registry);
     $output = new Output;
@@ -51,7 +55,7 @@ it('shows general help when no command specified', function () {
 
 it('shows command-specific help', function () {
     $registry = new CommandRegistry;
-    $registry->register(new SampleCommand);
+    $registry->register(createSampleCommand());
 
     $helpCommand = new HelpCommand($registry);
     $output = new Output;

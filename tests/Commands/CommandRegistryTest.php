@@ -6,23 +6,27 @@ use Yalla\Commands\Command;
 use Yalla\Commands\CommandRegistry;
 use Yalla\Output\Output;
 
-class DummyCommand extends Command
+// Helper function to create dummy command
+function createDummyCommand(string $name = 'dummy')
 {
-    public function __construct(string $name = 'dummy')
+    return new class($name) extends Command
     {
-        $this->name = $name;
-        $this->description = 'Dummy command';
-    }
+        public function __construct(string $name = 'dummy')
+        {
+            $this->name = $name;
+            $this->description = 'Dummy command';
+        }
 
-    public function execute(array $input, Output $output): int
-    {
-        return 0;
-    }
+        public function execute(array $input, Output $output): int
+        {
+            return 0;
+        }
+    };
 }
 
 it('can register and retrieve commands', function () {
     $registry = new CommandRegistry;
-    $command = new DummyCommand('test');
+    $command = createDummyCommand('test');
 
     $registry->register($command);
 
@@ -39,8 +43,8 @@ it('returns null for non-existent commands', function () {
 
 it('can retrieve all registered commands', function () {
     $registry = new CommandRegistry;
-    $command1 = new DummyCommand('test1');
-    $command2 = new DummyCommand('test2');
+    $command1 = createDummyCommand('test1');
+    $command2 = createDummyCommand('test2');
 
     $registry->register($command1);
     $registry->register($command2);

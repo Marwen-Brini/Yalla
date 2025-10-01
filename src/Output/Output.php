@@ -26,6 +26,12 @@ class Output
 
     const WHITE = "\033[37m";
 
+    const GRAY = "\033[90m";
+
+    const DARK_GRAY = "\033[90m";
+
+    const BRIGHT_YELLOW = "\033[93m";
+
     const BG_BLACK = "\033[40m";
 
     const BG_RED = "\033[41m";
@@ -48,9 +54,26 @@ class Output
 
     const UNDERLINE = "\033[4m";
 
+    // Verbosity levels
+    const VERBOSITY_QUIET = 0;
+
+    const VERBOSITY_NORMAL = 1;
+
+    const VERBOSITY_VERBOSE = 2;
+
+    const VERBOSITY_DEBUG = 3;
+
+    const VERBOSITY_TRACE = 4;
+
     private bool $supportsColors;
 
     private ?InteractiveInput $interactiveInput = null;
+
+    private int $verbosity = self::VERBOSITY_NORMAL;
+
+    private bool $showTimestamps = false;
+
+    private string $timestampFormat = 'Y-m-d H:i:s';
 
     public function __construct()
     {
@@ -100,27 +123,113 @@ class Output
 
     public function writeln(string $message): void
     {
+        if ($this->showTimestamps && ! empty($message)) {
+            $timestamp = date($this->timestampFormat);
+            $message = "[{$timestamp}] {$message}";
+        }
         $this->write($message, true);
     }
 
     public function success(string $message): void
     {
-        $this->writeln($this->color($message, self::GREEN));
+        $this->writeln($this->color('✅ '.$message, self::GREEN));
     }
 
     public function error(string $message): void
     {
-        $this->writeln($this->color($message, self::RED));
+        $this->writeln($this->color('❌ '.$message, self::RED));
     }
 
     public function warning(string $message): void
     {
-        $this->writeln($this->color($message, self::YELLOW));
+        $this->writeln($this->color('⚠️  '.$message, self::YELLOW));
     }
 
     public function info(string $message): void
     {
-        $this->writeln($this->color($message, self::CYAN));
+        $this->writeln($this->color('ℹ️  '.$message, self::CYAN));
+    }
+
+    public function debug(string $message): void
+    {
+        if ($this->verbosity >= self::VERBOSITY_DEBUG) {
+            $this->writeln($this->color('🔍 '.$message, self::GRAY));
+        }
+    }
+
+    public function comment(string $message): void
+    {
+        $this->writeln($this->color('💡 '.$message, self::CYAN));
+    }
+
+    public function question(string $message): void
+    {
+        $this->writeln($this->color('❓ '.$message, self::MAGENTA));
+    }
+
+    public function note(string $message): void
+    {
+        $this->writeln($this->color('📝 '.$message, self::WHITE));
+    }
+
+    public function caution(string $message): void
+    {
+        $this->writeln($this->color('⚡ '.$message, self::BRIGHT_YELLOW));
+    }
+
+    public function verbose(string $message): void
+    {
+        if ($this->verbosity >= self::VERBOSITY_VERBOSE) {
+            $this->writeln($message);
+        }
+    }
+
+    public function trace(string $message): void
+    {
+        if ($this->verbosity >= self::VERBOSITY_TRACE) {
+            $this->writeln($this->color('[TRACE] '.$message, self::DARK_GRAY));
+        }
+    }
+
+    public function sql(string $query, array $bindings = []): void
+    {
+        if ($this->verbosity >= self::VERBOSITY_DEBUG) {
+            $interpolated = $this->interpolateQuery($query, $bindings);
+            $this->debug('SQL: '.$interpolated);
+        }
+    }
+
+    public function withTimestamps(bool $show = true): self
+    {
+        $this->showTimestamps = $show;
+
+        return $this;
+    }
+
+    public function setTimestampFormat(string $format): self
+    {
+        $this->timestampFormat = $format;
+
+        return $this;
+    }
+
+    protected function formatMessage(string $message): string
+    {
+        if (! $this->showTimestamps) {
+            return $message;
+        }
+
+        return '['.(date($this->timestampFormat)).'] '.$message;
+    }
+
+    protected function interpolateQuery(string $query, array $bindings): string
+    {
+        foreach ($bindings as $binding) {
+            $value = is_string($binding) ? "'{$binding}'" : (string) $binding;
+            $query = (string) preg_replace('/\?/', $value, $query, 1);
+        }
+
+        return $query;
     }
 
     public function color(string $text, string $color): string
@@ -264,11 +373,9 @@ class Output
         $this->writeln($this->color($message, self::UNDERLINE));
     }
 
-    public function section(string $title): void
+    public function section(string $title): OutputSection
     {
-        $this->writeln('');
-        $this->writeln($this->color('━━━ '.$title.' ━━━', self::CYAN));
-        $this->writeln('');
+        return new OutputSection($this, $title);
     }
 
     public function tree(array $items, int $level = 0): void
@@ -409,5 +516,89 @@ class Output
     public function steps(array $steps): \Yalla\Progress\StepIndicator
     {
         return new \Yalla\Progress\StepIndicator($this, $steps);
+    }
+
+    // ========== Verbosity Management ==========
+
+    /**
+     * Set verbosity level
+     */
+    public function setVerbosity(int $level): self
+    {
+        $this->verbosity = $level;
+
+        return $this;
+    }
+
+    /**
+     * Get current verbosity level
+     */
+    public function getVerbosity(): int
+    {
+        return $this->verbosity;
+    }
+
+    /**
+     * Check if quiet mode
+     */
+    public function isQuiet(): bool
+    {
+        return $this->verbosity === self::VERBOSITY_QUIET;
+    }
+
+    /**
+     * Check if verbose mode
+     */
+    public function isVerbose(): bool
+    {
+        return $this->verbosity >= self::VERBOSITY_VERBOSE;
+    }
+
+    /**
+     * Check if debug mode
+     */
+    public function isDebug(): bool
+    {
+        return $this->verbosity >= self::VERBOSITY_DEBUG;
+    }
+
+    /**
+     * Check if trace mode
+     */
+    public function isTrace(): bool
+    {
+        return $this->verbosity >= self::VERBOSITY_TRACE;
+    }
+
+    // ========== Timestamp Management ==========
+
+    /**
+     * Check if timestamps are enabled
+     */
+    public function hasTimestamps(): bool
+    {
+        return $this->showTimestamps;
+    }
+
+    // ========== Grouped Output ==========
+
+    /**
+     * Output within a group
+     */
+    public function group(string $title, callable $callback): void
+    {
+        $this->writeln('');
+        $this->writeln($this->color('━━━ '.$title.' ━━━', self::CYAN));
+        $this->writeln('');
+        $callback($this);
+        $this->writeln('');
+    }
+
+    /**
+     * Create an output section for updateable content
+     */
+    public function createSection(string $title): OutputSection
+    {
+        return new OutputSection($this, $title);
     }
 }

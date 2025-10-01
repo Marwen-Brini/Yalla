@@ -54,6 +54,18 @@ class Application
         return $this;
     }
 
+    public function alias(string $commandName, string $alias): self
+    {
+        $command = $this->registry->get($commandName);
+
+        if ($command) {
+            $command->addAlias($alias);
+            $this->registry->registerAlias($alias, $commandName);
+        }
+
+        return $this;
+    }
+
     public function run(): int
     {
         try {
