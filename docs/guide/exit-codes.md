@@ -100,4 +100,4 @@ try {
 ## See Also
 
 - [Commands](/guide/commands) - Creating commands
-- [Error Handling](/guide/error-handling) - Exception handling
+- [Middleware](/guide/middleware) - Error handling in middleware

@@ -31,8 +31,8 @@ Version 2.0 represents a massive evolution of Yalla CLI, transforming it from a 
 - **[Command Middleware](/guide/middleware)** - Authentication, logging, timing, and custom middleware pipeline
 - **[Dry Run Mode](/guide/dry-run)** - Preview command operations without executing them
 - **[Environment Management](/guide/environment)** - .env file support with variable expansion
-- **[File System Helpers](/api/file-helper)** - Safe file operations, backup, unique filenames
-- **[Stub Generator](/api/stub-generator)** - Template-based code generation with conditionals and loops
+- **File System Helpers** - Safe file operations, backup, unique filenames
+- **Stub Generator** - Template-based code generation with conditionals and loops
 - **[Process Locking](/guide/process-locking)** - Prevent concurrent command execution with file-based locks
 - **[Command Aliases](/guide/commands#aliases)** - Create shortcuts for frequently used commands
 - **[Exit Codes](/guide/exit-codes)** - Standard exit codes with descriptions and exception mapping

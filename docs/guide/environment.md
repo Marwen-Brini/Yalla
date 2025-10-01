@@ -446,5 +446,5 @@ try {
 ## See Also
 
 - [Commands](/guide/commands) - Using environment in commands
-- [Configuration](/guide/configuration) - Application configuration
-- [Security](/guide/security) - Securing sensitive data
+- [Getting Started](/guide/getting-started) - Application setup
+- [Best Practices](#best-practices) - Security and best practices
